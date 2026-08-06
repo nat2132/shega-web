@@ -11,7 +11,8 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-dev-key-change-in-p
 
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'shega-api-dah3.onrender.com').split(',')
+ALLOWED_HOSTS = [h for h in os.getenv('ALLOWED_HOSTS', '').split(',') if h]
+ALLOWED_HOSTS.append('shega-api-dah3.onrender.com')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
