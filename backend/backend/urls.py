@@ -19,17 +19,15 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from .dashboard import dashboard_stats
-
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/admin/', include('admin_api.urls')),
     path('api/auth/', include('accounts.urls')),
     path('api/customers/', include('customers.urls')),
     path('api/licenses/', include('licenses.urls')),
     path('api/payments/', include('payments.urls')),
     path('api/notifications/', include('notifications.urls')),
     path('api/license/', include('api_public.urls')),
-    path('api/admin/dashboard/', dashboard_stats, name='dashboard-stats'),
 ]
 
 if settings.DEBUG:

@@ -1,44 +1,52 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { ArrowRight, Phone } from 'lucide-react';
+import { motion } from "framer-motion";
+import { ArrowRight, Phone } from "lucide-react";
+import Link from "next/link";
 
 export default function CTA() {
   return (
-    <section className="relative overflow-hidden py-24 sm:py-32 granny-gradient-2">
-      <div className="absolute inset-0 bg-grid pointer-events-none opacity-30" />
-
-      <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+    <section className="relative overflow-hidden py-24 sm:py-32">
+      <div className="hero-orb hero-orb-1" />
+      <div className="hero-orb hero-orb-2" />
+      <div className="absolute inset-0 grid-pattern opacity-20" />
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
+          viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+          className="relative z-10 rounded-3xl glass-strong p-12 sm:p-16 overflow-hidden text-center glass-inner-highlight"
         >
-          <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-            Ready to Transform Your Business?
-          </h2>
-          <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">
-            Join thousands of Ethiopian businesses already using Shega to streamline
-            operations, manage inventory, and grow faster.
-          </p>
-        </motion.div>
+          <div className="ambient-glow ambient-glow-1" />
+          <div className="ambient-glow ambient-glow-2" />
 
-        <motion.div
-          className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.5, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-        >
-          <button className="inline-flex items-center gap-2 rounded-xl bg-foreground px-8 py-4 text-base font-semibold text-background transition-all duration-300 hover:opacity-90">
-            Get Started Free
-            <ArrowRight className="h-5 w-5" />
-          </button>
-          <button className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-8 py-4 text-base font-semibold text-foreground transition-all duration-300 hover:bg-surface">
-            <Phone className="h-5 w-5 text-muted-foreground" />
-            Talk to Sales
-          </button>
+          <div className="relative z-10">
+            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+              Ready to Get Started?
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted">
+              Manage inventory, track sales, and streamline your operations — all from
+              one platform designed for Ethiopian businesses.
+            </p>
+
+            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <Link
+                href="#how-it-works"
+                className="btn-glass-primary gap-2 px-8 py-4 text-base group"
+              >
+                Get Started
+                <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+              </Link>
+              <Link
+                href="/contact"
+                className="btn-glass gap-2 px-8 py-4 text-base"
+              >
+                <Phone className="h-4 w-4" />
+                Contact Us
+              </Link>
+            </div>
+          </div>
         </motion.div>
       </div>
     </section>

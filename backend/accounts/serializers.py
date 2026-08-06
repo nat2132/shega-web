@@ -38,14 +38,11 @@ class LoginSerializer(TokenObtainPairSerializer):
 
     def validate(self, attrs):
         username = attrs.get(self.username_field)
-        password = attrs.get('password')
 
         if '@' in username:
-            try:
-                user = User.objects.get(email=username)
-                attrs[self.username_field] = user.username
-            except User.DoesNotExist:
-                pass
+            users = User.objects.filter(email=username)
+            if users.exists():
+                attrs[self.username_field] = users.first().username
 
         return super().validate(attrs)
 

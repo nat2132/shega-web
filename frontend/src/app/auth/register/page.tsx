@@ -9,24 +9,19 @@ import { Loader2, Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuthStore } from "@/store/authStore";
 
-const businessTypes = ["Retail", "Wholesale", "Distribution", "Manufacturing", "Restaurant", "Service", "Other"];
-
 export default function RegisterPage() {
   const router = useRouter();
   const { register } = useAuthStore();
   const [form, setForm] = useState({
     full_name: "",
     email: "",
-    phone_number: "",
-    business_name: "",
-    business_type: "",
     password: "",
     password2: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
@@ -41,12 +36,12 @@ export default function RegisterPage() {
       await register({
         full_name: form.full_name,
         email: form.email,
-        phone_number: form.phone_number,
+        phone_number: "",
         password: form.password,
         password2: form.password2,
       });
-      toast.success("Account created!");
-      router.push("/customer/");
+      toast.success("Admin account created!");
+      router.push("/admin/");
     } catch {
       toast.error("Registration failed. Please check your information.");
     } finally {
@@ -55,7 +50,6 @@ export default function RegisterPage() {
   };
 
   const inputClass = "block w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-foreground placeholder-muted-foreground transition-all duration-200 hover:border-border-hover focus:border-foreground/20 focus:outline-hidden focus:ring-2 focus:ring-foreground/10";
-  const selectClass = inputClass;
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
@@ -74,40 +68,19 @@ export default function RegisterPage() {
               <Image src="/images/logo.png" alt="Shega" width={36} height={36} />
               <span className="text-2xl font-bold text-foreground">shega</span>
             </Link>
-            <h1 className="text-xl font-semibold text-foreground">Create your account</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Get started with Shega in minutes</p>
+            <h1 className="text-xl font-semibold text-foreground">Admin Registration</h1>
+            <p className="mt-1 text-sm text-muted-foreground">Create an administrator account</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="full_name" className="mb-1.5 block text-sm font-medium text-foreground">Username</label>
-              <input id="full_name" name="full_name" type="text" required value={form.full_name} onChange={handleChange} className={inputClass} placeholder="John Doe" />
+              <label htmlFor="full_name" className="mb-1.5 block text-sm font-medium text-foreground">Full Name</label>
+              <input id="full_name" name="full_name" type="text" required value={form.full_name} onChange={handleChange} className={inputClass} placeholder="Admin Name" />
             </div>
 
             <div>
               <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-foreground">Email</label>
-              <input id="email" name="email" type="email" required value={form.email} onChange={handleChange} className={inputClass} placeholder="you@example.com" />
-            </div>
-
-            <div>
-              <label htmlFor="phone_number" className="mb-1.5 block text-sm font-medium text-foreground">Phone</label>
-              <input id="phone_number" name="phone_number" type="tel" required value={form.phone_number} onChange={handleChange} className={inputClass} placeholder="+251 91 234 5678" />
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label htmlFor="business_name" className="mb-1.5 block text-sm font-medium text-foreground">Business Name</label>
-                <input id="business_name" name="business_name" type="text" value={form.business_name} onChange={handleChange} className={inputClass} placeholder="My Business" />
-              </div>
-              <div>
-                <label htmlFor="business_type" className="mb-1.5 block text-sm font-medium text-foreground">Business Type</label>
-                <select id="business_type" name="business_type" value={form.business_type} onChange={handleChange} className={selectClass}>
-                  <option value="" className="bg-background">Select type</option>
-                  {businessTypes.map((type) => (
-                    <option key={type} value={type} className="bg-background">{type}</option>
-                  ))}
-                </select>
-              </div>
+              <input id="email" name="email" type="email" required value={form.email} onChange={handleChange} className={inputClass} placeholder="admin@example.com" />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
@@ -132,7 +105,7 @@ export default function RegisterPage() {
               className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-foreground text-sm font-semibold text-background transition-all duration-200 hover:opacity-90 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50"
             >
               {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
-              {isLoading ? "Creating account..." : "Create Account"}
+              {isLoading ? "Creating admin account..." : "Create Admin Account"}
             </button>
           </form>
 

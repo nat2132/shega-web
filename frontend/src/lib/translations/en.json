@@ -1,0 +1,321 @@
+{
+  "nav": {
+    "home": "Home",
+    "features": "Features",
+    "pricing": "Pricing",
+    "mobileApp": "Mobile App",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "login": "Login",
+    "startFreeTrial": "Get Started"
+  },
+  "hero": {
+    "headline": "The Complete Inventory & Sales Management System for Ethiopian Businesses",
+    "subheadline": "Track inventory, manage sales, organize customers, and monitor finances — all from one platform designed for Ethiopian businesses.",
+    "primaryCta": "Get Started",
+    "secondaryCta": "Learn More",
+    "badge": "Beta Now Open"
+  },
+  "features": {
+    "mobile": {
+      "title": "Manage Your Business from Anywhere",
+      "subtitle": "Manage inventory, track sales, and stay on top of your business from anywhere.",
+      "items": {
+        "inventoryManagement": "Inventory Management",
+        "sales": "Sales",
+        "contacts": "Contacts",
+        "stockAdjustments": "Stock Adjustments",
+        "reports": "Reports",
+        "expenses": "Expenses",
+        "budgets": "Budgets",
+        "debtManagement": "Debt Management",
+        "customerOrders": "Customer Orders",
+        "purchaseOrders": "Purchase Orders",
+        "multiWarehouse": "Multi Warehouse",
+        "aiAssistant": "AI Assistant",
+        "businessHealthScore": "Business Health Score",
+        "themes": "Themes",
+        "biometrics": "Biometrics",
+        "supplierCreditReminders": "Supplier Credit Reminders"
+      }
+    },
+    "desktop": {
+      "title": "Coming Soon",
+      "subtitle": "The desktop application is currently in development. Stay tuned for updates!",
+      "items": {}
+    }
+  },
+  "pricing": {
+    "mobile": {
+      "title": "Mobile Plans",
+      "subtitle": "Start on mobile and upgrade as you grow.",
+      "basic": {
+        "name": "Basic",
+        "description": "Essential tools for small businesses getting started.",
+        "monthlyPrice": "1,999",
+        "quarterlyPrice": "2,499",
+        "period": "ETB",
+        "monthLabel": "1 Month",
+        "quarterLabel": "3 Months",
+        "features": [
+          "Inventory",
+          "Sales",
+          "Contacts",
+          "Stock Adjustments"
+        ],
+        "cta": "Choose Basic"
+      },
+      "premium": {
+        "name": "Premium",
+        "description": "Advanced features for growing businesses ready to scale.",
+        "popular": "Most Popular",
+        "recommended": "Best Value",
+        "monthlyPrice": "2,499",
+        "quarterlyPrice": "5,499",
+        "period": "ETB",
+        "monthLabel": "1 Month",
+        "quarterLabel": "3 Months",
+        "features": [
+          "Everything in Basic plus:",
+          "Reports",
+          "Dashboard Overview",
+          "PDF Receipts",
+          "CSV Import & Export",
+          "Expense Management",
+          "Budget Management",
+          "Debt Management",
+          "Customer Orders",
+          "Purchase Orders",
+          "Multi Warehouse",
+          "AI Assistant",
+          "Business Health Score",
+          "Biometrics",
+          "Themes",
+          "Supplier Credit Reminders"
+        ],
+        "cta": "Choose Premium"
+      }
+    },
+    "comparison": {
+      "title": "Compare All Features",
+      "subtitle": "See exactly what you get with each plan.",
+      "columns": {
+        "feature": "Feature",
+        "mobileBasic": "Mobile Basic",
+        "mobilePremium": "Mobile Premium"
+      },
+      "features": {
+        "inventory": "Inventory",
+        "sales": "Sales",
+        "contacts": "Contacts",
+        "stockAdjustments": "Stock Adjustments",
+        "reports": "Reports",
+        "dashboardOverview": "Dashboard Overview",
+        "pdfReceipts": "PDF Receipts",
+        "csvImportExport": "CSV Import & Export",
+        "expenseManagement": "Expense Management",
+        "budgetManagement": "Budget Management",
+        "debtManagement": "Debt Management",
+        "customerOrders": "Customer Orders",
+        "purchaseOrders": "Purchase Orders",
+        "multiWarehouse": "Multi Warehouse",
+        "aiAssistant": "AI Assistant",
+        "businessHealthScore": "Business Health Score",
+        "biometrics": "Biometrics",
+        "themes": "Themes",
+        "supplierCreditReminders": "Supplier Credit Reminders"
+      }
+    }
+  },
+  "freeTrial": {
+    "badge": "Try It Free",
+    "title": "Try SHEGA Free for 7 Days",
+    "subtitle": "No credit card required. Explore all features during your trial period.",
+    "benefits": {
+      "noCard": "✅ 7-Day Free Trial",
+      "fullAccess": "✅ Full Premium Access",
+      "noCommitment": "✅ No Commitment Required",
+      "allFeatures": "✅ All Features Unlocked"
+    },
+    "cta": "Get Started"
+  },
+  "howItWorks": {
+    "badge": "Simple Setup",
+    "title": "Get Started in 4 Easy Steps",
+    "subtitle": "From download to subscription in minutes.",
+    "steps": [
+      {
+        "step": "1",
+        "title": "Download the App",
+        "desc": "Get SHEGA from the Google Play Store."
+      },
+      {
+        "step": "2",
+        "title": "Create Your Business",
+        "desc": "Set up your business profile, add your products, customers, and suppliers in minutes."
+      },
+      {
+        "step": "3",
+        "title": "Start Your Free Trial",
+        "desc": "Get 7 days of full Premium access. Explore every feature with no limits and no commitment."
+      },
+      {
+        "step": "4",
+        "title": "Choose Your Plan",
+        "desc": "Select the plan that fits your business and subscribe via Telebirr."
+      }
+    ]
+  },
+  "payment": {
+    "badge": "Secure Payment",
+    "title": "Simple Payment via Telebirr",
+    "subtitle": "Subscribe easily using Ethiopia's most trusted mobile payment service.",
+    "steps": [
+      {
+        "step": "1",
+        "title": "Select a Plan",
+        "desc": "Choose the subscription plan that fits your business needs."
+      },
+      {
+        "step": "2",
+        "title": "Complete Payment",
+        "desc": "Pay securely using Telebirr on your phone."
+      },
+      {
+        "step": "3",
+        "title": "Submit Transaction ID",
+        "desc": "Enter your Telebirr transaction ID in the app."
+      },
+      {
+        "step": "4",
+        "title": "Quick Verification",
+        "desc": "Our team verifies your payment within minutes."
+      },
+      {
+        "step": "5",
+        "title": "Subscription Active",
+        "desc": "Your Premium access is activated immediately."
+      }
+    ],
+    "note": "Payment verification is quick and secure. Your subscription activates as soon as payment is confirmed.",
+    "cta": "See Plans"
+  },
+  "screenshots": {
+    "title": "See SHEGA in Action",
+    "subtitle": "A first look at the SHEGA interface — designed for efficiency and ease of use.",
+    "mobile": {
+      "title": "Mobile App Screens",
+      "inventory": "Mobile Inventory",
+      "sales": "Sales",
+      "reports": "Reports",
+      "dashboard": "Dashboard",
+      "aiAssistant": "AI Assistant",
+      "purchaseOrders": "Purchase Orders"
+    },
+    "desktop": {
+      "title": "Desktop Application",
+      "dashboard": "Desktop Dashboard",
+      "employeeManagement": "Employee Management",
+      "auditLogs": "Audit Logs",
+      "reports": "Reports",
+      "suppliers": "Suppliers",
+      "shipments": "Shipments"
+    }
+  },
+  "testimonials": {
+    "badge": "Our Vision",
+    "title": "Built for Ethiopian Businesses",
+    "subtitle": "SHEGA was created to solve the real challenges Ethiopian businesses face every day — from inventory management to sales tracking and financial oversight.",
+    "items": [
+      {
+        "name": "Offline-First Design",
+        "role": "Core Feature",
+        "location": "",
+        "quote": "SHEGA works offline, so you never lose access to your business data — even in areas with unreliable internet."
+      },
+      {
+        "name": "Ethiopian Calendar Support",
+        "role": "Core Feature",
+        "location": "",
+        "quote": "Built-in Ethiopian calendar support means you can work with dates the way you always have, without conversion hassles."
+      },
+      {
+        "name": "Multi-Language Interface",
+        "role": "Core Feature",
+        "location": "",
+        "quote": "Use SHEGA in English, Amharic, Afan Oromo, or Tigrigna — with more languages on the way."
+      },
+      {
+        "name": "Built for Growth",
+        "role": "Our Mission",
+        "location": "",
+        "quote": "We're building a platform that grows with your business — from a single shop to multiple locations and teams."
+      }
+    ]
+  },
+  "faq": {
+    "badge": "FAQ",
+    "title": "Frequently Asked Questions",
+    "subtitle": "Everything you need to know about SHEGA subscriptions.",
+    "items": [
+      {
+        "question": "How does the free trial work?",
+        "answer": "Every new account receives a 7-day Premium trial with full access to all features. No credit card or payment information is required. Simply download the app, create your business, and start exploring immediately."
+      },
+      {
+        "question": "What happens after my trial ends?",
+        "answer": "After your 7-day trial, you will need to choose a subscription plan to continue using SHEGA. Your data remains safe and secure. Simply select a plan, complete the Telebirr payment, and submit your transaction ID to activate your subscription."
+      },
+      {
+        "question": "Can I upgrade later?",
+        "answer": "Yes, you can upgrade from Basic to Premium at any time. When you upgrade, you immediately get access to all Premium features. The remaining value of your current subscription is applied to your new plan."
+      },
+      {
+        "question": "Can I switch between Basic and Premium?",
+        "answer": "Absolutely. You can switch between Basic and Premium plans at any time. Downgrades take effect at the end of your current billing period, while upgrades are applied immediately."
+      },
+      {
+        "question": "Will my data be deleted if my subscription expires?",
+        "answer": "No, your data is never deleted. If your subscription expires, your account is temporarily suspended but all your business data remains intact. Once you renew your subscription, everything is restored exactly as you left it."
+      },
+      {
+        "question": "How do I pay with Telebirr?",
+        "answer": "Select your desired subscription plan in the app, choose Telebirr as your payment method, complete the payment on your Telebirr app, then enter the transaction ID you received back into SHEGA. Our team verifies the payment and activates your subscription."
+      },
+      {
+        "question": "How long does payment verification take?",
+        "answer": "Payment verification typically takes just a few minutes. Our team processes Telebirr transactions promptly during business hours. You will receive a notification as soon as your subscription is activated."
+      },
+      {
+        "question": "Can I renew before my subscription expires?",
+        "answer": "Yes, you can renew your subscription at any time before the expiration date. Early renewal extends your subscription from the current expiration date, so you never lose any days. We recommend renewing at least 24 hours before expiry to ensure uninterrupted service."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Ready to Get Started?",
+    "subtitle": "We're building the platform Ethiopian businesses deserve. Start your free trial and see what SHEGA can do for you.",
+    "primaryCta": "Get Started",
+    "secondaryCta": "Contact Us"
+  },
+  "footer": {
+    "about": "About SHEGA",
+    "aboutDesc": "SHEGA is a modern inventory and sales management platform built for Ethiopian businesses. Manage your operations from anywhere with the mobile application.",
+    "pricing": "Pricing",
+    "features": "Features",
+    "support": "Support",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "contactInfo": "Contact Information",
+    "email": "ssshegas@gmail.com",
+    "phone": "0925319901",
+    "social": "Follow Us",
+    "copyright": "© 2026 SHEGA Technologies. All Rights Reserved.",
+    "product": "Product",
+    "legal": "Legal",
+    "download": "Download",
+    "mobileApp": "Mobile App",
+    "contact": "Contact",
+    "downloadMobile": "Download for Android"
+  }
+}

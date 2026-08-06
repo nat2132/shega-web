@@ -10,7 +10,6 @@ import {
   PauseCircle,
   XCircle,
   X,
-  Filter,
 } from "lucide-react";
 import api from "@/lib/api";
 import { formatDate, cn } from "@/lib/utils";
@@ -45,6 +44,7 @@ export default function LicensesPage() {
     loadLicenses();
     loadPlans();
     loadCustomers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, statusFilter, planFilter]);
 
   async function loadLicenses() {
@@ -159,15 +159,15 @@ export default function LicensesPage() {
                 <motion.tr key={l.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                   className="border-b border-white/[0.03] transition-colors hover:bg-white/[0.02]">
                   <td className="px-5 py-4 font-mono text-xs text-gray-200">{l.license_key}</td>
-                  <td className="px-5 py-4 text-gray-300">{l.customer?.full_name || "N/A"}</td>
-                  <td className="px-5 py-4 text-gray-300">{l.plan?.name || "N/A"}</td>
+                  <td className="px-5 py-4 text-gray-300">{typeof l.customer === 'object' ? l.customer?.full_name || "N/A" : "N/A"}</td>
+                  <td className="px-5 py-4 text-gray-300">{typeof l.plan === 'object' ? (l.plan as LicensePlan)?.name || "N/A" : "N/A"}</td>
                   <td className="px-5 py-4">
                     <span className={cn("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", statusColors[l.status])}>
                       {l.status}
                     </span>
                   </td>
-                  <td className="px-5 py-4 text-xs text-gray-500">{formatDate(l.issued_date)}</td>
-                  <td className="px-5 py-4 text-xs text-gray-500">{formatDate(l.expiry_date)}</td>
+                  <td className="px-5 py-4 text-xs text-gray-500">{l.issued_date ? formatDate(l.issued_date) : formatDate(l.start_date)}</td>
+                  <td className="px-5 py-4 text-xs text-gray-500">{l.expiry_date ? formatDate(l.expiry_date) : "—"}</td>
                   <td className="px-5 py-4 text-center text-gray-400">{l.activated_devices}/{l.max_activations}</td>
                   <td className="px-5 py-4">
                     <div className="flex items-center justify-end gap-1">
@@ -234,7 +234,7 @@ export default function LicensesPage() {
                   <select required value={form.plan} onChange={(e) => setForm({ ...form, plan: e.target.value })}
                     className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]">
                     <option value="">Select plan</option>
-                    {plans.map((p) => <option key={p.id} value={p.id}>{p.name} — {p.duration_days} days</option>)}
+                    {plans.map((p) => <option key={p.id} value={p.id}>{p.name} — {p.duration_days ?? p.duration_months * 30} days</option>)}
                   </select>
                 </div>
                 <div>

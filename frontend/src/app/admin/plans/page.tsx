@@ -46,11 +46,11 @@ export default function PlansPage() {
     setEditing(plan);
     setForm({
       name: plan.name,
-      code: plan.code,
+      code: plan.code || "",
       description: plan.description,
       price: plan.price.toString(),
-      duration_days: plan.duration_days.toString(),
-      max_activations: plan.max_activations.toString(),
+      duration_days: (plan.duration_days ?? plan.duration_months * 30).toString(),
+      max_activations: (plan.max_activations ?? 1).toString(),
       is_active: plan.is_active,
     });
     setModalOpen(true);
@@ -119,7 +119,7 @@ export default function PlansPage() {
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h3 className="text-lg font-semibold text-gray-100">{plan.name}</h3>
-                <p className="text-xs text-gray-500 mt-0.5">{plan.code}</p>
+                <p className="text-xs text-gray-500 mt-0.5">{plan.code || "—"}</p>
               </div>
               <button
                 onClick={() => toggleActive(plan)}
@@ -134,11 +134,11 @@ export default function PlansPage() {
             <div className="space-y-2 text-sm">
               <div className="flex items-center justify-between text-gray-400">
                 <span>Duration</span>
-                <span className="text-gray-200">{plan.duration_days} days</span>
+                <span className="text-gray-200">{plan.duration_days ?? plan.duration_months * 30} days</span>
               </div>
               <div className="flex items-center justify-between text-gray-400">
                 <span>Device Limit</span>
-                <span className="text-gray-200">{plan.max_activations}</span>
+                <span className="text-gray-200">{plan.max_activations ?? plan.device_limit}</span>
               </div>
             </div>
             {plan.description && (

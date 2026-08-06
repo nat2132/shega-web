@@ -34,6 +34,7 @@ export default function InvoicesPage() {
   useEffect(() => {
     loadInvoices();
     loadCustomers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   async function loadInvoices() {
@@ -106,14 +107,14 @@ export default function InvoicesPage() {
                 <motion.tr key={inv.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                   className="border-b border-white/[0.03] transition-colors hover:bg-white/[0.02]">
                   <td className="px-5 py-4 font-mono text-xs text-gray-200">{inv.invoice_number}</td>
-                  <td className="px-5 py-4 text-gray-300">{inv.customer?.full_name || "N/A"}</td>
+                  <td className="px-5 py-4 text-gray-300">{typeof inv.customer === 'object' ? inv.customer?.full_name || "N/A" : "N/A"}</td>
                   <td className="px-5 py-4 text-gray-200 font-medium">{formatCurrency(inv.total || inv.amount)}</td>
                   <td className="px-5 py-4">
                     <span className={cn("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", statusColors[inv.status])}>
                       {inv.status}
                     </span>
                   </td>
-                  <td className="px-5 py-4 text-xs text-gray-500">{formatDate(inv.issued_date)}</td>
+                  <td className="px-5 py-4 text-xs text-gray-500">{inv.issued_date ? formatDate(inv.issued_date) : formatDate(inv.created_at)}</td>
                   <td className="px-5 py-4">
                     <div className="flex items-center justify-end gap-1">
                       <button className="rounded-lg p-2 text-gray-400 hover:bg-white/[0.06] hover:text-gray-200 transition-all" title="View"><Eye className="h-4 w-4" /></button>

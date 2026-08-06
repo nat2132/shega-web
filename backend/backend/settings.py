@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'payments',
     'notifications',
     'api_public',
+    'admin_api',
 ]
 
 MIDDLEWARE = [

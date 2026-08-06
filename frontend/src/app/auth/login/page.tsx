@@ -11,7 +11,7 @@ import { useAuthStore } from "@/store/authStore";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuthStore();
+  const { login, logout } = useAuthStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -23,8 +23,15 @@ export default function LoginPage() {
     try {
       await login(email, password);
       const user = useAuthStore.getState().user;
-      router.push(user?.is_staff ? "/admin/" : "/customer/");
-    } catch {
+      if (user?.is_staff) {
+        router.push("/admin/");
+      } else {
+        logout();
+        toast.error("Please use the SHEGA mobile app to sign in. Web login is for administrators only.");
+        router.push("/");
+      }
+    } catch (err) {
+      console.error('Login error:', err);
       toast.error("Invalid email or password.");
     } finally {
       setIsLoading(false);
@@ -111,10 +118,7 @@ export default function LoginPage() {
           </form>
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
-            Don&apos;t have an account?{" "}
-            <Link href="/auth/register" className="font-medium text-foreground underline underline-offset-4 decoration-border hover:decoration-foreground transition-all">
-              Create one
-            </Link>
+            Users: sign in through the SHEGA mobile app.
           </p>
         </div>
       </motion.div>

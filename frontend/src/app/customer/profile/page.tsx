@@ -1,15 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { User, Mail, Phone, Building2, MapPin, Lock, Save, Loader2, Check } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { User as UserIcon, Mail, Phone, Building2, MapPin, Lock, Save } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useAuthStore } from '@/store/authStore';
+import type { User } from '@/lib/types';
 import toast from 'react-hot-toast';
 
 export default function ProfilePage() {
-  const { user, updateProfile, isLoading: authLoading } = useAuthStore();
+  const { user, updateProfile } = useAuthStore();
   const [profileForm, setProfileForm] = useState({
     full_name: '',
     phone_number: '',
@@ -24,18 +24,21 @@ export default function ProfilePage() {
   });
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
+  const [prevUser, setPrevUser] = useState<User | null>(user);
 
-  useEffect(() => {
+  if (prevUser !== user) {
+    setPrevUser(user);
     if (user) {
+      const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ') || user.email || '';
       setProfileForm({
-        full_name: user.full_name || '',
-        phone_number: user.phone_number || '',
-        company_name: user.profile?.company_name || '',
-        business_type: '',
-        address: user.profile?.address || '',
+        full_name: fullName,
+        phone_number: user.phone || '',
+        company_name: user.business_name || '',
+        business_type: user.business_type || '',
+        address: user.address || '',
       });
     }
-  }, [user]);
+  }
 
   const handleSaveProfile = async () => {
     setSavingProfile(true);
@@ -116,7 +119,7 @@ export default function ProfilePage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1.5">
-              <User className="h-3.5 w-3.5 inline mr-1.5 text-foreground" />
+              <UserIcon className="h-3.5 w-3.5 inline mr-1.5 text-foreground" />
               Full Name
             </label>
             <input

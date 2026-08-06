@@ -2,21 +2,35 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sun, Moon, Languages } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "@/hooks/useTranslations";
+import { useTheme } from "@/hooks/useTheme";
+
+const languages = [
+  { code: "en", label: "EN" },
+  { code: "am", label: "አማ" },
+  { code: "om", label: "OR" },
+  { code: "ti", label: "ትግራ" },
+];
 
 const navLinks = [
-  { label: "Features", href: "/features" },
-  { label: "Pricing", href: "/pricing" },
-  { label: "Download", href: "/download" },
-  { label: "Contact", href: "/contact" },
+  { label: "nav.home", href: "#" },
+  { label: "nav.features", href: "#features" },
+  { label: "nav.pricing", href: "#pricing" },
+  { label: "nav.mobileApp", href: "#mobile-app" },
+  { label: "nav.faq", href: "#faq" },
+  { label: "nav.contact", href: "#contact" },
 ];
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
+  const { t, language, setLanguage } = useTranslations();
+  const { resolvedTheme, setTheme } = useTheme();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -26,58 +40,116 @@ function Navbar() {
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
+    return () => { document.body.style.overflow = ""; };
   }, [mobileOpen]);
+
+  useEffect(() => {
+    if (!langOpen) return;
+    const close = () => setLangOpen(false);
+    document.addEventListener("click", close);
+    return () => document.removeEventListener("click", close);
+  }, [langOpen]);
 
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-all duration-300",
-        scrolled ? "glass-nav-scrolled" : "glass-nav"
+        "fixed inset-x-0 top-0 z-50 transition-all duration-500",
+        scrolled
+          ? "bg-white/80 dark:bg-black/80 backdrop-blur-2xl border-b border-[var(--border-soft)]"
+          : "bg-transparent"
       )}
     >
-      <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center gap-2.5">
-          <Image src="/images/logo.png" alt="Shega" width={32} height={32} className="shrink-0" />
-          <span className="text-xl font-bold text-foreground">shega</span>
+      <nav className="mx-auto flex h-14 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
+        <Link href="/" className="group flex items-center gap-2.5">
+          <div className="relative flex h-9 w-9 items-center justify-center">
+             <Image src="/images/logo.png" alt="SHEGA" width={32} height={32} className="object-contain dark:invert" priority />
+           </div>
+          <span className="text-[15px] font-semibold tracking-tight text-[var(--fg)]">
+            SHEGA
+          </span>
         </Link>
 
-        <div className="hidden items-center gap-8 md:flex">
+        <div className="hidden items-center gap-0.5 md:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-medium text-muted-foreground transition-colors duration-200 hover:text-foreground"
+              className="rounded-lg px-3 py-1.5 text-[13px] font-medium text-[var(--muted)] transition-colors duration-200 hover:text-[var(--fg)]"
             >
-              {link.label}
+              {t(link.label) as string}
             </Link>
           ))}
         </div>
 
-        <div className="hidden items-center gap-3 md:flex">
-          <Link
-            href="/auth/login"
-            className="inline-flex h-9 items-center justify-center rounded-lg px-4 text-sm font-medium text-muted-foreground transition-colors duration-200 hover:text-foreground"
+        <div className="hidden items-center gap-1.5 md:flex">
+          <div className="relative">
+            <button
+              onClick={(e) => { e.stopPropagation(); setLangOpen(!langOpen); }}
+              className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--surface)] transition-colors"
+              aria-label="Switch language"
+            >
+              <Languages className="h-4 w-4" />
+            </button>
+            <AnimatePresence>
+              {langOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -4, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -4, scale: 0.95 }}
+                  transition={{ duration: 0.12 }}
+                  className="absolute right-0 mt-1.5 w-24 rounded-xl border border-[var(--border-soft)] bg-white dark:bg-black shadow-lg overflow-hidden"
+                >
+                  {languages.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => { setLanguage(lang.code); setLangOpen(false); }}
+                      className={cn(
+                        "w-full px-3 py-2 text-[13px] font-medium text-left transition-colors hover:bg-[var(--surface)]",
+                        language === lang.code
+                          ? "text-[var(--fg)] bg-[var(--surface)]"
+                          : "text-[var(--muted)]"
+                      )}
+                    >
+                      {lang.label}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <button
+            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--surface)] transition-colors"
+            aria-label="Toggle theme"
           >
-            Sign In
-          </Link>
+            {resolvedTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
+
           <Link
-            href="/auth/register"
-            className="inline-flex h-9 items-center justify-center rounded-lg bg-accent px-4 text-sm font-medium text-background transition-all duration-200 hover:opacity-90"
+            href="#how-it-works"
+            className="btn-primary gap-1.5 px-4 py-1.5 text-[13px]"
           >
-            Get Started
+            {t("nav.startFreeTrial") as string}
           </Link>
         </div>
 
-        <button
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground md:hidden"
-          aria-label={mobileOpen ? "Close menu" : "Open menu"}
-        >
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        <div className="flex items-center gap-1 md:hidden">
+          <button
+            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] hover:text-[var(--fg)]"
+            aria-label="Toggle theme"
+          >
+            {resolvedTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] hover:text-[var(--fg)]"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+          >
+            {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          </button>
+        </div>
       </nav>
 
       <AnimatePresence>
@@ -86,35 +158,44 @@ function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="overflow-hidden border-t border-border md:hidden"
+            transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+            className="overflow-hidden border-t border-[var(--border-soft)] bg-white dark:bg-black"
           >
-            <div className="space-y-1 bg-background px-4 pb-4 pt-2">
+            <div className="space-y-0.5 px-5 pb-5 pt-3">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className="block rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
+                  className="block rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--muted)] transition-colors hover:text-[var(--fg)]"
                 >
-                  {link.label}
+                  {t(link.label) as string}
                 </Link>
               ))}
-              <div className="mt-3 border-t border-border pt-3">
+              <div className="mt-4 border-t border-[var(--border-soft)] pt-4">
                 <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    {languages.map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={() => { setLanguage(lang.code); }}
+                        className={cn(
+                          "flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
+                          language === lang.code
+                            ? "border-[var(--accent)] text-[var(--accent)] bg-[var(--accent)]/8"
+                            : "border-[var(--border)] text-[var(--muted)]"
+                        )}
+                      >
+                        {lang.label}
+                      </button>
+                    ))}
+                  </div>
                   <Link
-                    href="/auth/login"
+                    href="#how-it-works"
                     onClick={() => setMobileOpen(false)}
-                    className="flex items-center justify-center rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground"
+                    className="btn-primary flex items-center justify-center gap-2 py-2.5"
                   >
-                    Sign In
-                  </Link>
-                  <Link
-                    href="/auth/register"
-                    onClick={() => setMobileOpen(false)}
-                    className="flex items-center justify-center rounded-lg bg-accent px-4 py-2.5 text-sm font-medium text-background"
-                  >
-                    Get Started
+                    {t("nav.startFreeTrial") as string}
                   </Link>
                 </div>
               </div>

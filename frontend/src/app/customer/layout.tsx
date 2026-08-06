@@ -17,10 +17,9 @@ import {
   ChevronRight,
   LogOut,
   Menu,
-  X,
   ChevronDown,
-  Package,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/store/authStore';
 
@@ -50,10 +49,14 @@ export default function CustomerLayout({ children }: { children: ReactNode }) {
   }, [loadUser]);
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push('/login');
+    if (!isLoading && isAuthenticated && !user?.is_staff) {
+      toast.error("Please use the SHEGA mobile app. Web access is for administrators only.");
+      router.push('/');
     }
-  }, [isLoading, isAuthenticated, router]);
+    if (!isLoading && !isAuthenticated) {
+      router.push('/auth/login');
+    }
+  }, [isLoading, isAuthenticated, user, router]);
 
   useEffect(() => {
     const fetchNotifications = async () => {

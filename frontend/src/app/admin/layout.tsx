@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState, useCallback, useSyncExternalStore, type ReactNode } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard,
   Users,
+  Building2,
   Key,
   Package,
   CreditCard,
@@ -18,173 +18,413 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
+  Sun,
+  Moon,
+  Menu,
+  X,
+  Shield,
+  LifeBuoy,
+  Flag,
+  Download,
+  BarChart3,
+  DollarSign,
+  ClipboardList,
+  AlertTriangle,
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
+import { useTheme } from "@/hooks/useTheme";
 import { cn } from "@/lib/utils";
 
-const navItems = [
+interface NavItem {
+  href: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  badge?: number;
+}
+
+const mainNav: NavItem[] = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/customers", label: "Customers", icon: Users },
-  { href: "/admin/licenses", label: "Licenses", icon: Key },
-  { href: "/admin/plans", label: "License Plans", icon: Package },
+  { href: "/admin/customers", label: "Users", icon: Users },
+  { href: "/admin/businesses", label: "Businesses", icon: Building2 },
   { href: "/admin/payments", label: "Payments", icon: CreditCard },
-  { href: "/admin/invoices", label: "Invoices", icon: FileText },
+  { href: "/admin/licenses", label: "Licenses", icon: Key },
+  { href: "/admin/subscriptions", label: "Subscriptions", icon: Package },
+  { href: "/admin/plans", label: "Plans", icon: FileText },
+];
+
+const systemNav: NavItem[] = [
+  { href: "/admin/invoices", label: "Invoices", icon: AlertTriangle },
+  { href: "/admin/trials", label: "Trials", icon: ClipboardList },
+  { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/admin/reports", label: "Reports", icon: DollarSign },
+  { href: "/admin/support", label: "Support Tickets", icon: LifeBuoy },
+  { href: "/admin/admins", label: "Admins", icon: Shield },
+  { href: "/admin/features", label: "Feature Flags", icon: Flag },
+  { href: "/admin/versions", label: "App Versions", icon: Download },
+  { href: "/admin/audit-logs", label: "Audit Logs", icon: ClipboardList },
   { href: "/admin/notifications", label: "Notifications", icon: Bell },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
+
+function SidebarLink({
+  item,
+  collapsed,
+  isActive,
+  onNavigate,
+}: {
+  item: NavItem;
+  collapsed: boolean;
+  isActive: boolean;
+  onNavigate: () => void;
+}) {
+  return (
+    <Link href={item.href} onClick={onNavigate}>
+      <motion.div
+        whileHover={{ x: collapsed ? 0 : 4 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        className={cn(
+          "relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
+          isActive
+            ? "bg-white/10 text-white"
+            : "text-gray-400 hover:bg-white/5 hover:text-gray-200"
+        )}
+      >
+        {isActive && (
+          <motion.div
+            layoutId="sidebar-active"
+            className="absolute inset-0 rounded-xl bg-white/10"
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          />
+        )}
+        <item.icon className="relative z-10 h-5 w-5 shrink-0" />
+        <AnimatePresence>
+          {!collapsed && (
+            <motion.span
+              initial={{ opacity: 0, width: 0 }}
+              animate={{ opacity: 1, width: "auto" }}
+              exit={{ opacity: 0, width: 0 }}
+              className="relative z-10 truncate"
+            >
+              {item.label}
+            </motion.span>
+          )}
+        </AnimatePresence>
+        {item.badge && !collapsed && (
+          <span className="relative z-10 ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-indigo-500/20 px-1.5 text-[10px] font-bold text-indigo-400">
+            {item.badge}
+          </span>
+        )}
+      </motion.div>
+    </Link>
+  );
+}
+
+function NavGroup({
+  title,
+  items,
+  collapsed,
+  pathname,
+  onNavigate,
+}: {
+  title: string;
+  items: NavItem[];
+  collapsed: boolean;
+  pathname: string;
+  onNavigate: () => void;
+}) {
+  return (
+    <div className="px-3">
+      {!collapsed && (
+        <p className="mb-1 px-3 text-[11px] font-semibold uppercase tracking-widest text-gray-500">
+          {title}
+        </p>
+      )}
+      <div className="space-y-0.5">
+        {items.map((item) => (
+          <SidebarLink
+            key={item.href}
+            item={item}
+            collapsed={collapsed}
+            isActive={pathname === item.href || pathname.startsWith(item.href + "/")}
+            onNavigate={onNavigate}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function LoadingSkeleton() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-black">
+      <div className="flex flex-col items-center gap-6">
+        <div className="relative">
+          <div className="h-14 w-14 animate-spin rounded-full border-2 border-gray-800 border-t-indigo-500" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="h-3 w-3 rounded-full bg-indigo-500" />
+          </div>
+        </div>
+        <div className="flex flex-col items-center gap-1.5">
+          <p className="text-sm font-medium text-gray-300">Loading admin panel</p>
+          <div className="flex gap-1">
+            <motion.div
+              animate={{ opacity: [0, 1, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, delay: 0 }}
+              className="h-1.5 w-1.5 rounded-full bg-gray-600"
+            />
+            <motion.div
+              animate={{ opacity: [0, 1, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
+              className="h-1.5 w-1.5 rounded-full bg-gray-600"
+            />
+            <motion.div
+              animate={{ opacity: [0, 1, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}
+              className="h-1.5 w-1.5 rounded-full bg-gray-600"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { user, isAuthenticated, isLoading, loadUser, logout } = useAuthStore();
+  const { setTheme, resolvedTheme } = useTheme();
   const [collapsed, setCollapsed] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
+    setMobileOpen(false);
+  }
 
   useEffect(() => {
-    setMounted(true);
     loadUser();
   }, [loadUser]);
 
   useEffect(() => {
     if (mounted && !isLoading && (!isAuthenticated || !user?.is_staff)) {
-      router.push("/login");
+      router.push("/auth/login");
     }
   }, [mounted, isAuthenticated, isLoading, user, router]);
 
-  if (!mounted || isLoading || !isAuthenticated || !user?.is_staff) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-10 w-10 animate-spin rounded-full border-2 border-border border-t-foreground" />
-          <p className="text-sm text-muted-foreground">Loading admin panel...</p>
-        </div>
-      </div>
-    );
+  const handleLogout = useCallback(() => {
+    logout();
+    router.push("/auth/login");
+  }, [logout, router]);
+
+  const handleSearch = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      if (searchQuery.trim()) {
+        router.push(`/admin/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      }
+    },
+    [searchQuery, router]
+  );
+
+  if (!mounted || isLoading) {
+    return <LoadingSkeleton />;
   }
 
-  return (
-    <div className="flex min-h-screen bg-background text-foreground">
-      <motion.aside
-        animate={{ width: collapsed ? 72 : 256 }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-border bg-background"
-      >
-        <div className="flex h-16 items-center gap-3 border-b border-border px-4">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-muted">
-            <Image src="/images/logo.png" alt="Shega" width={24} height={24} />
-          </div>
+  if (!isAuthenticated || !user?.is_staff) {
+    return null;
+  }
+
+  const initials = (user.full_name || user.email || "A")
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+
+  const sidebarContent = (
+    <div className="flex h-full flex-col">
+      <div className="flex h-16 items-center gap-3 border-b border-white/10 px-4">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-500/20">
+          <span className="text-sm font-bold text-indigo-400">S</span>
+        </div>
+        <AnimatePresence>
+          {!collapsed && (
+            <motion.span
+              initial={{ opacity: 0, width: 0 }}
+              animate={{ opacity: 1, width: "auto" }}
+              exit={{ opacity: 0, width: 0 }}
+              className="truncate text-base font-semibold tracking-tight text-white"
+            >
+              Shega Admin
+            </motion.span>
+          )}
+        </AnimatePresence>
+        <button
+          onClick={() => setMobileOpen(false)}
+          className="ml-auto flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-white/5 hover:text-white lg:hidden"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+
+      <nav className="flex-1 space-y-6 overflow-y-auto py-4 scrollbar-hide">
+        <NavGroup title="Main" items={mainNav} collapsed={collapsed} pathname={pathname} onNavigate={() => setMobileOpen(false)} />
+        <NavGroup title="System" items={systemNav} collapsed={collapsed} pathname={pathname} onNavigate={() => setMobileOpen(false)} />
+      </nav>
+
+      <div className="border-t border-white/10 p-3">
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="mb-1 flex w-full items-center justify-center rounded-xl px-3 py-2.5 text-sm text-gray-400 transition-all hover:bg-white/5 hover:text-gray-200"
+        >
+          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+        </button>
+        <button
+          onClick={handleLogout}
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-gray-400 transition-all hover:bg-white/5 hover:text-gray-200"
+        >
+          <LogOut className="h-5 w-5 shrink-0" />
           <AnimatePresence>
             {!collapsed && (
               <motion.span
-                initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: "auto" }}
-                exit={{ opacity: 0, width: 0 }}
-                className="truncate text-base font-semibold tracking-tight"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
               >
-                Shega Admin
+                Logout
               </motion.span>
             )}
           </AnimatePresence>
-        </div>
+        </button>
+      </div>
+    </div>
+  );
 
-        <nav className="flex-1 space-y-1 overflow-y-auto p-3 scrollbar-hide">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link key={item.href} href={item.href}>
-                <motion.div
-                  whileHover={{ x: 4 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  className={cn(
-                    "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
-                    isActive
-                      ? "bg-muted text-foreground"
-                      : "text-muted-foreground hover:bg-surface-hover hover:text-foreground"
-                  )}
-                >
-                  <item.icon className="h-5 w-5 shrink-0" />
-                  <AnimatePresence>
-                    {!collapsed && (
-                      <motion.span
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="truncate"
-                      >
-                        {item.label}
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="border-t border-border p-3">
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            className="flex w-full items-center justify-center rounded-xl px-3 py-2.5 text-sm text-muted-foreground hover:bg-surface-hover hover:text-foreground transition-all"
-          >
-            {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-          </button>
-          <button
-            onClick={logout}
-            className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted-foreground hover:bg-surface-hover hover:text-foreground transition-all"
-          >
-            <LogOut className="h-5 w-5 shrink-0" />
-            <AnimatePresence>
-              {!collapsed && (
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  Logout
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </button>
-        </div>
+  return (
+    <div className="flex min-h-screen bg-black text-white">
+      {/* Desktop sidebar */}
+      <motion.aside
+        animate={{ width: collapsed ? 72 : 256 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="fixed left-0 top-0 z-50 hidden h-screen flex-col border-r border-white/10 bg-black lg:flex"
+      >
+        {sidebarContent}
       </motion.aside>
 
+      {/* Mobile sidebar overlay */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm lg:hidden"
+            onClick={() => setMobileOpen(false)}
+          >
+            <motion.aside
+              initial={{ x: -300 }}
+              animate={{ x: 0 }}
+              exit={{ x: -300 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="h-full w-72 border-r border-white/10 bg-black"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {sidebarContent}
+            </motion.aside>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Main content area */}
       <div
         className={cn(
           "flex flex-1 flex-col transition-all duration-300",
-          collapsed ? "ml-[72px]" : "ml-64"
+          "lg:ml-64",
+          collapsed && "lg:ml-[72px]"
         )}
       >
-        <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b border-border bg-background px-6">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        {/* Top header */}
+        <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b border-white/10 bg-black/80 backdrop-blur-xl px-4 lg:px-6">
+          {/* Mobile menu button */}
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="flex h-9 w-9 items-center justify-center rounded-xl text-gray-400 hover:bg-white/5 hover:text-gray-200 lg:hidden"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+
+          {/* Search bar */}
+          <form onSubmit={handleSearch} className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
             <input
               type="text"
-              placeholder="Search anything..."
-              className="h-10 w-full rounded-xl border border-border bg-surface pl-10 pr-4 text-sm text-foreground placeholder-muted-foreground outline-none transition-all focus:border-foreground/20 focus:bg-surface-hover focus:ring-1 focus:ring-foreground/10"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search businesses, customers..."
+              className="h-10 w-full rounded-xl border border-white/10 bg-white/5 pl-10 pr-4 text-sm text-white placeholder-gray-500 outline-none transition-all focus:border-indigo-500/40 focus:bg-white/[0.07] focus:ring-1 focus:ring-indigo-500/20"
             />
-          </div>
-          <div className="flex items-center gap-3">
-            <button className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface text-muted-foreground hover:bg-surface-hover hover:text-foreground transition-all">
+          </form>
+
+          <div className="flex items-center gap-2">
+            {/* Theme toggle */}
+            <button
+              onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-gray-400 transition-all hover:bg-white/10 hover:text-gray-200"
+              title={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`}
+            >
+              {resolvedTheme === "dark" ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              )}
+            </button>
+
+            {/* Notifications */}
+            <button className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-gray-400 transition-all hover:bg-white/10 hover:text-gray-200">
               <Bell className="h-4 w-4" />
-              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-foreground text-[10px] font-bold text-background">
+              <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-500 text-[9px] font-bold text-white">
                 3
               </span>
             </button>
-            <div className="flex items-center gap-3 rounded-xl border border-border bg-surface px-3 py-1.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted text-xs font-bold text-foreground">
-                {user.full_name?.charAt(0)?.toUpperCase() || "A"}
+
+            {/* User avatar */}
+            <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/20 text-xs font-bold text-indigo-400">
+                {initials}
               </div>
               <div className="hidden sm:block">
-                <p className="text-sm font-medium leading-tight text-foreground">
+                <p className="text-sm font-medium leading-tight text-gray-200">
                   {user.full_name || "Admin"}
                 </p>
-                <p className="text-xs text-muted-foreground">Administrator</p>
+                <p className="text-xs text-gray-500">Administrator</p>
               </div>
             </div>
           </div>
         </header>
 
-        <main className="flex-1 bg-grid bg-glow p-6">{children}</main>
+        {/* Page content */}
+        <main className="flex-1 p-4 lg:p-6">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={pathname}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
+        </main>
       </div>
     </div>
   );

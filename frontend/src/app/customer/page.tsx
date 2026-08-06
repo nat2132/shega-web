@@ -14,7 +14,7 @@ import {
   Activity,
 } from 'lucide-react';
 import Link from 'next/link';
-import { cn, formatDate, formatRelativeTime } from '@/lib/utils';
+import { cn, formatRelativeTime } from '@/lib/utils';
 import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/ui/Button';
 import api from '@/lib/api';

@@ -1,112 +1,134 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { Star } from 'lucide-react';
+import { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useTranslations } from "@/hooks/useTranslations";
+import { Quote, ChevronLeft, ChevronRight } from "lucide-react";
 
-const testimonials = [
-  {
-    name: 'Abebe Kebede',
-    business: 'Kebede Wholesale Trading',
-    quote:
-      'Shega transformed how we manage our inventory. We reduced stockouts by 80% and can finally track everything across our three warehouses in Addis.',
-    rating: 5,
-  },
-  {
-    name: 'Sara Hailu',
-    business: 'Hailu General Merchandise',
-    quote:
-      'The debt management feature alone was worth the switch. Now we know exactly who owes us and when payments are due. Game changer for our business.',
-    rating: 5,
-  },
-  {
-    name: 'Tadesse Mekonnen',
-    business: 'Mekonnen Retail Store',
-    quote:
-      'Setup was incredibly easy. Within a day we had our entire inventory digitized. The offline POS means we never miss a sale even when internet is spotty.',
-    rating: 5,
-  },
-  {
-    name: 'Lemlem Tesfaye',
-    business: 'Tesfaye Distributors PLC',
-    quote:
-      'We moved from a messy spreadsheet system to Shega. The analytics alone opened our eyes to where we were losing money. Highly recommended for any distributor.',
-    rating: 5,
-  },
-];
-
-function StarRating({ rating }: { rating: number }) {
-  return (
-    <div className="flex gap-0.5">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <Star
-          key={i}
-          className={`h-4 w-4 ${
-            i < rating ? 'fill-foreground text-foreground' : 'fill-none text-muted-foreground/30'
-          }`}
-        />
-      ))}
-    </div>
-  );
-}
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, delay: i * 0.1, ease: [0.25, 0.1, 0.25, 1] as const },
-  }),
+const slideVariants = {
+  enter: { opacity: 0, x: 40 },
+  center: { opacity: 1, x: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } },
+  exit: { opacity: 0, x: -40, transition: { duration: 0.3 } },
 };
 
-export default function Testimonials() {
-  return (
-    <section className="relative overflow-hidden py-24 sm:py-32">
-      <div className="absolute inset-0 bg-grid pointer-events-none opacity-30" />
+function Testimonials() {
+  const { t } = useTranslations();
+  const items = t("testimonials.items") as unknown as Array<{ name: string; role: string; location: string; quote: string }>;
+  const [current, setCurrent] = useState(0);
+  const [paused, setPaused] = useState(false);
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  const next = useCallback(() => {
+    setCurrent((c) => (c + 1) % items.length);
+  }, [items.length]);
+
+  const prev = useCallback(() => {
+    setCurrent((c) => (c - 1 + items.length) % items.length);
+  }, [items.length]);
+
+  useEffect(() => {
+    if (paused) return;
+    const timer = setInterval(next, 5000);
+    return () => clearInterval(timer);
+  }, [paused, next]);
+
+  if (!items || items.length === 0) return null;
+  const item = items[current];
+
+  return (
+    <section id="testimonials" className="section-light py-28 relative overflow-hidden">
+      <div className="container-apple">
         <motion.div
-          className="mx-auto mb-16 max-w-2xl text-center"
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+          viewport={{ once: true, margin: "-60px" }}
+          className="text-center mb-16"
         >
-          <h2 className="gradient-text text-3xl font-bold tracking-tight sm:text-4xl">
-            Trusted by Ethiopian Businesses
+          <div className="pill-blue pill-apple mb-5 inline-flex">{t("testimonials.badge") as string}</div>
+          <h2 className="font-display text-[clamp(1.75rem,3vw,2.5rem)] font-semibold text-[var(--fg)] leading-[1.1] tracking-[-0.015em] mb-4">
+            {t("testimonials.title") as string}
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-            Hear from the businesses that power their operations with Shega.
+          <p className="text-[17px] text-[var(--muted)] max-w-2xl mx-auto leading-relaxed">
+            {t("testimonials.subtitle") as string}
           </p>
         </motion.div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {testimonials.map((t, i) => (
-            <motion.div
-              key={t.name}
-              className="granny-card flex flex-col rounded-2xl p-6"
-              variants={cardVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: '-80px' }}
-              custom={i}
+        <div
+          className="max-w-2xl mx-auto"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+        >
+          <div className="relative min-h-[200px]">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={current}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                className="card-apple p-8 relative"
+              >
+                <Quote className="absolute top-6 right-6 h-8 w-8 text-[var(--accent)]/8" />
+                <div className="flex gap-1 mb-3">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className="text-[var(--accent)] text-sm">★</span>
+                  ))}
+                </div>
+                <p className="text-[15px] text-[var(--muted)] mb-6 leading-relaxed">
+                  &ldquo;{item.quote}&rdquo;
+                </p>
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-[var(--surface)] border border-[var(--border-soft)] flex items-center justify-center text-[14px] font-semibold text-[var(--fg)]">
+                    {item.name.charAt(0)}
+                  </div>
+                  <div>
+                    <div className="text-[14px] font-semibold text-[var(--fg)]">{item.name}</div>
+                    <div className="text-[12px] text-[var(--muted)] mt-0.5">
+                      {item.role} &middot; {item.location}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          <div className="flex items-center justify-center gap-3 mt-6">
+            <button
+              onClick={prev}
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--border)] text-[var(--muted)] hover:text-[var(--fg)] hover:border-[var(--meta)] transition-all"
+              aria-label="Previous testimonial"
             >
-              <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-sm font-semibold text-foreground">
-                  {t.name.split(' ').map((n) => n[0]).join('')}
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-foreground">{t.name}</div>
-                  <div className="text-xs text-muted-foreground">{t.business}</div>
-                </div>
-              </div>
-              <StarRating rating={t.rating} />
-              <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
-                &ldquo;{t.quote}&rdquo;
-              </p>
-            </motion.div>
-          ))}
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <div className="flex gap-1.5">
+              {items.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrent(i)}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    i === current
+                      ? "w-6 bg-[var(--accent)]"
+                      : "w-1.5 bg-[var(--border)] hover:bg-[var(--meta)]"
+                  }`}
+                  aria-label={`Go to testimonial ${i + 1}`}
+                />
+              ))}
+            </div>
+            <button
+              onClick={next}
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--border)] text-[var(--muted)] hover:text-[var(--fg)] hover:border-[var(--meta)] transition-all"
+              aria-label="Next testimonial"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+
+          <p className="text-center text-[11px] text-[var(--muted)] mt-3 tracking-[0.02em]">
+            {paused ? "Paused" : "Auto-rotating"}
+          </p>
         </div>
       </div>
     </section>
   );
 }
+
+export default Testimonials;

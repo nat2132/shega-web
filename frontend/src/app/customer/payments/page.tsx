@@ -8,14 +8,11 @@ import {
   Upload,
   X,
   Check,
-  Clock,
-  XCircle,
   FileText,
   DollarSign,
   Banknote,
   Building2,
   Wallet,
-  Loader2,
 } from 'lucide-react';
 import { cn, formatDate, formatCurrency } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';

@@ -4,7 +4,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from licenses.models import License, DeviceActivation, LicenseAuditLog
+from licenses.models import License, DeviceActivation
+from licenses.utils import check_device_limit
 
 from .permissions import PublicEndpoint
 from .serializers import (
@@ -59,8 +60,7 @@ class VerifyLicenseView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        active_count = license.device_activations.filter(is_active=True).count()
-        if not device and active_count >= license.device_limit:
+        if not device and not check_device_limit(license):
             return Response(
                 {'valid': False, 'message': 'Device limit reached.'},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -106,53 +106,40 @@ class ActivateDeviceView(APIView):
             )
 
         device_id = serializer.validated_data['device_id']
-        device, created = DeviceActivation.objects.get_or_create(
+
+        existing = license.device_activations.filter(device_id=device_id).first()
+
+        if existing and existing.is_active:
+            existing.last_seen = timezone.now()
+            existing.device_name = serializer.validated_data.get('device_name', existing.device_name)
+            existing.operating_system = serializer.validated_data.get(
+                'operating_system', existing.operating_system,
+            )
+            existing.save(update_fields=['last_seen', 'device_name', 'operating_system'])
+            return Response({
+                'success': True,
+                'message': 'Device already active.',
+                'device_id': existing.device_id,
+                'activated_at': existing.activation_date,
+            })
+
+        if not check_device_limit(license):
+            return Response(
+                {'success': False, 'message': 'Device limit reached.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        device, _ = DeviceActivation.objects.update_or_create(
             license=license,
             device_id=device_id,
             defaults={
                 'device_name': serializer.validated_data.get('device_name', ''),
                 'operating_system': serializer.validated_data.get('operating_system', ''),
                 'ip_address': request.META.get('REMOTE_ADDR', '0.0.0.0'),
+                'last_seen': timezone.now(),
+                'is_active': True,
             },
         )
-
-        if not created:
-            if device.is_active:
-                device.last_seen = timezone.now()
-                device.device_name = serializer.validated_data.get('device_name', device.device_name)
-                device.operating_system = serializer.validated_data.get(
-                    'operating_system', device.operating_system,
-                )
-                device.save(update_fields=['last_seen', 'device_name', 'operating_system'])
-                return Response({
-                    'success': True,
-                    'message': 'Device already active.',
-                    'device_id': device.device_id,
-                    'activated_at': device.activation_date,
-                })
-
-            active_count = license.device_activations.filter(is_active=True).count()
-            if active_count >= license.device_limit:
-                return Response(
-                    {'success': False, 'message': 'Device limit reached.'},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-            device.is_active = True
-            device.device_name = serializer.validated_data.get('device_name', device.device_name)
-            device.operating_system = serializer.validated_data.get(
-                'operating_system', device.operating_system,
-            )
-            device.save(update_fields=['is_active', 'device_name', 'operating_system', 'last_seen'])
-        else:
-            active_count = license.device_activations.filter(is_active=True).count()
-            if active_count > license.device_limit:
-                device.is_active = False
-                device.save(update_fields=['is_active'])
-                return Response(
-                    {'success': False, 'message': 'Device limit reached.'},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
 
         return Response({
             'success': True,
@@ -229,7 +216,8 @@ class RenewLicenseView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        new_expiry = timezone.now().date() + timedelta(days=365)
+        duration_days = license.plan.duration_months * 30
+        new_expiry = timezone.now().date() + timedelta(days=duration_days)
         license.expiry_date = new_expiry
         license.status = 'active'
         license.save(update_fields=['expiry_date', 'status'])

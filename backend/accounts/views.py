@@ -2,18 +2,19 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.filters import SearchFilter, OrderingFilter
+from django.contrib.auth import authenticate, get_user_model
 
 from .models import User
 from .serializers import (
     UserSerializer,
     UserCreateSerializer,
-    LoginSerializer,
     ChangePasswordSerializer,
     ProfileUpdateSerializer,
 )
 from .permissions import IsAdminUser, IsOwnerOrAdmin
+
+UserModel = get_user_model()
 
 
 class RegisterView(generics.CreateAPIView):
@@ -36,8 +37,31 @@ class RegisterView(generics.CreateAPIView):
         )
 
 
-class LoginView(TokenObtainPairView):
-    serializer_class = LoginSerializer
+class LoginView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        username = request.data.get('username', '')
+        password = request.data.get('password', '')
+
+        if '@' in username:
+            users = UserModel.objects.filter(email=username)
+            if users.exists():
+                username = users.first().username
+
+        user = authenticate(username=username, password=password)
+        if user is None:
+            return Response(
+                {'detail': 'No active account found with the given credentials'},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+            'user': UserSerializer(user).data,
+        })
 
 
 class LogoutView(APIView):
@@ -61,12 +85,19 @@ class LogoutView(APIView):
             )
 
 
-class ProfileView(generics.RetrieveUpdateAPIView):
-    serializer_class = ProfileUpdateSerializer
+class ProfileView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
-    def get_object(self):
-        return self.request.user
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+
+    def patch(self, request):
+        serializer = ProfileUpdateSerializer(request.user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        user_serializer = UserSerializer(request.user)
+        return Response(user_serializer.data)
 
 
 class ChangePasswordView(generics.UpdateAPIView):

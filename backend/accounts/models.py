@@ -10,7 +10,7 @@ class User(AbstractUser):
         WAREHOUSE = 'Warehouse', 'Warehouse'
         SMALL_BUSINESS = 'Small_Business', 'Small Business'
 
-    phone = models.CharField(max_length=20, unique=True)
+    phone = models.CharField(max_length=20, unique=True, blank=True, null=True)
     business_name = models.CharField(max_length=255, blank=True)
     business_type = models.CharField(
         max_length=50, choices=BusinessTypes.choices, blank=True

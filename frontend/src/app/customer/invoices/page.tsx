@@ -91,10 +91,10 @@ export default function InvoicesPage() {
                         <span className="font-mono text-gray-300">{invoice.invoice_number}</span>
                       </td>
                       <td className="py-3 px-4 text-gray-300 whitespace-nowrap">
-                        {formatDate(invoice.issued_date)}
+                        {formatDate(invoice.issued_date || '')}
                       </td>
                       <td className="py-3 px-4 text-gray-300 font-medium whitespace-nowrap">
-                        {formatCurrency(invoice.total)}
+                        {formatCurrency(invoice.total || 0)}
                       </td>
                       <td className="py-3 px-4">
                         <span className={cn('text-xs font-medium px-2.5 py-0.5 rounded-full border', status.class)}>

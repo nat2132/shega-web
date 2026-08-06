@@ -10,7 +10,6 @@ import {
   Check,
   Smartphone,
   Monitor,
-  Globe,
   XCircle,
   RefreshCw,
   Clock,
@@ -24,10 +23,13 @@ import type { License, DeviceActivation, Payment } from '@/lib/types';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 
-const statusConfig = {
+const statusConfig: Record<string, { label: string; class: string }> = {
   active: { label: 'Active', class: 'bg-muted text-foreground font-semibold border-border' },
   expired: { label: 'Expired', class: 'bg-muted text-muted-foreground border-border' },
   suspended: { label: 'Suspended', class: 'bg-muted text-muted-foreground border-border' },
+  revoked: { label: 'Revoked', class: 'bg-muted text-muted-foreground border-border' },
+  trial: { label: 'Trial', class: 'bg-muted text-foreground font-semibold border-border' },
+  pending: { label: 'Pending', class: 'bg-muted text-muted-foreground border-border' },
   cancelled: { label: 'Cancelled', class: 'bg-muted text-muted-foreground border-border' },
 };
 
@@ -39,12 +41,14 @@ export default function LicenseDetailPage() {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [daysRemaining, setDaysRemaining] = useState(0);
 
   useEffect(() => {
     const fetch = async () => {
       try {
         const { data: lic } = await api.get(`/customers/licenses/${params.id}/`);
         setLicense(lic);
+        setDaysRemaining(Math.ceil((new Date(lic.expiry_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
 
         const { data: devs } = await api.get(`/customers/licenses/${params.id}/devices/`);
         setDevices(Array.isArray(devs) ? devs : devs.results ?? []);
@@ -88,9 +92,6 @@ export default function LicenseDetailPage() {
   if (!license) return null;
 
   const status = statusConfig[license.status];
-  const daysRemaining = Math.ceil(
-    (new Date(license.expiry_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-  );
 
   return (
     <div className="space-y-6">
@@ -108,7 +109,7 @@ export default function LicenseDetailPage() {
         </button>
         <div>
           <h2 className="text-2xl font-bold text-white">License Details</h2>
-          <p className="text-gray-400 text-sm mt-0.5">{license.plan.name}</p>
+          <p className="text-gray-400 text-sm mt-0.5">{typeof license.plan === 'object' ? license.plan.name : 'N/A'}</p>
         </div>
       </motion.div>
 
@@ -147,11 +148,11 @@ export default function LicenseDetailPage() {
               </div>
               <div>
                 <p className="text-xs text-gray-500 uppercase tracking-wider">Plan</p>
-                <p className="text-sm text-gray-300 mt-1">{license.plan.name}</p>
+                <p className="text-sm text-gray-300 mt-1">{typeof license.plan === 'object' ? license.plan.name : 'N/A'}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500 uppercase tracking-wider">Issued Date</p>
-                <p className="text-sm text-gray-300 mt-1">{formatDate(license.issued_date)}</p>
+                <p className="text-sm text-gray-300 mt-1">{formatDate(license.issued_date || license.start_date)}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500 uppercase tracking-wider">Expiry Date</p>
@@ -255,7 +256,7 @@ export default function LicenseDetailPage() {
                 <div className="h-2 w-2 mt-2 rounded-full bg-foreground shrink-0" />
                 <div className="flex-1">
                   <p className="text-sm text-gray-300">License created</p>
-                  <p className="text-xs text-gray-500">{formatDate(license.issued_date)}</p>
+                  <p className="text-xs text-gray-500">{formatDate(license.issued_date || license.start_date)}</p>
                 </div>
               </div>
               {devices.map((d) => (
@@ -310,7 +311,7 @@ export default function LicenseDetailPage() {
                   >
                     <div>
                       <p className="text-sm text-gray-300">{formatCurrency(p.amount)}</p>
-                      <p className="text-xs text-gray-500">{formatDate(p.paid_at)}</p>
+                      <p className="text-xs text-gray-500">{formatDate(p.paid_at || '')}</p>
                     </div>
                     <Link href={`/customer/invoices`}>
                       <ExternalLink className="h-4 w-4 text-foreground hover:text-muted-foreground cursor-pointer" />

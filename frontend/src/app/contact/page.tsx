@@ -12,14 +12,14 @@ const contactInfo = [
   {
     icon: Mail,
     label: "Email",
-    value: "support@shega.com",
-    href: "mailto:support@shega.com",
+    value: "ssshegas@gmail.com",
+    href: "mailto:ssshegas@gmail.com",
   },
   {
     icon: Phone,
     label: "Phone",
-    value: "+251 11 123 4567",
-    href: "tel:+251111234567",
+    value: "0925319901",
+    href: "tel:0925319901",
   },
   {
     icon: MapPin,
@@ -66,12 +66,13 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--background)] flex flex-col">
+    <div className="min-h-screen bg-bg flex flex-col">
       <Navbar />
       <main className="flex-1 pt-16">
         <section className="relative overflow-hidden py-24 sm:py-32">
-          <div className="absolute inset-0 bg-glow pointer-events-none" />
-          <div className="absolute inset-0 bg-grid pointer-events-none opacity-50" />
+          <div className="hero-orb hero-orb-1" />
+          <div className="hero-orb hero-orb-2" />
+          <div className="absolute inset-0 grid-pattern opacity-20" />
 
           <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <motion.div
@@ -80,13 +81,11 @@ export default function ContactPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
             >
-              <h1 className="text-4xl font-bold tracking-tight text-[var(--foreground)] sm:text-5xl">
-                Get in{" "}
-                <span className="bg-linear-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  Touch
-                </span>
+              <div className="pill pill-glass mb-6 inline-flex">We&apos;d love to hear from you</div>
+              <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl leading-[1.1]">
+                Get in <span className="text-gradient">Touch</span>
               </h1>
-              <p className="mt-4 text-lg leading-relaxed text-zinc-400">
+              <p className="mt-4 text-lg leading-relaxed text-muted max-w-2xl mx-auto">
                 Have a question or need help? We&apos;d love to hear from you.
               </p>
             </motion.div>
@@ -100,13 +99,13 @@ export default function ContactPage() {
               >
                 <form
                   onSubmit={handleSubmit}
-                  className="glass rounded-2xl p-8 space-y-5"
+                  className="glass rounded-2xl p-8 space-y-5 glass-inner-highlight"
                 >
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div>
                       <label
                         htmlFor="name"
-                        className="mb-1.5 block text-sm font-medium text-gray-300"
+                        className="mb-1.5 block text-sm font-medium text-muted"
                       >
                         Name
                       </label>
@@ -117,14 +116,14 @@ export default function ContactPage() {
                         required
                         value={form.name}
                         onChange={handleChange}
-                        className="block w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white placeholder-gray-500 backdrop-blur-xl transition-all duration-200 hover:border-white/[0.15] focus:border-indigo-500/40 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20"
+                        className="block w-full rounded-xl glass-input px-3.5 py-2.5 text-sm text-foreground placeholder-muted/60 transition-all duration-200"
                         placeholder="Your name"
                       />
                     </div>
                     <div>
                       <label
                         htmlFor="phone"
-                        className="mb-1.5 block text-sm font-medium text-gray-300"
+                        className="mb-1.5 block text-sm font-medium text-muted"
                       >
                         Phone
                       </label>
@@ -135,7 +134,7 @@ export default function ContactPage() {
                         required
                         value={form.phone}
                         onChange={handleChange}
-                        className="block w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white placeholder-gray-500 backdrop-blur-xl transition-all duration-200 hover:border-white/[0.15] focus:border-indigo-500/40 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20"
+                        className="block w-full rounded-xl glass-input px-3.5 py-2.5 text-sm text-foreground placeholder-muted/60 transition-all duration-200"
                         placeholder="+251 91 234 5678"
                       />
                     </div>
@@ -144,7 +143,7 @@ export default function ContactPage() {
                     <div>
                       <label
                         htmlFor="email"
-                        className="mb-1.5 block text-sm font-medium text-gray-300"
+                        className="mb-1.5 block text-sm font-medium text-muted"
                       >
                         Email
                       </label>
@@ -155,14 +154,14 @@ export default function ContactPage() {
                         required
                         value={form.email}
                         onChange={handleChange}
-                        className="block w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white placeholder-gray-500 backdrop-blur-xl transition-all duration-200 hover:border-white/[0.15] focus:border-indigo-500/40 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20"
+                        className="block w-full rounded-xl glass-input px-3.5 py-2.5 text-sm text-foreground placeholder-muted/60 transition-all duration-200"
                         placeholder="you@example.com"
                       />
                     </div>
                     <div>
                       <label
                         htmlFor="business_name"
-                        className="mb-1.5 block text-sm font-medium text-gray-300"
+                        className="mb-1.5 block text-sm font-medium text-muted"
                       >
                         Business Name
                       </label>
@@ -172,7 +171,7 @@ export default function ContactPage() {
                         type="text"
                         value={form.business_name}
                         onChange={handleChange}
-                        className="block w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white placeholder-gray-500 backdrop-blur-xl transition-all duration-200 hover:border-white/[0.15] focus:border-indigo-500/40 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20"
+                        className="block w-full rounded-xl glass-input px-3.5 py-2.5 text-sm text-foreground placeholder-muted/60 transition-all duration-200"
                         placeholder="Your business"
                       />
                     </div>
@@ -180,7 +179,7 @@ export default function ContactPage() {
                   <div>
                     <label
                       htmlFor="message"
-                      className="mb-1.5 block text-sm font-medium text-gray-300"
+                      className="mb-1.5 block text-sm font-medium text-muted"
                     >
                       Message
                     </label>
@@ -191,14 +190,14 @@ export default function ContactPage() {
                       rows={5}
                       value={form.message}
                       onChange={handleChange}
-                      className="block w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white placeholder-gray-500 backdrop-blur-xl transition-all duration-200 hover:border-white/[0.15] focus:border-indigo-500/40 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 resize-none"
+                      className="block w-full rounded-xl glass-input px-3.5 py-2.5 text-sm text-foreground placeholder-muted/60 transition-all duration-200 resize-none"
                       placeholder="How can we help you?"
                     />
                   </div>
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="inline-flex h-12 w-full items-center justify-center gap-2.5 rounded-xl bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 px-8 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition-all duration-200 hover:shadow-indigo-500/40 hover:scale-[1.02] active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50"
+                    className="btn-glass-primary inline-flex h-12 w-full items-center justify-center gap-2.5 px-8 text-sm rounded-xl"
                   >
                     {isSubmitting ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -211,7 +210,7 @@ export default function ContactPage() {
               </motion.div>
 
               <motion.div
-                className="lg:col-span-2 space-y-4"
+                className="lg:col-span-2 space-y-3"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
@@ -220,16 +219,16 @@ export default function ContactPage() {
                   <a
                     key={info.label}
                     href={info.href}
-                    className="glass rounded-xl p-5 flex items-start gap-4 transition-all duration-200 hover:border-white/[0.12] hover:shadow-[0_0_30px_-5px_rgba(99,102,241,0.1)]"
+                    className="glass-hoverable rounded-2xl p-5 flex items-start gap-4 glass-inner-highlight"
                   >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.06] border border-white/[0.06] text-foreground">
                       <info.icon className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs font-medium text-zinc-500">
+                      <p className="text-xs font-medium text-muted tracking-wider uppercase">
                         {info.label}
                       </p>
-                      <p className="mt-0.5 text-sm font-medium text-[var(--foreground)]">
+                      <p className="mt-0.5 text-sm font-medium text-foreground">
                         {info.value}
                       </p>
                     </div>

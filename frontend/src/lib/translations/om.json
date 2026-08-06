@@ -1,0 +1,482 @@
+{
+  "nav": {
+    "home": "Mana",
+    "features": "Birmadha",
+    "pricing": "Gatii",
+    "desktopApp": "App Dhasktii",
+    "mobileApp": "App Bilbila",
+    "faq": "Gaaffilee Yeroo Baay'ee Gaafatan",
+    "support": "Deegarsa",
+    "contact": "Nu Quunnamaa",
+    "login": "Seeni",
+    "startFreeTrial": "Jalqabi",
+    "viewPricing": "Gatii Ilaali",
+    "downloadDesktop": "Dhasktii Buufadhu",
+    "downloadMobile": "Bilbila Buufadhu"
+  },
+  "hero": {
+    "headline": "Bija Keessan Guutuu Platform Tokko Qabaadhaa",
+    "subheadline": "Kuuusaa hordofi, gurgurtaa bulchi, daatiwwan qindeessi, fi baasii to'aa — hunda platform tokko irraa, daldaltoota Itiyoophiyaatiif tolfame.",
+    "primaryCta": "Jalqabi",
+    "secondaryCta": "Dabalataan Baradhu",
+    "badge": "Beeta Amma Baname",
+    "trustBadges": {
+      "offline": "Offline Hojjeta",
+      "ethiopianCalendar": "Guyyaa Itiyoophiyaa",
+      "languages": "Afaan 4",
+      "secureAccess": "PIN fi Biometric Badhadhinaa"
+    }
+  },
+  "stats": {
+    "businesses": "Shega Fayyadamanii",
+    "salesProcessed": "Gurgurtaa Hojjetame",
+    "inventoryManaged": "Inventory Bulchiinsa",
+    "expensesTracked": "Baasii Hordofame",
+    "customerDebts": "Sababee Daatiwwan"
+  },
+  "trust": {
+    "title": "Bija Itiyoophiyaaf Godhame",
+    "offlineFirst": "Offline-First Teknooloojii",
+    "offlineFirstDesc": "Internet bilis ta'ee hojjeta. Odeefannoon keessan meeshaa irra jira.",
+    "localStorage": "Odeefannoo Naannoo Badhadhinaa",
+    "localStorageDesc": "Odeefannoon dhaabbataa keessan meeshaa irratti iddoosaleerraa eegama.",
+    "multiLanguage": "Afaan Hedduu Deeggarsa",
+    "multiLanguageDesc": "Ingiliffaa, Amaariffaa, Oromoo, Tigrignaa fi fonti Itiyoophiyaan deggera.",
+    "ethiopianCalendar": "Guyyaa fi Saa'aa Itiyoophiyaa",
+    "ethiopianCalendarDesc": "Guyyaa Itiyoophiyaa deggera. Guyyaa fi sa'aa naannoo hordofa.",
+    "fastPerformance": "Saffisaa fi Sadarkaa",
+    "fastPerformanceDesc": "Saffisaan hojjeti. Meeshaalee umrii dheera irrattis saffisa.",
+    "backupRestore": "Badhaadhinaa fi Deebisuu",
+    "backupRestoreDesc": "Badhaadhinaa-atomii. Odeefannoo keessan eegadhaa."
+  },
+  "features": {
+    "mobile": {
+      "title": "Bilbila Keessanii Bija Keessan Bakka Kamuu Bulchaa",
+      "subtitle": "Kuusaa bulchi, gurgurtaa hordofi, fi daldala kee bakka kamiiyyuu irraa to'achuu.",
+      "items": {
+        "inventoryManagement": "Inventory Bulchuu",
+        "sales": "Gurgurtaa fi POS",
+        "contacts": "Quunnamoota",
+        "stockAdjustments": "Qindaa'ina Kuusaa Fooyyessuu",
+        "reports": "Gazzii",
+        "expenses": "Baasii",
+        "budgets": "Bajata",
+        "debtManagement": "Daa Bulchuu",
+        "customerOrders": "Ajaja Maamila",
+        "purchaseOrders": "Ajaja Bitaa",
+        "multiWarehouse": "Kuusaa Baay'ee",
+        "aiAssistant": "Gargaaraa AI",
+        "businessHealthScore": "Dhamma Fayyaa Bija",
+        "themes": "Gammee",
+        "biometrics": "Baayometiriksii",
+        "supplierCreditReminders": "Yaadachiisa Liqii Dhiyeessitootaa"
+      }
+    },
+    "desktop": {
+      "title": "Bulchiinsa Bija Guutuu Dhaabbata Guddateef",
+      "subtitle": "Fayyadamtoota, hojjattoota, fi gabaasa sadarkaa olaa bulchuuf meeshaalee dhasktii cimaa.",
+      "items": {
+        "userManagement": "Bulchiinsa Fayyadamaa",
+        "employeeManagement": "Bulchiinsa Hojjattootaa",
+        "auditLogs": "Galmee Qorannoo",
+        "supplierManagement": "Bulchiinsa Dhiyeessitootaa",
+        "shipmentManagement": "Bulchiinsa Guuricha",
+        "advancedReporting": "Gabaasa Sadarkaa Ol"
+      }
+    }
+  },
+  "whyChoose": {
+    "title": "Maaliif Shega Filatta",
+    "subtitle": "Bija Itiyoophiyaaf Tolche Dhaabbata.",
+    "items": {
+      "saveTime": "Yeroa Oolchi",
+      "saveTimeDesc": "Hojii barbaachisaa dandeessi.",
+      "reduceWork": "Hojii Xiqqeesi",
+      "reduceWorkDesc": "Waraqaa hojii xureessi.",
+      "trackSales": "Gurgurtaa Hordofi",
+      "trackSalesDesc": "Dallaa hunda yeroo hordofi.",
+      "manageInventory": "Inventory Too'aa",
+      "manageInventoryDesc": "Godaanqu heddu irratti hordofi.",
+      "monitorPerformance": "Bija Udna Hordofi",
+      "monitorPerformanceDesc": "Fayyaa dhaabbataa kee ilaali.",
+      "controlExpenses": "Baasii To'aa",
+      "controlExpensesDesc": "Baasii hunda hordofi.",
+      "manageDebts": "Daataa Daatiwwan",
+      "manageDebtsDesc": "Kaffaltii hordofi, yaadadhu.",
+      "generateReports": "Gazzii Saffisaan",
+      "generateReportsDesc": "Gazzii tokkoon uumadhu.",
+      "betterDecisions": "Ittin Caalaa Murannoo",
+      "betterDecisionsDesc": "Odeefannoof murannoo gaari godhaa.",
+      "workOffline": "Offline Hojjeta",
+      "workOfflineDesc": "Bakka, yeroo walitti fufi."
+    }
+  },
+  "screenshots": {
+    "title": "Shega Hojii Iraatti Ilaali",
+    "subtitle": "Ilaalcha jalqabaa Shega irratti — hojjechuu salphaa fi bu'aa qabeessa ta'uuf tolfame.",
+    "mobile": {
+      "title": "Sagalee App Bilbilaa",
+      "inventory": "Inventory Bilbilaa",
+      "sales": "Gurgurtaa",
+      "reports": "Gazzii",
+      "dashboard": "Daa'ishboordii",
+      "aiAssistant": "Garaagara AI",
+      "purchaseOrders": "Ajaja Bitaa"
+    },
+    "desktop": {
+      "title": "App Dhasktii",
+      "dashboard": "Dashboard Dhasktii",
+      "employeeManagement": "Bulchiinsa Hojjattootaa",
+      "auditLogs": "Galmee Qorannoo",
+      "reports": "Gazzii",
+      "suppliers": "Dhiyeessitoota",
+      "shipments": "Guuricha"
+    }
+  },
+  "pricing": {
+    "toggle": {
+      "monthly": "Ji'aan",
+      "threeMonths": "Ji'aa 3 Iffaa"
+    },
+    "desktop": {
+      "title": "Karoora Dhasktii",
+      "subtitle": "Garee fi dhaabbata dagaaganiif meeshaa cimaa.",
+      "basic": {
+        "name": "Bu'ura",
+        "description": "Bija xixiqqoof meeshaa dhasktii bu'uraa.",
+        "monthlyPrice": "2,499",
+        "quarterlyPrice": "5,499",
+        "period": "ETB",
+        "monthLabel": "Ji'a 1",
+        "quarterLabel": "Ji'a 3",
+        "features": [
+          "Kuusaa",
+          "Gurgurtaa",
+          "Quunnamoota",
+          "Qindaa'ina Kuusaa Fooyyessuu"
+        ],
+        "cta": "Bu'ura Filadhu"
+      },
+      "premium": {
+        "name": "Sadarkaa Ol",
+        "description": "Meeshaalee dhasktii amaloota guutuu qaban garee fi dhaabbata guddachaa jiraniif.",
+        "popular": "Baay'ee Filatamaa",
+        "recommended": "Gatii Gaarii",
+        "monthlyPrice": "4,499",
+        "quarterlyPrice": "11,499",
+        "period": "ETB",
+        "monthLabel": "Ji'a 1",
+        "quarterLabel": "Ji'a 3",
+        "features": [
+          "Waan Dhasktii Bu'ura keessa jiru hunda fi dabalata:",
+          "Gazzii",
+          "Dashboard Irratti Argama",
+          "Rasiidii PDF",
+          "CSV Ol Fe'uu fi Erguu",
+          "Bulchiinsa Baasii",
+          "Bulchiinsa Bajataa",
+          "Bulchiinsa Daa",
+          "Ajaja Maamila",
+          "Ajaja Bitaa",
+          "Kuusaa Baay'ee",
+          "Gargaaraa AI",
+          "Dhamma Fayyaa Bija",
+          "Biometrics",
+          "Gammee",
+          "Bulchiinsa Fayyadamaa",
+          "Bulchiinsa Hojjattootaa",
+          "Galmee Qorannoo",
+          "Bulchiinsa Dhiyeessitootaa",
+          "Bulchiinsa Guuricha"
+        ],
+        "cta": "Sadarkaa Ol Filadhu"
+      }
+    },
+    "mobile": {
+      "title": "Karoora Bilbilaa",
+      "subtitle": "Bilbila irraa jalqabi akkaataa guddannaa keessaniin ol qacari.",
+      "basic": {
+        "name": "Bu'ura",
+        "description": "Bija xixiqqoo jalqabuuf meeshaa barbaachisaa.",
+        "monthlyPrice": "1,999",
+        "quarterlyPrice": "2,499",
+        "period": "ETB",
+        "monthLabel": "Ji'a 1",
+        "quarterLabel": "Ji'a 3",
+        "features": [
+          "Kuusaa",
+          "Gurgurtaa",
+          "Quunnamoota",
+          "Qindaa'ina Kuusaa Fooyyessuu"
+        ],
+        "cta": "Bu'ura Filadhu"
+      },
+      "premium": {
+        "name": "Sadarkaa Ol",
+        "description": "Daldaltoota guddachuu qophaa'aniif amaloota sadarkaa olaa.",
+        "popular": "Baay'ee Filatamaa",
+        "recommended": "Gatii Gaarii",
+        "monthlyPrice": "2,499",
+        "quarterlyPrice": "5,499",
+        "period": "ETB",
+        "monthLabel": "Ji'a 1",
+        "quarterLabel": "Ji'a 3",
+        "features": [
+          "Waan Bu'ura keessa jiru hunda fi dabalata:",
+          "Gazzii",
+          "Dashboard Irratti Argama",
+          "Rasiidii PDF",
+          "CSV Ol Fe'uu fi Erguu",
+          "Bulchiinsa Baasii",
+          "Bulchiinsa Bajataa",
+          "Bulchiinsa Daa",
+          "Ajaja Maamila",
+          "Ajaja Bitaa",
+          "Kuusaa Baay'ee",
+          "Gargaaraa AI",
+          "Dhamma Fayyaa Bija",
+          "Biometrics",
+          "Gammee",
+          "Yaadachiisa Liqii Dhiyeessitootaa"
+        ],
+        "cta": "Sadarkaa Ol Filadhu"
+      }
+    },
+    "comparison": {
+      "title": "Amaloota Hunda Wal bira Kaa'i",
+      "subtitle": "Karoora hunda keessatti waan argattan sirriitti ilaalaa.",
+      "columns": {
+        "feature": "Amala",
+        "mobileBasic": "Mobile Bu'ura",
+        "mobilePremium": "Mobile Sadarkaa Ol",
+        "desktopBasic": "Dhasktii Bu'ura",
+        "desktopPremium": "Dhasktii Sadarkaa Ol"
+      },
+      "features": {
+        "inventory": "Kuusaa",
+        "sales": "Gurgurtaa",
+        "contacts": "Quunnamoota",
+        "stockAdjustments": "Qindaa'ina Kuusaa Fooyyessuu",
+        "reports": "Gazzii",
+        "dashboardOverview": "Dashboard Irratti Argama",
+        "pdfReceipts": "Rasiidii PDF",
+        "csvImportExport": "CSV Ol Fe'uu fi Erguu",
+        "expenseManagement": "Bulchiinsa Baasii",
+        "budgetManagement": "Bulchiinsa Bajataa",
+        "debtManagement": "Bulchiinsa Daa",
+        "customerOrders": "Ajaja Maamila",
+        "purchaseOrders": "Ajaja Bitaa",
+        "multiWarehouse": "Kuusaa Baay'ee",
+        "aiAssistant": "Gargaaraa AI",
+        "businessHealthScore": "Dhamma Fayyaa Bija",
+        "biometrics": "Baayometiriksii",
+        "themes": "Gammee",
+        "supplierCreditReminders": "Yaadachiisa Liqii Dhiyeessitootaa",
+        "userManagement": "Bulchiinsa Fayyadamaa",
+        "employeeManagement": "Bulchiinsa Hojjattootaa",
+        "auditLogs": "Galmee Qorannoo",
+        "supplierManagement": "Bulchiinsa Dhiyeessitootaa",
+        "shipmentManagement": "Bulchiinsa Guuricha",
+        "advancedReporting": "Gabaasa Sadarkaa Ol"
+      }
+    }
+  },
+  "comingSoon": {
+    "title": "iOS Gabaabsaa Ni Dhufa",
+    "description": "Shega iPhone fi iPad ko too'aahun. Waantiibsaa galmaa'i nama jalqaba hojjetoota Shega iOS irra argatuf.",
+    "notifyMe": "Na Beeessi",
+    "badge": "App Store Gabaabsaa"
+  },
+  "freeTrial": {
+    "badge": "Bilisa Yaali",
+    "title": "Shega Guyyaa 7 Bilis Yaali",
+    "subtitle": "Kaardii kreeditii hin barbaachisu. Yeroo yalii kee keessatti amaloota hunda daawwadhu.",
+    "benefits": {
+      "noCard": "✅ Guyyaa 7 Bilis Yaali",
+      "fullAccess": "Dandeettii Hunda",
+      "easySetup": "Sassata Saffisaa",
+      "cancelAnytime": "Yeroo Barbaadee Dhiisi",
+      "noCommitment": "✅ Dirqama Hin Barbaachisu",
+      "allFeatures": "✅ Amaloota Hunda Hiramuu"
+    },
+    "cta": "Jalqabi"
+  },
+  "payment": {
+    "badge": "Kafaalaa Nageenyaa",
+    "title": "Kaffaltii Salphaa Teelebiirr Tiin",
+    "subtitle": "Tajaajila kaffaltii bilbilaa Itiyoophiyaa amanamaan bilbilaadhaa.",
+    "steps": [
+      {
+        "step": "1",
+        "title": "Karoora Filadhu",
+        "desc": "Karoora dhaabbataa fi hojiin keessan walitti dhufu filadhu."
+      },
+      {
+        "step": "2",
+        "title": "Kaffaltii Xumuri",
+        "desc": "Bilbilaa Teelebiirr fayyadamuun nageenyumaan kaffali."
+      },
+      {
+        "step": "3",
+        "title": "ID Tiraanksakshinii Galchi",
+        "desc": "Teellebiirr ID tiraanksakshinii keessan app keessa galchi."
+      },
+      {
+        "step": "4",
+        "title": "Saffisaan Mirkaneessuu",
+        "desc": "Gareen keenya kaffaltii keessan daqiiqaa keessatti mirkaneessa."
+      },
+      {
+        "step": "5",
+        "title": "Bilbilaan Hojiiraa",
+        "desc": "Premiyam argachuun keessan yeruma sana hojiira."
+      }
+    ],
+    "note": "Mirkaneessi kaffaltii saffisaan. Bilbilaan keessan yeruma kaffaltiin mirkanaa'etti hojiir.",
+    "cta": "Karoora Ilaali"
+  },
+  "testimonials": {
+    "badge": "Argamuma Keenya",
+    "title": "Daldaltoota Itiyoophiyaatiif Tolfame",
+    "subtitle": "Shega rakkoo dhugaa daldaltoota Itiyoophiyaa furuuf uumame — kuusaa bulchiinsaa kaasee hamma gurgurtaa hordoffiiti.",
+    "items": [
+      {
+        "name": "Qindaa'ina Offiin Hojjechuu",
+        "role": "Amala Ijoo",
+        "location": "",
+        "quote": "Shega offline hojjeta, kanaafuu odeefannoon kee yeroo hunda si bira jira."
+      },
+      {
+        "name": "Deeggarsa Guyyaa Itiyoophiyaa",
+        "role": "Amala Ijoo",
+        "location": "",
+        "quote": "Guyyaa Itiyoophiyaa keessatti hojjachuu dandeessa, jijjiirama rakkisaa malee."
+      },
+      {
+        "name": "Afaan Hedduu",
+        "role": "Amala Ijoo",
+        "location": "",
+        "quote": "Shega Ingiliffaa, Amaariffaa, Oromoo, fi Tigrignaa keessatti fayyadamuu."
+      },
+      {
+        "name": "Guddinaaf Tolfame",
+        "role": "Yaada Keenya",
+        "location": "",
+        "quote": "Daldala kee wajjin guddatu platform tokko ijaarraa."
+      }
+    ]
+  },
+  "faq": {
+    "badge": "Gaaffilee Yeroo Baay'ee Gaafatan",
+    "title": "Gaaffii Dakkisaa",
+    "subtitle": "Shega irratti gaaffii yaadannee deebii argadhu.",
+    "items": [
+      {
+        "question": "Shega offline hojjeta?",
+        "answer": "Eeyyen, Shega offline-first hojjeti. Odeefannoon keessan hunda meeshaa keessa jira. Naannoo internet yeroo deebi'u saffisaan yeroo argama hojjechuu itti fufa."
+      },
+      {
+        "question": "Guyyaa Itiyoophiyaa fayyadamuu ni danda'a?",
+        "answer": "Eeyyen, Shega guyyaa Itiyoophiyaa guutuu deegera. Guyyaa Gregorian irraa Itiyoophiyaatti dagatii. Guyyaa, gazzii fi sagantee lamaanitti ilaala."
+      },
+      {
+        "question": "Bakka quunnamti heddu bulchu?",
+        "answer": "Eeyyen, karoora keetii irratti godaansaa hedduu bulchuu dandeessa."
+      },
+      {
+        "question": "Deebisuu fi badhaadhinaa akkam hojjeta?",
+        "answer": "Shega odeefannoo keessan sadarkaa tokkoon hin bakka hin qabne. Bilis deebisuu ni dandeessa."
+      },
+      {
+        "question": "Galannoowwan akkam hojjetu?",
+        "answer": "Ji'aan ykn ji'aa 3 galanno. Yaalii biliis 7 booda karoora filadhaa."
+      },
+      {
+        "question": "Karoora naanna'a ol aanaa?",
+        "answer": "Eeyyen, karoora kee ol aanaa haala barbaachisummaa. Dandeettii haara darba."
+      },
+      {
+        "question": "Odeefannoon dhaabbataa nii eegama?",
+        "answer": "Shega PIN fi biometric deeggarsa. Odeefannoo meeshaa keessa eegama."
+      },
+      {
+        "question": "Shega afaan hedduu deeggara?",
+        "answer": "Eeyyen, Shega Ingiliffaa, Amaariffaa, Oromoo, Tigrignaa deeggara. Afaan barruu barreessuu salphaa jijjiira."
+      }
+    ]
+  },
+  "howItWorks": {
+    "badge": "Sirna Salphaa",
+    "title": "Tarkaanfi 4 Salphaan Jalqabi",
+    "subtitle": "Buufachaa kaasee hamma hojiirra oolchuutti dakkaana muraasa keessatti.",
+    "steps": [
+      {
+        "step": "1",
+        "title": "App Buufadhu",
+        "desc": "SHEGA Google Play Store irraa ykn desktop app Windows, macOS, ykn Linux irratti buufadhu."
+      },
+      {
+        "step": "2",
+        "title": "Bija Keessan Uumaa",
+        "desc": "Piroofaayilii bjaa keessan qopheessaa, oomisha, daatiwwan, fi dhiyeessitoota keessan daqiiqaa muraasatti dabali."
+      },
+      {
+        "step": "3",
+        "title": "Bilis Yaali Keessan Jalqabaa",
+        "desc": "Guyyaa 3 Premium oophii guutuu argadhu. Amaloota hunda daawwadhu."
+      },
+      {
+        "step": "4",
+        "title": "Karoora Keessan Filadhu",
+        "desc": "Bilbila ykn Karoora Dhasktii fi yeroo keessan walitti dhufu filadhaa fi Teelebiirratti bilbilaa."
+      }
+    ]
+  },
+  "finalCta": {
+    "title": "Bija Keessan Shega Waliin Guddisi",
+    "subtitle": "Inventory, gurgurtaa, baasii, daatiwwan, hojjetoota, platform tokkoon.",
+    "primaryCta": "Free Yaalii Jalqabaa",
+    "secondaryCta": "Gurgurtaa Quunnamaa"
+  },
+  "footer": {
+    "product": "Bira",
+    "features": "Birmadha",
+    "pricing": "Gatii",
+    "desktopApp": "App Dhasktii",
+    "mobileApp": "App Bilbila",
+    "about": "Waa'ee Shegaa",
+    "aboutDesc": "Shega daldaltoota Itiyoophiyaatiif tolfame platform ammayyaa kuusaa fi gurgurtaa qindeessaa.",
+    "support": "Deegarsa",
+    "contact": "Quunnama",
+    "contactInfo": "Odeeffannoo Quunnamti",
+    "legal": "Seera",
+    "privacyPolicy": "Iccitiin Koptii",
+    "termsOfService": "Tajaajiluu Mallattoo",
+    "social": "Nu Hordofaa",
+    "copyright": "© 2026 Shega Tech. Bifa Hunda.",
+    "tagline": "Itiyoophiyaaf dhaabbata guutuu.",
+    "email": "support@shega.et",
+    "phone": "+251 911 234 567",
+    "download": "Buufadhu",
+    "downloadDesktop": "Dhasktii Buufadhu",
+    "downloadMobile": "APK Buufadhu"
+  },
+  "cta": {
+    "title": "Jalqabuuf Qophii?",
+    "subtitle": "Platform daldaltoota Itiyoophiyaa barbaachisu ijaarraa. Yalii bilisaa kee jalqabi akka Shega maal gochuu danda'u ilaaluuf.",
+    "primaryCta": "Jalqabi",
+    "secondaryCta": "Nu Quunnamaa"
+  },
+  "theme": {
+    "light": "Ifa",
+    "dark": "Nana",
+    "system": "Sisitemii"
+  },
+  "language": {
+    "en": "Ingiliffaa",
+    "am": "Amaariffaa",
+    "om": "Oromoo",
+    "ti": "Tigrignaa",
+    "select": "Afaan Filadhu"
+  }
+}

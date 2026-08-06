@@ -13,7 +13,7 @@ import {
   CheckCircle2,
   Apple,
 } from 'lucide-react';
-import { cn, formatDate } from '@/lib/utils';
+import { formatDate } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 
 interface VersionInfo {
@@ -230,7 +230,7 @@ export default function DownloadPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {history.map((v, i) => (
+                  {history.map((v) => (
                     <tr key={v.version} className="border-b border-[var(--color-border)] last:border-b-0">
                       <td className="py-3 pr-4">
                         <code className="text-sm font-medium text-foreground">v{v.version}</code>

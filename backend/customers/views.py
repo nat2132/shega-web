@@ -30,6 +30,14 @@ class CustomerProfileViewSet(viewsets.ModelViewSet):
         instance.status = CustomerProfile.Status.BLOCKED
         instance.save(update_fields=['status'])
 
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(
+            {'detail': 'Customer has been blocked.'},
+            status=status.HTTP_200_OK,
+        )
+
     @action(detail=False, methods=['get'])
     def search(self, request):
         q = request.query_params.get('q', '')

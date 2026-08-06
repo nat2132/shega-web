@@ -43,10 +43,15 @@ export const useAuthStore = create<AuthState>((set) => ({
   login: async (email: string, password: string) => {
     set({ isLoading: true });
     try {
-      const { data } = await api.post<LoginResponse>('/auth/login/', { email, password });
+      const { data } = await api.post<LoginResponse & { user?: User }>('/auth/login/', { username: email, password });
       localStorage.setItem('access_token', data.access);
       localStorage.setItem('refresh_token', data.refresh);
-      set({ user: data.user, isAuthenticated: true, isLoading: false });
+      if (data.user) {
+        set({ user: data.user, isAuthenticated: true, isLoading: false });
+      } else {
+        const profileRes = await api.get<User>('/auth/profile/');
+        set({ user: profileRes.data, isAuthenticated: true, isLoading: false });
+      }
     } catch (error) {
       set({ isLoading: false });
       throw error;

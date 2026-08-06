@@ -1,0 +1,482 @@
+{
+  "nav": {
+    "home": "መበገሲ",
+    "features": "ኣምርንቲ",
+    "pricing": "ክሳዕ",
+    "desktopApp": "ዴስክቶፕ ኤፕሊኬሽን",
+    "mobileApp": "ሞባይል ኤፕሊኬሽን",
+    "faq": "ተደጋጋሚ ሕቶታት",
+    "support": "ደገፍ",
+    "contact": "ተራኸቡና",
+    "login": "ተመዝገቡ",
+    "startFreeTrial": "ጀምሩ",
+    "viewPricing": "ክሳዥ ርኣዩ",
+    "downloadDesktop": "ዴስክቶፕ ኣውረዱ",
+    "downloadMobile": "ሞባይል ኣውረዱ"
+  },
+  "hero": {
+    "headline": "ብሓደ ኃይለኛ ፕላትፎርም ዅሉ ንግድኹም ምምሕር",
+    "subheadline": "ክምችት ተከታተሉ፣ ሽያጭ ኣመሓድሩ፣ ደንበኛታት ኣደላድሉ፣ ወጪዎች ተቆጻጸሩ — ኩሉ ኣብ ሓደ ፕላትፎርም።",
+    "primaryCta": "ጀምሩ",
+    "secondaryCta": "ተወሳኺ ፍለጡ",
+    "badge": "ቤታ ሕጂ ተኸፊቱ",
+    "trustBadges": {
+      "offline": "ኣብ ኦፋይን ይሰርሕ",
+      "ethiopianCalendar": "የኢትዮጵያ ቀን መቁጠሪያ",
+      "languages": "4 ቋንቋዎች",
+      "secureAccess": "ደህንነት PIN እና Biometric"
+    }
+  },
+  "stats": {
+    "businesses": "ሺጋ ዝጠቅሙ ንግዶች",
+    "salesProcessed": "ዝተኻሓዱ ሽያጮች",
+    "inventoryManaged": "Inventory ዝተቆጣጠረ",
+    "expensesTracked": "ወጪዎች ዝተከታተሉ",
+    "customerDebts": "ዕዳዎች ዝተቆጣጠሩ"
+  },
+  "trust": {
+    "title": "ለኢትዮጵያ ንግዶች ዝተሰርሐ",
+    "offlineFirst": "ኦፋይን-ፊርስት ቴክኖሎጂ",
+    "offlineFirstDesc": "ኣብ ኢንተርኔት ኢሉ እውን ይሰርሕ። መረጃኹም ኣብ መሣርሒ ይቕመጥ።",
+    "localStorage": "ደህንነት ኣካባቢ መረጃ ማከማቸ",
+    "localStorageDesc": "የንግድ መረጃ ኣብ መሣርሒኹም ብምሉእ ምቕባል ይሕለው።",
+    "multiLanguage": "ብዙ ቋንቋ ድጋፍ",
+    "multiLanguageDesc": "እንግሊዝኛ፣ ኣማርኛ፣ ኣፋን ኦሮሞ እና ትግርኛ ብሙሉ ትንታኔ ዝድግፍ።",
+    "ethiopianCalendar": "የኢትዮጵያ ቀን እና ሰዓት",
+    "ethiopianCalendarDesc": "የኢትዮጵያ ቀን ምሉእ ድጋፍ። ካብ ጎርጎርያን ናብ ኢትዮጵያ ቀን ምቕይር'ውን'ዩ።",
+    "fastPerformance": "ፍጥነት እና ጥዑምነት",
+    "fastPerformanceDesc": "ኣብ ኩሉ መሣርሒ ብፍጥነት ይሰርሕ።",
+    "backupRestore": "ምቕያር እና ምልሶ",
+    "backupRestoreDesc": "በበራሱ መረጃ ምቕያር። ሓደ ጥይቅ ምልሶ።"
+  },
+  "features": {
+    "mobile": {
+      "title": "ንግድኻ ካብ ዝኾነ ቦታ ኣመሓድር",
+      "subtitle": "ክምችት ኣመሓድሩ፣ ሽያጫት ተከታተሉ፣ ንግድኹም ካብ ዝኾነ ቦታ ተቆጻጸሩ።",
+      "items": {
+        "inventoryManagement": "Inventory ምምሕራጥ",
+        "sales": "ሽያጭ እና POS",
+        "contacts": "ግንኙነታት",
+        "stockAdjustments": "ምምዕራይ ክምችት",
+        "reports": "ሪፖርቶች",
+        "expenses": "ወጪዎች",
+        "budgets": "በጀታት",
+        "debtManagement": "ምምሕራጥ ዕዳ",
+        "customerOrders": "ትእዛዛት ደንበኛ",
+        "purchaseOrders": "ትእዛዛት ግዝኣት",
+        "multiWarehouse": "ብዙሕ መኽዘን",
+        "aiAssistant": "ሓጋዚ AI",
+        "businessHealthScore": "ነጥቢ ጥዕና ንግዲ",
+        "themes": "ገጽታታት",
+        "biometrics": "ባዮሜትሪክስ",
+        "supplierCreditReminders": "መዘኻኸሪ ብድሪ ኣቅራቢ"
+      }
+    },
+    "desktop": {
+      "title": "ምሉእ ምምሕራጥ ንግዲ ንዝዓብዩ ኩባንያታት",
+      "subtitle": "ተጠቃሚታት፣ ሰራተኛታት እና ዝለዓለ ሪፖርት ኣቀራርባ ንምምሕራር ሓያላት ዴስክቶፕ ናውቲ።",
+      "items": {
+        "userManagement": "ምምሕራጥ ተጠቃሚ",
+        "employeeManagement": "ምምሕራጥ ሰራተኛ",
+        "auditLogs": "መዝገብ ፍተሻ",
+        "supplierManagement": "ምምሕራጥ ኣቅራቢ",
+        "shipmentManagement": "ምምሕራጥ ሃውልት",
+        "advancedReporting": "ዝለዓለ ሪፖርት ኣቀራርባ"
+      }
+    }
+  },
+  "whyChoose": {
+    "title": "ሺጋን ስለምትምረጡ",
+    "subtitle": "ለኢትዮጵያ ሰብሳቢዎች ዝተሰርሐ ሕሳብ ንግድ።",
+    "items": {
+      "saveTime": "ጊዜ ኣብቅዑ",
+      "saveTimeDesc": "ዝተደጋግሙ ስራ'ይት ኣብቅዑ።",
+      "reduceWork": "ስራ ቀንስ",
+      "reduceWorkDesc": "ወረቀት ስራ ኣብርሑ።",
+      "trackSales": "እያንዳንዲ ሽያጭ ርእዩ",
+      "trackSalesDesc": "ኩሉ ግዜያዊ ሽያጭ ምክታት።",
+      "manageInventory": "Inventory ብቀላሉ ምምሕር",
+      "manageInventoryDesc": "ኣብ ብዙ ማከማቻታት ቁጽሪ እቃ'ይ ምክታት።",
+      "monitorPerformance": "የንግድ አፈፃፀሚ ርእዩ",
+      "monitorPerformanceDesc": "ጥዑምነት ንግድኹም ሕብርቱ ርኣዩ።",
+      "controlExpenses": "ወጪዎች ቁጽጽር",
+      "controlExpensesDesc": "ኩሉ የንግድ ወጪዎች ምክታት እና ምድላው።",
+      "manageDebts": "ዕዳዎች ደንበኞች ምምሕር",
+      "manageDebtsDesc": "ክፍያ'ይ ምክታት እና ማሳወቂያ ስደት።",
+      "generateReports": "ሪፖርቶች ብፍጥነት ምውጻእ",
+      "generateReportsDesc": "ብሓደ ጥይቅ ሙሉ ሪፖርት ስረዓት።",
+      "betterDecisions": "ሕሳብ ምርጫ ምግባር",
+      "betterDecisionsDesc": "መረጃ ንሕሳብ ምርጫ ጥሩ።",
+      "workOffline": "ብኦፋይን ስራ ምስራሕ",
+      "workOfflineDesc": "ኣብ ኩሉ ቦታ እና ሰዓት ቀጽሉ።"
+    }
+  },
+  "screenshots": {
+    "title": "ሼጋ ኣብ ተግባር ርአ",
+    "subtitle": "መጀመርታ ትርኢት ሼጋ — ንቅልጡፍን ምቾትን ዝተነደፈ።",
+    "mobile": {
+      "title": "ናይ ሞባይል ኤፕ መሸነፍ",
+      "inventory": "ክምችት ሞባይል",
+      "sales": "ሽያጭ",
+      "reports": "ሪፖርቶች",
+      "dashboard": "ዳሽቦርድ",
+      "aiAssistant": "ሓጋዚ AI",
+      "purchaseOrders": "ትእዛዛት ግዝኣት"
+    },
+    "desktop": {
+      "title": "ናይ ዴስክቶፕ መተግበሪ",
+      "dashboard": "ዳሽቦርድ ዴስክቶፕ",
+      "employeeManagement": "ምምሕራጥ ሰራተኛ",
+      "auditLogs": "መዝገብ ፍተሻ",
+      "reports": "ሪፖርቶች",
+      "suppliers": "ኣቅራቢያት",
+      "shipments": "ሃውልት"
+    }
+  },
+  "pricing": {
+    "toggle": {
+      "monthly": "ወርሐዊ",
+      "threeMonths": "ነዚ 3 ወር"
+    },
+    "desktop": {
+      "title": "ናይ ዴስክቶፕ ፕላናት",
+      "subtitle": "ንጉጅለታት እና ንዝተመስረቱ ንግዶት ሓያል ናውቲ።",
+      "basic": {
+        "name": "መሰረታዊ",
+        "description": "ንናእሽቶ ንግዶት ኣገዳሲ ናውቲ ዴስክቶፕ።",
+        "monthlyPrice": "2,499",
+        "quarterlyPrice": "5,499",
+        "period": "ETB",
+        "monthLabel": "1 ወርሒ",
+        "quarterLabel": "3 ኣዋርሕ",
+        "features": [
+          "ክምችት",
+          "ሽያጭ",
+          "ግንኙነታት",
+          "ምምዕራይ ክምችት"
+        ],
+        "cta": "መሰረታዊ ምረጹ"
+      },
+      "premium": {
+        "name": "ፕሪሚየም",
+        "description": "ምሉእ ኣምርንቲ ዴስክቶፕ ንጉጅለታት እና ንዝዓብዩ ኩባንያታት።",
+        "popular": "ብዝያዳ ተመራጺ",
+        "recommended": "ምርጥ ዋጋ",
+        "monthlyPrice": "4,499",
+        "quarterlyPrice": "11,499",
+        "period": "ETB",
+        "monthLabel": "1 ወርሒ",
+        "quarterLabel": "3 ኣዋርሕ",
+        "features": [
+          "ኣብ ዴስክቶፕ መሰረታዊ ዘሎ ዅሉ እንዳ ተወሳኺ፦",
+          "ሪፖርቶች",
+          "ኣጠቓላሊ ትርኢት ዳሽቦርድ",
+          "PDF ደረሰናት",
+          "CSV ምእታው እና ምልኡክ",
+          "ምምሕራጥ ወጪ",
+          "ምምሕራጥ በጀት",
+          "ምምሕራጥ ዕዳ",
+          "ትእዛዛት ደንበኛ",
+          "ትእዛዛት ግዝኣት",
+          "ብዙሕ መኽዘን",
+          "ሓጋዚ AI",
+          "ነጥቢ ጥዕና ንግዲ",
+          "ባዮሜትሪክስ",
+          "ገጽታታት",
+          "ምምሕራጥ ተጠቃሚ",
+          "ምምሕራጥ ሰራተኛ",
+          "መዝገብ ፍተሻ",
+          "ምምሕራጥ ኣቅራቢ",
+          "ምምሕራጥ ሃውልት"
+        ],
+        "cta": "ፕሪሚየም ምረጹ"
+      }
+    },
+    "mobile": {
+      "title": "ናይ ሞባይል ፕላናት",
+      "subtitle": "ኣብ ሞባይል ጀምሩ እንደ ዕብየትኩም ኣመሓድሩ።",
+      "basic": {
+        "name": "መሰረታዊ",
+        "description": "ንዝጀመሩ ናእሽቶ ንግዶት ኣገዳሲ ናውቲ።",
+        "monthlyPrice": "1,999",
+        "quarterlyPrice": "2,499",
+        "period": "ETB",
+        "monthLabel": "1 ወርሒ",
+        "quarterLabel": "3 ኣዋርሕ",
+        "features": [
+          "ክምችት",
+          "ሽያጭ",
+          "ግንኙነታት",
+          "ምምዕራይ ክምችት"
+        ],
+        "cta": "መሰረታዊ ምረጹ"
+      },
+      "premium": {
+        "name": "ፕሪሚየም",
+        "description": "ንዝዓብዩ ንግዶት ዝለዓሉ ኣምርንቲ።",
+        "popular": "ብዝያዳ ተመራጺ",
+        "recommended": "ምርጥ ዋጋ",
+        "monthlyPrice": "2,499",
+        "quarterlyPrice": "5,499",
+        "period": "ETB",
+        "monthLabel": "1 ወርሒ",
+        "quarterLabel": "3 ኣዋርሕ",
+        "features": [
+          "ኣብ መሰረታዊ ዘሎ ዅሉ እንዳ ተወሳኺ፦",
+          "ሪፖርቶች",
+          "ኣጠቓላሊ ትርኢት ዳሽቦርድ",
+          "PDF ደረሰናት",
+          "CSV ምእታው እና ምልኡክ",
+          "ምምሕራጥ ወጪ",
+          "ምምሕራጥ በጀት",
+          "ምምሕራጥ ዕዳ",
+          "ትእዛዛት ደንበኛ",
+          "ትእዛዛት ግዝኣት",
+          "ብዙሕ መኽዘን",
+          "ሓጋዚ AI",
+          "ነጥቢ ጥዕና ንግዲ",
+          "ባዮሜትሪክስ",
+          "ገጽታታት",
+          "መዘኻኸሪ ብድሪ ኣቅራቢ"
+        ],
+        "cta": "ፕሪሚየም ምረጹ"
+      }
+    },
+    "comparison": {
+      "title": "ኩሎም ኣምርንቲ ኣነጻጽሩ",
+      "subtitle": "ኣብ ነፍሲ ወከፍ ፕላን እንታይ ከም እትረኽቡ ርአ።",
+      "columns": {
+        "feature": "ኣምር",
+        "mobileBasic": "ሞባይል መሰረታዊ",
+        "mobilePremium": "ሞባይል ፕሪሚየም",
+        "desktopBasic": "ዴስክቶፕ መሰረታዊ",
+        "desktopPremium": "ዴስክቶፕ ፕሪሚየም"
+      },
+      "features": {
+        "inventory": "ክምችት",
+        "sales": "ሽያጭ",
+        "contacts": "ግንኙነታት",
+        "stockAdjustments": "ምምዕራይ ክምችት",
+        "reports": "ሪፖርቶች",
+        "dashboardOverview": "ኣጠቓላሊ ትርኢት ዳሽቦርድ",
+        "pdfReceipts": "PDF ደረሰናት",
+        "csvImportExport": "CSV ምእታው እና ምልኡክ",
+        "expenseManagement": "ምምሕራጥ ወጪ",
+        "budgetManagement": "ምምሕራጥ በጀት",
+        "debtManagement": "ምምሕራጥ ዕዳ",
+        "customerOrders": "ትእዛዛት ደንበኛ",
+        "purchaseOrders": "ትእዛዛት ግዝኣት",
+        "multiWarehouse": "ብዙሕ መኽዘን",
+        "aiAssistant": "ሓጋዚ AI",
+        "businessHealthScore": "ነጥቢ ጥዕና ንግዲ",
+        "biometrics": "ባዮሜትሪክስ",
+        "themes": "ገጽታታት",
+        "supplierCreditReminders": "መዘኻኸሪ ብድሪ ኣቅራቢ",
+        "userManagement": "ምምሕራጥ ተጠቃሚ",
+        "employeeManagement": "ምምሕራጥ ሰራተኛ",
+        "auditLogs": "መዝገብ ፍተሻ",
+        "supplierManagement": "ምምሕራጥ ኣቅራቢ",
+        "shipmentManagement": "ምምሕራጥ ሃውልት",
+        "advancedReporting": "ዝለዓለ ሪፖርት ኣቀራርባ"
+      }
+    }
+  },
+  "comingSoon": {
+    "title": "ናይ iOS ስራ ኣብ ቀረቤታ ኣሎ",
+    "description": "ናይ ሺጋ ናይ ኣይፎን እና ኣይፓድ ስራ ንምድላኽ ኣብ ስራሕ ኣለና። ኣብ ዝርዝር ዝውውር ይኹኑ እና ካብ መስርሕኩም ሺጋን ኣብ iOS ቀዳማይ ይርእዩ'ለው።",
+    "notifyMe": "ኣሳውቡኒ",
+    "badge": "ኣፕ ስቶር ኣብ ቀረቤታ"
+  },
+  "freeTrial": {
+    "badge": "ነጻ ፍተኑ",
+    "title": "ሼጋ ን7 መዓልቲ ብነጻ ፍተኑ",
+    "subtitle": "ክረዲት ካርድ ኣየድልን። ኣብ እዋን ፈተናኹም ኩሎም ኣምርንቲ ዳህስሱ።",
+    "benefits": {
+      "noCard": "✅ ናይ 7 መዓልቲ ነጻ ሙከራ",
+      "fullAccess": "ሙሉ ባህር'ያት",
+      "easySetup": "ቀላል ምዋቃስ",
+      "cancelAnytime": "ብዘጋጅነት ምቁራጽ",
+      "noCommitment": "✅ ዋሕስ ኣየድልን",
+      "allFeatures": "✅ ኩሎም ኣምርንቲ ተከፊቶም"
+    },
+    "cta": "ጀምሩ"
+  },
+  "payment": {
+    "badge": "እሙን ክፍሊት",
+    "title": "ብቴሌብር ቀሊል ክፍሊት",
+    "subtitle": "ብኢትዮጵያ እቲ ዝበለጸ እምነት ዘለዎ ሞባይል ክፍሊት አገልግሎት ንመዝገቡ።",
+    "steps": [
+      {
+        "step": "1",
+        "title": "ፕላን ምረጹ",
+        "desc": "ንንግድኩም ዚሰማማዕ ናይ ምዝገባ ፕላን ምረጹ።"
+      },
+      {
+        "step": "2",
+        "title": "ክፍሊት ኣጠናቅቑ",
+        "desc": "ብቴሌብር ብስልክኩም ብደህንነት ክፈሉ።"
+      },
+      {
+        "step": "3",
+        "title": "ናይ ግብይት መለለይ ኣእቱ",
+        "desc": "ናይ ቴሌብር ግብይት መለለይኩም ኣብ ኤፕሊኬሽኑ ኣእቱ።"
+      },
+      {
+        "step": "4",
+        "title": "ቅልጡፍ ምርግጋጽ",
+        "desc": "ጉድና ክፍሊትኩም ኣብ ደቂቃታት የረጋግጽ።"
+      },
+      {
+        "step": "5",
+        "title": "ምዝገባ ንጡፍ",
+        "desc": "ፕሪሚየም መዳረሻኹም ብቕልጡፍ ይንቀሳቐስ።"
+      }
+    ],
+    "note": "ምርግጋጽ ክፍሊት ቅልጡፍ እዩ። ክፍሊት ምስ ተረጋገጸ ምዝገባኹም ብቕልጡፍ ይንቀሳቐስ።",
+    "cta": "ፕላናት ርአዩ"
+  },
+  "testimonials": {
+    "badge": "ራእይና",
+    "title": "ንኢትዮጵያውያን ንግዶት ዝተሰርሐ",
+    "subtitle": "ሼጋ ዝተፈጥረ ናይ ኢትዮጵያ ንግዶት ናይ ሓቂ ጸገማት ንምፍታሕ እዩ።",
+    "items": [
+      {
+        "name": "ኦፍላይን-ፈርስት ዲዛይን",
+        "role": "ቀንዲ ኣምር",
+        "location": "",
+        "quote": "ሼጋ ብዘይ ኢንተርኔት ይሰርሕ፣ ስለዚ ናይ ንግዲ ሓበሬታኹም ኣይጠፍእን።"
+      },
+      {
+        "name": "ናይ ኢትዮጵያ ቀን መቝጠሪ ደገፍ",
+        "role": "ቀንዲ ኣምር",
+        "location": "",
+        "quote": "ናይ ኢትዮጵያ ቀን መቝጠሪ ኣብ ውሽጢ ዘሎ።"
+      },
+      {
+        "name": "ብዙ ቋንቋታት",
+        "role": "ቀንዲ ኣምር",
+        "location": "",
+        "quote": "ሼጋ ብእንግሊዝኛ፣ ኣማርኛ፣ ኦሮምኛ ወይ ትግርኛ ተጠቀሙ።"
+      },
+      {
+        "name": "ንዕብየት ዝተሰርሐ",
+        "role": "ተልእኮና",
+        "location": "",
+        "quote": "ምስ ንግድኹም ኣብሩ ዝዓብይ ፕላትፎርም ንሰርሕ ኣለና።"
+      }
+    ]
+  },
+  "faq": {
+    "badge": "ተደጋጋሚ ሕቶታት",
+    "title": "ዝተወሰነ ሕቶታት",
+    "subtitle": "ስለ ሺጋ ሕቶታት መልስ ርእዩ።",
+    "items": [
+      {
+        "question": "ሺጋ ኣብ ኦፋይን ይሰርሕ?",
+        "answer": "እወ፣ ሺጋ ንግድ ኦፋይን ዝተሰርሐ እዩ። መረጃኹም ዅሉ ኣብ መሣርሒኹም ኣብ ኣካባቢ ይቕመጥ።"
+      },
+      {
+        "question": "የኢትዮጵያ ቀን መቁጠሪያ ክጠቅም እየ?",
+        "answer": "እወ፣ ሺጋ የኢትዮጵያ ቀን ምሉእ ድጋፍ ኣለዉ። ካብ ጎርጎርያን ናብ ኢትዮጵያ ቀን ይለወጥ።"
+      },
+      {
+        "question": "ብዙ ማከማቻታት ክውከል እየ?",
+        "answer": "እወ፣ እቅድኹም ከተማእ ብዙ ማከማቻታት ክትመለምሩ ትኽእሉ።"
+      },
+      {
+        "question": "Backup እና Restore ከም ምስራሕ ሕቶ ኣለኒ",
+        "answer": "ሺጋ ምሉእ መረጃኹም በይሕቱ ይቕየር። ሓደ ጥይቅ ምልሶ ይኽእሉ።"
+      },
+      {
+        "question": "Subscriptions ከመ ስራሕ ሕቶ?",
+        "answer": "ወርሓዊ ወይም 3-ወር እቅድ ምረጡ። ካብ 7 መዓልቲ ነጻ ሙከራ ብድሕሪኡ ክትመዝገቡ።"
+      },
+      {
+        "question": "እቅድይ ደሓር ምሃዝ ክኽእል እየ?",
+        "answer": "እወ፣ እቅድኩም ናብ ላዕሊ ወይ ታች ክትለውጡ ትኽእሉ።"
+      },
+      {
+        "question": "መረጃ ንግድይ ደህንነቱ ዝተጠበቀ እዩ?",
+        "answer": "ሺጋ PIN ጥበቃ እና Biometric ምርግጋጥ ይጠቅም። መረጃ ኣብ መሣርሒኹም ብምቕጻል ይሕለው።"
+      },
+      {
+        "question": "ሺጋ ብዙ ቋንቋዎች ይድግፍ?",
+        "answer": "እወ፣ ሺጋ እንግሊዝኛ፣ ኣማርኛ፣ ኣፋን ኦሮሞ እና ትግርኛ ይድግፍ። ቋንቋ ክትለውጡ ትኽእሉ እዋን ኢልኩም።"
+      }
+    ]
+  },
+  "howItWorks": {
+    "badge": "ቀሊል ምትካእ",
+    "title": "ብ4 ቀሊል ስጉምትታት ጀምሩ",
+    "subtitle": "ካብ ምውራድ ክሳብ ምዝገባ ኣብ ደቂቃታት።",
+    "steps": [
+      {
+        "step": "1",
+        "title": "ኤፕሊኬሽን ኣውረዱ",
+        "desc": "ሼጋ ካብ ጉግል ፕሌይ ስቶር ኣውረዱ ወይም የዴስክቶፕ ስሪት ንዊንዶውስ፣ ማክኦኤስ ወይም ሊኑክስ ኣውረዱ።"
+      },
+      {
+        "step": "2",
+        "title": "ንግድኹም ፍጠሩ",
+        "desc": "መገለጺ ንግድኹም ኣዳልዉ፣ ምርታትኩም፣ ደንበኛታትኩም እና ኣቅራብኡትኩም ኣብ ደቂቃታት ውስኩም።"
+      },
+      {
+        "step": "3",
+        "title": "ነጻ ሙከራኹም ጀምሩ",
+        "desc": "ን3 መዓልታት ምሉእ ፕሪሚየም መዳረሻ ርኸቡ። ዅሉ ኣምርንቲ ብዘይ ገደብ ዳህስሱ።"
+      },
+      {
+        "step": "4",
+        "title": "ፕላንኩም ምረጹ",
+        "desc": "ሞባይል ወይም ዴስክቶፕ ፕላን ንንግድኩም ዚሰማማዕ ምረጹ እና ብተሌብር ተመዝገቡ።"
+      }
+    ]
+  },
+  "finalCta": {
+    "title": "ንግድኹም ብሺጋ ኣብብሑ",
+    "subtitle": "Inventory፣ ሽያጭ፣ ወጪዎች፣ ደንበኞች ንግድ ተግባራት ካብ ሓደ ፕላትፎርም።",
+    "primaryCta": "ነጻ ሙከራ ጀምሩ",
+    "secondaryCta": "ሽያጭ ርእዩ"
+  },
+  "footer": {
+    "about": "ብዛዕባ ሼጋ",
+    "aboutDesc": "ሼጋ ንኢትዮጵያውያን ንግዶት ዝተሰርሐ ዘመናዊ ናይ ክምችት እና ሽያጭ ምምሕራጥ ፕላትፎርም እዩ።",
+    "product": "ምርት",
+    "features": "ኣምርንቲ",
+    "pricing": "ክሳዥ",
+    "desktopApp": "ዴስክቶፕ ኤፕሊኬሽን",
+    "mobileApp": "ሞባይል ኤፕሊኬሽን",
+    "support": "ደገፍ",
+    "contact": "ተራኸቡና",
+    "legal": "ሕጊ",
+    "privacyPolicy": "ናይ ግላዊነት ፖሊሲ",
+    "termsOfService": "ናይ አገልግሎት ውሏች",
+    "contactInfo": "ናይ መገኛ ኣድራሻ",
+    "email": "support@shega.et",
+    "phone": "+251 911 234 567",
+    "social": "ተኸተሉና",
+    "download": "ኣውርዱ",
+    "downloadDesktop": "ንዴስክቶፕ ኣውርዱ",
+    "downloadMobile": "APK ኣውርዱ",
+    "copyright": "© 2026 Shega Technologies. ዅሉ መብት ዝተጠበቀ።",
+    "tagline": "ለኢትዮጵያ ንግዶች ምሉእ ንግድ ምምሕር ፕላትፎርም።"
+  },
+  "cta": {
+    "title": "ንምጅማር ድሉዋት ዲኹም?",
+    "subtitle": "ንኢትዮጵያውያን ንግዶት ዝግብኦም ፕላትፎርም ንሰርሕ ኣለና። ነጻ ሙከራኹም ጀምሩ ሼጋ እንታይ ከም ዝኽእል ርአዩ።",
+    "primaryCta": "ጀምሩ",
+    "secondaryCta": "ተራኸቡና"
+  },
+  "theme": {
+    "light": "ብርሃን",
+    "dark": "ጨለማ",
+    "system": "ስርዓት"
+  },
+  "language": {
+    "en": "እንግሊዝኛ",
+    "am": "ኣማርኛ",
+    "om": "ኦሮምኛ",
+    "ti": "ትግርኛ",
+    "select": "ቋንቋ ምረጡ"
+  }
+}

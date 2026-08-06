@@ -2,62 +2,71 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Save, Mail, Shield, CreditCard, Sliders } from "lucide-react";
+import {
+  Save,
+  Sliders,
+  DollarSign,
+  CreditCard,
+  Shield,
+} from "lucide-react";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import toast from "react-hot-toast";
 
-interface Settings {
+interface SystemSettings {
   site_name: string;
   support_email: string;
   support_phone: string;
-  company_address: string;
-  smtp_host: string;
-  smtp_port: string;
-  smtp_user: string;
-  smtp_password: string;
-  default_license_duration: string;
-  max_activations_default: string;
-  allow_auto_renew: boolean;
+  support_address: string;
+  trial_duration_days: number;
+  maintenance_mode: boolean;
+  mobile_basic_price: number;
+  mobile_premium_price: number;
+  desktop_basic_price: number;
+  desktop_premium_price: number;
+  telebirr_merchant_id: string;
+  telebirr_api_key: string;
   currency: string;
-  payment_gateway: string;
-  gateway_api_key: string;
-  gateway_secret: string;
+  tax_rate: number;
+  terms_conditions: string;
+  privacy_policy: string;
 }
 
 export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState("general");
-  const [form, setForm] = useState<Settings>({
+  const [form, setForm] = useState<SystemSettings>({
     site_name: "Shega ERP",
     support_email: "support@shegaerp.com",
     support_phone: "+251-11-555-1234",
-    company_address: "Addis Ababa, Ethiopia",
-    smtp_host: "",
-    smtp_port: "587",
-    smtp_user: "",
-    smtp_password: "",
-    default_license_duration: "365",
-    max_activations_default: "3",
-    allow_auto_renew: true,
+    support_address: "Addis Ababa, Ethiopia",
+    trial_duration_days: 14,
+    maintenance_mode: false,
+    mobile_basic_price: 199,
+    mobile_premium_price: 499,
+    desktop_basic_price: 299,
+    desktop_premium_price: 699,
+    telebirr_merchant_id: "",
+    telebirr_api_key: "",
     currency: "ETB",
-    payment_gateway: "chapa",
-    gateway_api_key: "",
-    gateway_secret: "",
+    tax_rate: 15,
+    terms_conditions: "",
+    privacy_policy: "",
   });
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    loadSettings();
+    api
+      .get<SystemSettings>("/admin/settings/")
+      .then(({ data }) => {
+        setForm((prev) => ({ ...prev, ...data }));
+        setLoading(false);
+      })
+      .catch(() => {
+        toast.error("Failed to load settings");
+        setLoading(false);
+      });
   }, []);
-
-  async function loadSettings() {
-    try {
-      const { data } = await api.get<Settings>("/admin/settings/");
-      setForm((prev) => ({ ...prev, ...data }));
-    } catch {
-      /* ignore */
-    }
-  }
 
   async function handleSave() {
     setSaving(true);
@@ -73,10 +82,18 @@ export default function SettingsPage() {
 
   const sections = [
     { key: "general", label: "General", icon: Sliders },
-    { key: "email", label: "Email", icon: Mail },
-    { key: "license", label: "License Defaults", icon: Shield },
+    { key: "pricing", label: "Pricing", icon: DollarSign },
     { key: "payment", label: "Payment", icon: CreditCard },
+    { key: "legal", label: "Legal", icon: Shield },
   ];
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-indigo-400" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -93,12 +110,12 @@ export default function SettingsPage() {
           <button
             key={s.key}
             onClick={() => setActiveSection(s.key)}
-            className={(
+            className={
               "flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all " +
-               (activeSection === s.key
+              (activeSection === s.key
                 ? "bg-white/[0.08] text-gray-200"
                 : "text-gray-400 hover:bg-white/[0.04] hover:text-gray-200")
-            )}
+            }
           >
             <s.icon className="h-4 w-4" />
             {s.label}
@@ -131,57 +148,48 @@ export default function SettingsPage() {
                 className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]" />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-gray-400">Company Address</label>
-              <textarea value={form.company_address} onChange={(e) => setForm({ ...form, company_address: e.target.value })} rows={2}
+              <label className="mb-1.5 block text-xs font-medium text-gray-400">Support Address</label>
+              <textarea value={form.support_address} onChange={(e) => setForm({ ...form, support_address: e.target.value })} rows={2}
                 className="w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2 text-sm text-gray-100 outline-none focus:border-white/[0.15] resize-none" />
             </div>
-          </div>
-        )}
-
-        {activeSection === "email" && (
-          <div className="space-y-4 max-w-xl">
-            <h3 className="text-base font-semibold text-gray-100 mb-4">Email Settings</h3>
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-gray-400">SMTP Host</label>
-              <input value={form.smtp_host} onChange={(e) => setForm({ ...form, smtp_host: e.target.value })}
-                className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]" />
-            </div>
-            <div>
-              <label className="mb-1.5 block text-xs font-medium text-gray-400">SMTP Port</label>
-              <input value={form.smtp_port} onChange={(e) => setForm({ ...form, smtp_port: e.target.value })}
-                className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]" />
-            </div>
-            <div>
-              <label className="mb-1.5 block text-xs font-medium text-gray-400">SMTP Username</label>
-              <input value={form.smtp_user} onChange={(e) => setForm({ ...form, smtp_user: e.target.value })}
-                className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]" />
-            </div>
-            <div>
-              <label className="mb-1.5 block text-xs font-medium text-gray-400">SMTP Password</label>
-              <input type="password" value={form.smtp_password} onChange={(e) => setForm({ ...form, smtp_password: e.target.value })}
-                className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]" />
-            </div>
-          </div>
-        )}
-
-        {activeSection === "license" && (
-          <div className="space-y-4 max-w-xl">
-            <h3 className="text-base font-semibold text-gray-100 mb-4">License Defaults</h3>
-            <div>
-              <label className="mb-1.5 block text-xs font-medium text-gray-400">Default License Duration (days)</label>
-              <input type="number" min="1" value={form.default_license_duration} onChange={(e) => setForm({ ...form, default_license_duration: e.target.value })}
-                className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]" />
-            </div>
-            <div>
-              <label className="mb-1.5 block text-xs font-medium text-gray-400">Default Max Activations</label>
-              <input type="number" min="1" value={form.max_activations_default} onChange={(e) => setForm({ ...form, max_activations_default: e.target.value })}
+              <label className="mb-1.5 block text-xs font-medium text-gray-400">Trial Duration (days)</label>
+              <input type="number" min="0" value={form.trial_duration_days} onChange={(e) => setForm({ ...form, trial_duration_days: Number(e.target.value) })}
                 className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]" />
             </div>
             <div className="flex items-center gap-3 pt-2">
-              <input type="checkbox" id="auto_renew" checked={form.allow_auto_renew}
-                onChange={(e) => setForm({ ...form, allow_auto_renew: e.target.checked })}
+              <input type="checkbox" id="maintenance_mode" checked={form.maintenance_mode}
+                onChange={(e) => setForm({ ...form, maintenance_mode: e.target.checked })}
                 className="h-4 w-4 rounded border-white/[0.06] bg-white/[0.03] text-gray-200 focus:ring-gray-400" />
-              <label htmlFor="auto_renew" className="text-sm text-gray-300">Allow automatic renewal</label>
+              <label htmlFor="maintenance_mode" className="text-sm text-gray-300">Maintenance Mode</label>
+            </div>
+          </div>
+        )}
+
+        {activeSection === "pricing" && (
+          <div className="space-y-4 max-w-xl">
+            <h3 className="text-base font-semibold text-gray-100 mb-4">Pricing Settings</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-gray-400">Mobile Basic Price</label>
+                <input type="number" min="0" value={form.mobile_basic_price} onChange={(e) => setForm({ ...form, mobile_basic_price: Number(e.target.value) })}
+                  className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]" />
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-gray-400">Mobile Premium Price</label>
+                <input type="number" min="0" value={form.mobile_premium_price} onChange={(e) => setForm({ ...form, mobile_premium_price: Number(e.target.value) })}
+                  className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]" />
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-gray-400">Desktop Basic Price</label>
+                <input type="number" min="0" value={form.desktop_basic_price} onChange={(e) => setForm({ ...form, desktop_basic_price: Number(e.target.value) })}
+                  className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]" />
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-gray-400">Desktop Premium Price</label>
+                <input type="number" min="0" value={form.desktop_premium_price} onChange={(e) => setForm({ ...form, desktop_premium_price: Number(e.target.value) })}
+                  className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]" />
+              </div>
             </div>
           </div>
         )}
@@ -190,31 +198,45 @@ export default function SettingsPage() {
           <div className="space-y-4 max-w-xl">
             <h3 className="text-base font-semibold text-gray-100 mb-4">Payment Settings</h3>
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-gray-400">Currency</label>
-              <select value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })}
-                className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]">
-                <option value="ETB">ETB (Birr)</option>
-                <option value="USD">USD (Dollar)</option>
-              </select>
-            </div>
-            <div>
-              <label className="mb-1.5 block text-xs font-medium text-gray-400">Payment Gateway</label>
-              <select value={form.payment_gateway} onChange={(e) => setForm({ ...form, payment_gateway: e.target.value })}
-                className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]">
-                <option value="chapa">Chapa</option>
-                <option value="stripe">Stripe</option>
-                <option value="paypal">PayPal</option>
-              </select>
-            </div>
-            <div>
-              <label className="mb-1.5 block text-xs font-medium text-gray-400">API Key</label>
-              <input type="password" value={form.gateway_api_key} onChange={(e) => setForm({ ...form, gateway_api_key: e.target.value })}
+              <label className="mb-1.5 block text-xs font-medium text-gray-400">Telebirr Merchant ID</label>
+              <input value={form.telebirr_merchant_id} onChange={(e) => setForm({ ...form, telebirr_merchant_id: e.target.value })}
                 className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]" />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-gray-400">API Secret</label>
-              <input type="password" value={form.gateway_secret} onChange={(e) => setForm({ ...form, gateway_secret: e.target.value })}
+              <label className="mb-1.5 block text-xs font-medium text-gray-400">Telebirr API Key</label>
+              <input type="password" value={form.telebirr_api_key} onChange={(e) => setForm({ ...form, telebirr_api_key: e.target.value })}
                 className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]" />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-gray-400">Currency</label>
+                <select value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })}
+                  className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]">
+                  <option value="ETB">ETB (Birr)</option>
+                  <option value="USD">USD (Dollar)</option>
+                </select>
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-gray-400">Tax Rate (%)</label>
+                <input type="number" min="0" max="100" value={form.tax_rate} onChange={(e) => setForm({ ...form, tax_rate: Number(e.target.value) })}
+                  className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]" />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeSection === "legal" && (
+          <div className="space-y-4 max-w-2xl">
+            <h3 className="text-base font-semibold text-gray-100 mb-4">Legal Documents</h3>
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-gray-400">Terms &amp; Conditions</label>
+              <textarea value={form.terms_conditions} onChange={(e) => setForm({ ...form, terms_conditions: e.target.value })} rows={8}
+                className="w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2 text-sm text-gray-100 outline-none focus:border-white/[0.15] resize-y font-mono" />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-gray-400">Privacy Policy</label>
+              <textarea value={form.privacy_policy} onChange={(e) => setForm({ ...form, privacy_policy: e.target.value })} rows={8}
+                className="w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2 text-sm text-gray-100 outline-none focus:border-white/[0.15] resize-y font-mono" />
             </div>
           </div>
         )}

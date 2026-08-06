@@ -6,24 +6,25 @@ import {
   Key,
   Copy,
   Check,
-  AlertTriangle,
   Smartphone,
   Eye,
   RefreshCw,
   XCircle,
-  ExternalLink,
 } from 'lucide-react';
 import Link from 'next/link';
-import { cn, formatDate, formatRelativeTime } from '@/lib/utils';
+import { cn, formatDate } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import api from '@/lib/api';
 import type { License } from '@/lib/types';
 import toast from 'react-hot-toast';
 
-const statusConfig = {
+const statusConfig: Record<string, { label: string; class: string }> = {
   active: { label: 'Active', class: 'bg-muted text-foreground font-semibold border-border' },
   expired: { label: 'Expired', class: 'bg-muted text-muted-foreground border-border' },
   suspended: { label: 'Suspended', class: 'bg-muted text-muted-foreground border-border' },
+  revoked: { label: 'Revoked', class: 'bg-muted text-muted-foreground border-border' },
+  trial: { label: 'Trial', class: 'bg-muted text-foreground font-semibold border-border' },
+  pending: { label: 'Pending', class: 'bg-muted text-muted-foreground border-border' },
   cancelled: { label: 'Cancelled', class: 'bg-muted text-muted-foreground border-border' },
 };
 
@@ -55,6 +56,7 @@ function LicenseSkeleton() {
 
 export default function LicensesPage() {
   const [licenses, setLicenses] = useState<License[]>([]);
+  const [daysRemaining, setDaysRemaining] = useState<Record<number, number>>({});
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState<number | null>(null);
 
@@ -62,7 +64,14 @@ export default function LicensesPage() {
     const fetch = async () => {
       try {
         const { data } = await api.get('/customers/licenses/');
-        setLicenses(Array.isArray(data) ? data : data.results ?? []);
+        const list = (Array.isArray(data) ? data : data.results ?? []) as License[];
+        setLicenses(list);
+        const now = Date.now();
+        setDaysRemaining(
+          Object.fromEntries(
+            list.map((l) => [l.id, Math.ceil((new Date(l.expiry_date).getTime() - now) / (1000 * 60 * 60 * 24))])
+          )
+        );
       } catch {
         setLicenses([]);
       } finally {
@@ -121,9 +130,7 @@ export default function LicensesPage() {
         <div className="space-y-4">
           {licenses.map((license, i) => {
             const status = statusConfig[license.status];
-            const daysRemaining = Math.ceil(
-              (new Date(license.expiry_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-            );
+            const remaining = daysRemaining[license.id] ?? 0;
 
             return (
               <motion.div
@@ -137,7 +144,7 @@ export default function LicensesPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 flex-wrap">
                       <h3 className="text-lg font-semibold text-white truncate">
-                        {license.plan.name}
+                        {typeof license.plan === 'object' ? license.plan.name : 'N/A'}
                       </h3>
                       <span
                         className={cn(
@@ -170,7 +177,7 @@ export default function LicensesPage() {
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
                   <div>
                     <p className="text-xs text-gray-500 uppercase tracking-wider">Start Date</p>
-                    <p className="text-sm text-gray-300 mt-0.5">{formatDate(license.issued_date)}</p>
+                    <p className="text-sm text-gray-300 mt-0.5">{formatDate(license.issued_date || license.start_date)}</p>
                   </div>
                   <div>
                     <p className="text-xs text-gray-500 uppercase tracking-wider">Expiry Date</p>
@@ -181,10 +188,10 @@ export default function LicensesPage() {
                     <p
                       className={cn(
                         'text-sm mt-0.5',
-                        daysRemaining <= 7 ? 'text-foreground font-semibold' : daysRemaining <= 30 ? 'text-muted-foreground' : 'text-muted-foreground'
+                        remaining <= 7 ? 'text-foreground font-semibold' : remaining <= 30 ? 'text-muted-foreground' : 'text-muted-foreground'
                       )}
                     >
-                      {daysRemaining > 0 ? `${daysRemaining} days` : 'Expired'}
+                      {remaining > 0 ? `${remaining} days` : 'Expired'}
                     </p>
                   </div>
                   <div>
