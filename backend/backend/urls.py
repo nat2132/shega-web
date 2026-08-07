@@ -19,6 +19,8 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+from api_public.views import PlansListView, SubscriptionStatusView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/admin/', include('admin_api.urls')),
@@ -28,6 +30,8 @@ urlpatterns = [
     path('api/payments/', include('payments.urls')),
     path('api/notifications/', include('notifications.urls')),
     path('api/license/', include('api_public.urls')),
+    path('api/plans/', PlansListView.as_view()),
+    path('api/subscription/status/', SubscriptionStatusView.as_view()),
 ]
 
 if settings.DEBUG:

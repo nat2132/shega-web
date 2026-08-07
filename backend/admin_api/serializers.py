@@ -241,12 +241,13 @@ class SubscriptionDetailSerializer(serializers.ModelSerializer):
 class PaymentListSerializer(serializers.ModelSerializer):
     customer_name = serializers.SerializerMethodField()
     customer_email = serializers.EmailField(source='customer.email')
+    business_name = serializers.SerializerMethodField()
     plan_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Payment
         fields = [
-            'id', 'customer', 'customer_name', 'customer_email',
+            'id', 'customer', 'customer_name', 'customer_email', 'business_name',
             'license', 'plan', 'plan_name',
             'amount', 'transaction_id', 'receipt_image',
             'payment_method', 'status', 'admin_notes',
@@ -258,6 +259,9 @@ class PaymentListSerializer(serializers.ModelSerializer):
     def get_customer_name(self, obj):
         return obj.customer.get_full_name() or obj.customer.email
 
+    def get_business_name(self, obj):
+        return (obj.customer.business_name or '').strip() or None
+
     def get_plan_name(self, obj):
         return obj.plan.name if obj.plan else None
 
@@ -266,6 +270,7 @@ class PaymentDetailSerializer(serializers.ModelSerializer):
     customer_name = serializers.SerializerMethodField()
     customer_email = serializers.EmailField(source='customer.email')
     customer_phone = serializers.CharField(source='customer.phone')
+    business_name = serializers.SerializerMethodField()
     plan_name = serializers.SerializerMethodField()
     plan_details = serializers.SerializerMethodField()
     license_details = serializers.SerializerMethodField()
@@ -274,7 +279,7 @@ class PaymentDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
         fields = [
-            'id', 'customer', 'customer_name', 'customer_email', 'customer_phone',
+            'id', 'customer', 'customer_name', 'customer_email', 'customer_phone', 'business_name',
             'license', 'license_details', 'plan', 'plan_name', 'plan_details',
             'amount', 'transaction_id', 'receipt_image',
             'payment_method', 'status', 'admin_notes',
@@ -285,6 +290,9 @@ class PaymentDetailSerializer(serializers.ModelSerializer):
 
     def get_customer_name(self, obj):
         return obj.customer.get_full_name() or obj.customer.email
+
+    def get_business_name(self, obj):
+        return (obj.customer.business_name or '').strip() or None
 
     def get_plan_name(self, obj):
         return obj.plan.name if obj.plan else None

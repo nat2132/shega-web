@@ -295,7 +295,7 @@ def dashboard_view(request):
 
 
 class BusinessViewSet(BaseAdminViewMixin, viewsets.ModelViewSet):
-    queryset = User.objects.filter(is_customer=True).select_related('customer_profile').prefetch_related('licenses', 'licenses__plan')
+    queryset = User.objects.filter(is_customer=True).select_related('customer_profile')
     search_fields = ['email', 'phone', 'business_name', 'username', 'first_name', 'last_name']
     filterset_fields = ['is_active', 'business_type', 'email_verified']
     ordering_fields = ['created_at', 'date_joined', 'business_name', 'email']

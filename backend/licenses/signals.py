@@ -1,19 +1,8 @@
-from django.db.models.signals import post_save, post_init
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 
 from .models import License, LicenseAuditLog
-
-
-@receiver(post_init, sender=License)
-def store_license_previous_status(sender, instance, **kwargs):
-    if instance.pk:
-        try:
-            instance._prev_status = License.objects.get(pk=instance.pk).status
-        except License.DoesNotExist:
-            instance._prev_status = None
-    else:
-        instance._prev_status = None
 
 
 @receiver(post_save, sender=License)

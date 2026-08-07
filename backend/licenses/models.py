@@ -66,6 +66,13 @@ class License(models.Model):
             self.device_limit = self.plan.device_limit
         super().save(*args, **kwargs)
 
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        instance = super().from_db(db, field_names, values)
+        # Capture the pre-save status without issuing a recursive query.
+        instance._prev_status = instance.status
+        return instance
+
     def __str__(self):
         return self.license_key
 

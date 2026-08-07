@@ -3,6 +3,7 @@ from django.utils import timezone
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from payments.models import Payment, Invoice
 from payments.serializers import (
@@ -125,4 +126,88 @@ class InvoiceViewSet(viewsets.ModelViewSet):
         if not self.request.user.is_staff:
             qs = qs.filter(customer=self.request.user)
         return qs
+
+
+class MobilePaymentCreateView(APIView):
+    """Mobile-facing endpoint for Telebirr-based payment submissions.
+
+    Accepts a plan and the user's Telebirr transaction reference and records a
+    pending Payment that admins later approve/reject in the admin dashboard.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        from licenses.models import LicensePlan
+
+        plan_id = request.data.get('plan_id')
+        transaction_id = (request.data.get('transaction_id') or '').strip()
+
+        if not plan_id:
+            return Response({'plan_id': ['This field is required.']}, status=status.HTTP_400_BAD_REQUEST)
+        if not transaction_id:
+            return Response({'transaction_id': ['This field is required.']}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            plan = LicensePlan.objects.get(pk=plan_id, is_active=True)
+        except LicensePlan.DoesNotExist:
+            return Response({'plan_id': ['Invalid plan selected.']}, status=status.HTTP_400_BAD_REQUEST)
+
+        if Payment.objects.filter(customer=request.user, transaction_id=transaction_id).exists():
+            return Response(
+                {'transaction_id': ['This transaction number has already been submitted.']},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        payment = Payment.objects.create(
+            customer=request.user,
+            plan=plan,
+            amount=plan.price,
+            transaction_id=transaction_id,
+            payment_method=Payment.PaymentMethod.TELEBIRR,
+            status=Payment.Status.PENDING,
+        )
+
+        return Response({
+            'id': payment.id,
+            'plan_id': plan.id,
+            'plan_name': plan.name,
+            'transaction_id': payment.transaction_id,
+            'amount': float(payment.amount),
+            'status': payment.status,
+            'created_at': payment.created_at,
+        }, status=status.HTTP_201_CREATED)
+
+
+class MobileMyPaymentView(APIView):
+    """Return the authenticated user's most recent payment."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        payment = (
+            Payment.objects.select_related('plan', 'license')
+            .filter(customer=request.user)
+            .order_by('-created_at')
+            .first()
+        )
+        if payment is None:
+            return Response({
+                'id': None,
+                'plan_id': None,
+                'plan_name': None,
+                'transaction_id': None,
+                'amount': None,
+                'status': 'none',
+                'reason': None,
+                'created_at': None,
+            })
+        return Response({
+            'id': payment.id,
+            'plan_id': payment.plan.id if payment.plan else None,
+            'plan_name': payment.plan.name if payment.plan else None,
+            'transaction_id': payment.transaction_id,
+            'amount': float(payment.amount),
+            'status': payment.status,
+            'reason': payment.admin_notes or None,
+            'created_at': payment.created_at,
+        })
 

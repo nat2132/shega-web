@@ -61,12 +61,18 @@ api.interceptors.response.use(
           throw new Error('No refresh token available');
         }
 
-        const { data } = await axios.post<{ access: string }>(
+        const { data } = await axios.post<{ access: string; refresh?: string }>(
           `${api.defaults.baseURL}/auth/refresh/`,
           { refresh: refreshToken }
         );
 
         localStorage.setItem('access_token', data.access);
+        // Backend rotates refresh tokens (ROTATE_REFRESH_TOKENS + BLACKLIST_AFTER_ROTATION),
+        // so the old refresh token is invalidated. Persist the rotated one or the next
+        // automatic refresh will fail and log the user out.
+        if (data.refresh) {
+          localStorage.setItem('refresh_token', data.refresh);
+        }
         processQueue(null, data.access);
 
         if (originalRequest.headers) {

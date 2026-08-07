@@ -25,6 +25,7 @@ interface AdminPayment {
   customer_name: string;
   customer_email: string;
   customer_phone?: string;
+  business_name?: string | null;
   license?: number | null;
   plan?: number | null;
   plan_name?: string | null;
@@ -203,7 +204,7 @@ export default function PaymentsPage() {
                 payments.map((p) => (
                   <tr key={p.id} className="border-b border-white/[0.03] transition-colors hover:bg-white/[0.02]">
                     <td className="px-4 py-4 font-medium text-gray-200">{p.customer_name || "—"}</td>
-                    <td className="px-4 py-4 text-gray-400">{p.customer_name || "—"}</td>
+                    <td className="px-4 py-4 text-gray-400">{p.business_name || "—"}</td>
                     <td className="px-4 py-4 text-gray-400">{p.customer_email || "—"}</td>
                     <td className="px-4 py-4">
                       <Badge variant="default" size="sm">{p.plan_name || "—"}</Badge>
@@ -281,7 +282,7 @@ export default function PaymentsPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <Info label="Name" value={detail.customer_name as string} />
                     <Info label="Email" value={detail.customer_email as string} />
-                    <Info label="Business Name" value={detail.customer_name as string} />
+                    <Info label="Business Name" value={detail.business_name as string} />
                   </div>
                 </div>
 

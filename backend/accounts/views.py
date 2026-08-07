@@ -41,11 +41,11 @@ class LoginView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
-        username = request.data.get('username', '')
+        username = request.data.get('username', '') or request.data.get('email', '')
         password = request.data.get('password', '')
 
         if '@' in username:
-            users = UserModel.objects.filter(email=username)
+            users = UserModel.objects.filter(email__iexact=username)
             if users.exists():
                 username = users.first().username
 

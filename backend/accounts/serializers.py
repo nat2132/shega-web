@@ -13,23 +13,39 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, min_length=8)
-    password2 = serializers.CharField(write_only=True, min_length=8)
+    name = serializers.CharField(required=False, allow_blank=True)
+    username = serializers.CharField(required=False, allow_blank=True)
+    password = serializers.CharField(write_only=True, min_length=6)
+    password2 = serializers.CharField(write_only=True, required=False, allow_blank=True)
 
     class Meta:
         model = User
         fields = (
-            'username', 'email', 'password', 'password2', 'phone',
+            'name', 'username', 'email', 'password', 'password2', 'phone',
             'business_name', 'business_type', 'address',
         )
 
     def validate(self, attrs):
-        if attrs['password'] != attrs.pop('password2'):
+        password = attrs.get('password', '')
+        password2 = attrs.get('password2') or ''
+        if password2 and password != password2:
             raise serializers.ValidationError({'password2': 'Passwords do not match.'})
+        email = attrs.get('email')
+        if email and User.objects.filter(email__iexact=email).exists():
+            raise serializers.ValidationError({'email': 'A user with this email already exists.'})
         return attrs
 
     def create(self, validated_data):
         validated_data['password'] = make_password(validated_data['password'])
+        name = validated_data.pop('name', '')
+        if name:
+            parts = name.strip().split()
+            validated_data['first_name'] = parts[0]
+            if len(parts) > 1:
+                validated_data['last_name'] = ' '.join(parts[1:])
+        if not validated_data.get('username'):
+            validated_data['username'] = validated_data.get('email')
+        validated_data['is_customer'] = True
         return super().create(validated_data)
 
 

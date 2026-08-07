@@ -3,8 +3,9 @@ from django.utils import timezone
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
-from licenses.models import License, DeviceActivation
+from licenses.models import License, DeviceActivation, LicensePlan
 from licenses.utils import check_device_limit
 
 from .permissions import PublicEndpoint
@@ -26,15 +27,36 @@ class VerifyLicenseView(APIView):
         serializer = VerifyLicenseSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        try:
-            license = License.objects.get(
-                license_key=serializer.validated_data['license_key'],
-            )
-        except License.DoesNotExist:
-            return Response(
-                {'valid': False, 'message': 'Invalid license key.'},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+        license_key = serializer.validated_data.get('license_key') or getattr(
+            request.user, 'license_key', None
+        )
+
+        # Support the mobile flow: an authenticated user without an explicit key
+        # verifies their own most recent license.
+        if not license_key and request.user.is_authenticated:
+            license = License.objects.filter(
+                customer=request.user
+            ).select_related('plan').first()
+            if license is None:
+                return Response(
+                    {'valid': False, 'message': 'No license found for this account.'},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+        else:
+            if not license_key:
+                return Response(
+                    {'valid': False, 'message': 'License key is required.'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            try:
+                license = License.objects.select_related('plan').get(
+                    license_key=license_key,
+                )
+            except License.DoesNotExist:
+                return Response(
+                    {'valid': False, 'message': 'Invalid license key.'},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
 
         if license.status != 'active':
             return Response(
@@ -48,7 +70,16 @@ class VerifyLicenseView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        device_id = serializer.validated_data['device_id']
+        device_id = serializer.validated_data.get('device_id')
+        if not device_id:
+            return Response({
+                'valid': True,
+                'license_key': license.license_key,
+                'status': license.status,
+                'expiry_date': license.expiry_date,
+                'message': 'License is valid.',
+            })
+
         device = license.device_activations.filter(device_id=device_id).first()
 
         if device and device.is_active:
@@ -238,14 +269,29 @@ class LicenseStatusView(APIView):
         serializer = LicenseStatusSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
 
-        try:
-            license = License.objects.get(
-                license_key=serializer.validated_data['license_key'],
-            )
-        except License.DoesNotExist:
+        license_key = serializer.validated_data.get('license_key') or ''
+
+        qs = License.objects.select_related('plan')
+        if license_key:
+            try:
+                license = qs.get(license_key=license_key)
+            except License.DoesNotExist:
+                return Response(
+                    {'valid': False, 'message': 'Invalid license key.'},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+        elif request.user.is_authenticated:
+            license = qs.filter(customer=request.user).order_by('-created_at').first()
+            if license is None:
+                return Response(
+                    {'valid': False, 'plan': None, 'expires_at': None,
+                     'license_key': None, 'reason': 'No license found for this account.'},
+                    status=status.HTTP_200_OK,
+                )
+        else:
             return Response(
-                {'valid': False, 'message': 'Invalid license key.'},
-                status=status.HTTP_404_NOT_FOUND,
+                {'valid': False, 'message': 'License key is required.'},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         active_devices = license.device_activations.filter(is_active=True)
@@ -259,6 +305,8 @@ class LicenseStatusView(APIView):
 
         return Response({
             'valid': license.status == 'active' and license.expiry_date > timezone.now().date(),
+            'plan': license.plan.name if license.plan else None,
+            'expires_at': license.expiry_date,
             'license_key': license.license_key,
             'status': license.status,
             'expiry_date': license.expiry_date,
@@ -266,4 +314,81 @@ class LicenseStatusView(APIView):
             'active_devices_count': active_devices.count(),
             'active_devices': devices,
             'created_at': license.created_at,
+        })
+
+
+class PlansListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        plans = LicensePlan.objects.filter(is_active=True)
+        data = [{
+            'id': p.id,
+            'name': p.name.lower(),
+            'display_name': p.name,
+            'price': float(p.price),
+            'duration_months': p.duration_months,
+            'features': [
+                '1 device' if p.device_limit == 1
+                else ('Unlimited devices' if p.device_limit == 0 else f'{p.device_limit} devices'),
+                f'{p.duration_months} month subscription',
+            ],
+            'description': p.name,
+        } for p in plans]
+        return Response(data)
+
+
+class SubscriptionStatusView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        from payments.models import Payment
+
+        license = (
+            License.objects.select_related('plan')
+            .filter(customer=request.user)
+            .order_by('-created_at')
+            .first()
+        )
+        if license is not None:
+            expires_at = license.expiry_date or None
+            started_at = license.start_date or None
+            plan_name = license.plan.name if license.plan else None
+            if license.status == 'active' and license.expiry_date >= timezone.now().date():
+                subscription_status = 'active'
+            elif license.status in ('active', 'suspended') and license.expiry_date < timezone.now().date():
+                subscription_status = 'expired'
+            elif license.status in ('expired', 'revoked', 'suspended'):
+                subscription_status = 'expired'
+            else:
+                subscription_status = 'active'
+            return Response({
+                'plan': plan_name,
+                'plan_name': plan_name,
+                'status': subscription_status,
+                'expires_at': expires_at,
+                'started_at': started_at,
+                'license_key': license.license_key,
+            })
+
+        pending = Payment.objects.filter(
+            customer=request.user, status='pending'
+        ).order_by('-created_at').first()
+        if pending is not None:
+            return Response({
+                'plan': pending.plan.name if pending.plan else None,
+                'plan_name': pending.plan.name if pending.plan else None,
+                'status': 'pending',
+                'expires_at': None,
+                'started_at': None,
+                'license_key': None,
+            })
+
+        return Response({
+            'plan': None,
+            'plan_name': None,
+            'status': 'none',
+            'expires_at': None,
+            'started_at': None,
+            'license_key': None,
         })

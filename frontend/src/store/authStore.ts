@@ -4,8 +4,7 @@ import type { User, LoginResponse } from '@/lib/types';
 
 interface RegisterData {
   email: string;
-  full_name: string;
-  phone_number: string;
+  name: string;
   password: string;
   password2: string;
 }
