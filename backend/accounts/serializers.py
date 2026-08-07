@@ -15,6 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
 class UserCreateSerializer(serializers.ModelSerializer):
     name = serializers.CharField(required=False, allow_blank=True)
     username = serializers.CharField(required=False, allow_blank=True)
+    email = serializers.EmailField(required=True)
     password = serializers.CharField(write_only=True, min_length=6)
     password2 = serializers.CharField(write_only=True, required=False, allow_blank=True)
 
@@ -31,7 +32,9 @@ class UserCreateSerializer(serializers.ModelSerializer):
         if password2 and password != password2:
             raise serializers.ValidationError({'password2': 'Passwords do not match.'})
         email = attrs.get('email')
-        if email and User.objects.filter(email__iexact=email).exists():
+        if not email:
+            raise serializers.ValidationError({'email': 'This field is required.'})
+        if User.objects.filter(email__iexact=email).exists():
             raise serializers.ValidationError({'email': 'A user with this email already exists.'})
         return attrs
 
@@ -43,8 +46,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
             validated_data['first_name'] = parts[0]
             if len(parts) > 1:
                 validated_data['last_name'] = ' '.join(parts[1:])
-        if not validated_data.get('username'):
-            validated_data['username'] = validated_data.get('email')
+        validated_data['username'] = validated_data.get('username') or validated_data['email']
         validated_data['is_customer'] = True
         return super().create(validated_data)
 

@@ -4,6 +4,8 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django.contrib.auth import authenticate, get_user_model
+from django.db import IntegrityError
+from django.core.exceptions import ValidationError as DjangoValidationError
 
 from .models import User
 from .serializers import (
@@ -25,7 +27,15 @@ class RegisterView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.save()
+        try:
+            user = serializer.save()
+        except (IntegrityError, DjangoValidationError):
+            # Resource warn: a concurrent request (or duplicate username/email
+            # that slipped past validation) must surface as a 400, never a 500.
+            return Response(
+                {'detail': 'An account with these details already exists.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         refresh = RefreshToken.for_user(user)
         return Response(
             {
