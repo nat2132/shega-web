@@ -167,6 +167,7 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
     customer_name = serializers.SerializerMethodField()
     customer_email = serializers.EmailField(source='customer.email')
     plan_name = serializers.CharField(source='plan.name')
+    plan_label = serializers.SerializerMethodField()
     plan_price = serializers.DecimalField(source='plan.price', max_digits=10, decimal_places=2)
     days_remaining = serializers.SerializerMethodField()
     platform = serializers.SerializerMethodField()
@@ -175,7 +176,7 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
         model = License
         fields = [
             'id', 'license_key', 'customer', 'customer_name', 'customer_email',
-            'plan', 'plan_name', 'plan_price', 'platform',
+            'plan', 'plan_name', 'plan_label', 'plan_price', 'platform',
             'status', 'start_date', 'expiry_date', 'device_limit',
             'is_trial', 'days_remaining', 'notes',
             'created_at', 'updated_at',
@@ -184,6 +185,11 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
 
     def get_customer_name(self, obj):
         return obj.customer.get_full_name() or obj.customer.email
+
+    def get_plan_label(self, obj):
+        if obj.plan:
+            return f"{obj.plan.name} ({obj.plan.duration_months} month)" if obj.plan.duration_months == 1 else f"{obj.plan.name} ({obj.plan.duration_months} months)"
+        return None
 
     def get_days_remaining(self, obj):
         if obj.expiry_date:
@@ -243,12 +249,13 @@ class PaymentListSerializer(serializers.ModelSerializer):
     customer_email = serializers.EmailField(source='customer.email')
     business_name = serializers.SerializerMethodField()
     plan_name = serializers.SerializerMethodField()
+    plan_label = serializers.SerializerMethodField()
 
     class Meta:
         model = Payment
         fields = [
             'id', 'customer', 'customer_name', 'customer_email', 'business_name',
-            'license', 'plan', 'plan_name',
+            'license', 'plan', 'plan_name', 'plan_label',
             'amount', 'transaction_id', 'receipt_image',
             'payment_method', 'status', 'admin_notes',
             'reviewed_by', 'reviewed_at',
@@ -265,6 +272,13 @@ class PaymentListSerializer(serializers.ModelSerializer):
     def get_plan_name(self, obj):
         return obj.plan.name if obj.plan else None
 
+    def get_plan_label(self, obj):
+        if not obj.plan:
+            return None
+        if obj.plan.duration_months == 1:
+            return f"{obj.plan.name} (1 month)"
+        return f"{obj.plan.name} ({obj.plan.duration_months} months)"
+
 
 class PaymentDetailSerializer(serializers.ModelSerializer):
     customer_name = serializers.SerializerMethodField()
@@ -272,6 +286,7 @@ class PaymentDetailSerializer(serializers.ModelSerializer):
     customer_phone = serializers.CharField(source='customer.phone')
     business_name = serializers.SerializerMethodField()
     plan_name = serializers.SerializerMethodField()
+    plan_label = serializers.SerializerMethodField()
     plan_details = serializers.SerializerMethodField()
     license_details = serializers.SerializerMethodField()
     invoice = serializers.SerializerMethodField()
@@ -280,7 +295,7 @@ class PaymentDetailSerializer(serializers.ModelSerializer):
         model = Payment
         fields = [
             'id', 'customer', 'customer_name', 'customer_email', 'customer_phone', 'business_name',
-            'license', 'license_details', 'plan', 'plan_name', 'plan_details',
+            'license', 'license_details', 'plan', 'plan_name', 'plan_label', 'plan_details',
             'amount', 'transaction_id', 'receipt_image',
             'payment_method', 'status', 'admin_notes',
             'reviewed_by', 'reviewed_at', 'invoice',
@@ -296,6 +311,13 @@ class PaymentDetailSerializer(serializers.ModelSerializer):
 
     def get_plan_name(self, obj):
         return obj.plan.name if obj.plan else None
+
+    def get_plan_label(self, obj):
+        if not obj.plan:
+            return None
+        if obj.plan.duration_months == 1:
+            return f"{obj.plan.name} (1 month)"
+        return f"{obj.plan.name} ({obj.plan.duration_months} months)"
 
     def get_plan_details(self, obj):
         from licenses.serializers import LicensePlanSerializer

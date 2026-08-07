@@ -29,6 +29,7 @@ interface AdminPayment {
   license?: number | null;
   plan?: number | null;
   plan_name?: string | null;
+  plan_label?: string | null;
   amount: string;
   transaction_id: string;
   receipt_image?: string | null;
@@ -207,7 +208,7 @@ export default function PaymentsPage() {
                     <td className="px-4 py-4 text-muted">{p.business_name || "—"}</td>
                     <td className="px-4 py-4 text-muted">{p.customer_email || "—"}</td>
                     <td className="px-4 py-4">
-                      <Badge variant="default" size="sm">{p.plan_name || "—"}</Badge>
+                      <Badge variant="default" size="sm">{p.plan_label || p.plan_name || "—"}</Badge>
                     </td>
                     <td className="px-4 py-4 font-medium text-fg">{formatCurrency(Number(p.amount))}</td>
                     <td className="px-4 py-4 font-mono text-[10px] text-fg-2">{p.transaction_id || `#${p.id}`}</td>
@@ -289,7 +290,7 @@ export default function PaymentsPage() {
                 <section>
                   <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Subscription Information</p>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <Info label="Selected Plan" value={detail.plan_name as string} />
+                    <Info label="Selected Plan" value={detail.plan_label || (detail.plan_name as string)} />
                     <Info label="Amount" value={formatCurrency(Number(detail.amount))} />
                     <Info label="Payment Method" value={detail.payment_method as string} />
                   </div>

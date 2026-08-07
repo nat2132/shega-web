@@ -26,6 +26,7 @@ interface AdminSubscription {
   customer_name: string;
   customer_email: string;
   plan_name: string;
+  plan_label?: string | null;
   platform?: string | null;
   status: "active" | "expired" | "suspended" | "revoked" | string;
   start_date: string;
@@ -198,7 +199,7 @@ export default function LicensesPage() {
                   <motion.tr key={l.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="border-b border-border transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.03]">
                     <td className="px-5 py-4 font-mono text-xs text-fg">{l.license_key}</td>
                     <td className="px-5 py-4 text-fg-2">{l.customer_name}</td>
-                    <td className="px-5 py-4 text-muted">{l.plan_name}</td>
+                    <td className="px-5 py-4 text-muted">{l.plan_label || l.plan_name}</td>
                     <td className="px-5 py-4 text-muted">{l.platform || "—"}</td>
                     <td className="px-5 py-4">
                       <Badge variant={statusVariant[l.status] || "default"} size="sm">{l.status}</Badge>
@@ -258,7 +259,7 @@ export default function LicensesPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   <Info label="Customer" value={detail.customer_name} />
                   <Info label="Email" value={detail.customer_email} />
-                  <Info label="Plan" value={detail.plan_name} />
+                  <Info label="Plan" value={detail.plan_label || detail.plan_name} />
                   <Info label="Status" value={detail.status} />
                   <Info label="Start Date" value={detail.start_date ? formatDate(detail.start_date, { hideTime: true }) : "—"} />
                   <Info label="Expiry Date" value={detail.expiry_date ? formatDate(detail.expiry_date, { hideTime: true }) : "—"} />

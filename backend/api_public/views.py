@@ -343,6 +343,25 @@ class SubscriptionStatusView(APIView):
     def get(self, request):
         from payments.models import Payment
 
+        # A pending payment means an upgrade/renewal is awaiting admin
+        # approval. Report it BEFORE the current license so the user is told
+        # "pending approval" for their new plan instead of their old one.
+        pending = (
+            Payment.objects.select_related('plan')
+            .filter(customer=request.user, status='pending')
+            .order_by('-created_at')
+            .first()
+        )
+        if pending is not None:
+            return Response({
+                'plan': pending.plan.name if pending.plan else None,
+                'plan_name': pending.plan.name if pending.plan else None,
+                'status': 'pending',
+                'expires_at': None,
+                'started_at': None,
+                'license_key': None,
+            })
+
         license = (
             License.objects.select_related('plan')
             .filter(customer=request.user)
@@ -368,19 +387,6 @@ class SubscriptionStatusView(APIView):
                 'expires_at': expires_at,
                 'started_at': started_at,
                 'license_key': license.license_key,
-            })
-
-        pending = Payment.objects.filter(
-            customer=request.user, status='pending'
-        ).order_by('-created_at').first()
-        if pending is not None:
-            return Response({
-                'plan': pending.plan.name if pending.plan else None,
-                'plan_name': pending.plan.name if pending.plan else None,
-                'status': 'pending',
-                'expires_at': None,
-                'started_at': None,
-                'license_key': None,
             })
 
         return Response({
