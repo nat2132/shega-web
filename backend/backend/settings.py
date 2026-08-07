@@ -2,6 +2,7 @@ from pathlib import Path
 from datetime import timedelta
 import os
 from dotenv import load_dotenv
+import dj_database_url
 
 load_dotenv()
 
@@ -66,6 +67,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
+    'default': dj_database_url.config(conn_max_age=600)
+} if os.getenv('DATABASE_URL') else {
     'default': {
         'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.sqlite3'),
         'NAME': os.getenv('DB_NAME', BASE_DIR / 'db.sqlite3'),
@@ -134,7 +137,7 @@ SIMPLE_JWT = {
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 CORS_ALLOWED_ORIGINS = os.getenv(
     'CORS_ALLOWED_ORIGINS',
-    'http://localhost:3000,http://localhost:8000,https://shega.vercel.app'
+    'http://localhost:3000,http://localhost:8000,https://shega-web-six.vercel.app'
 ).split(',')
 CORS_ALLOW_CREDENTIALS = True
 
