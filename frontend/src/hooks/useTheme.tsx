@@ -21,11 +21,13 @@ export function useTheme() {
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }): ReactElement {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === 'undefined') return 'dark';
+  const [theme, setTheme] = useState<Theme>('dark');
+
+  useEffect(() => {
     const saved = localStorage.getItem('shega-theme') as Theme | null;
-    return saved ?? 'dark';
-  });
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (saved) setTheme(saved);
+  }, []);
 
   const resolvedTheme: 'light' | 'dark' = (() => {
     if (theme !== 'system') return theme;
