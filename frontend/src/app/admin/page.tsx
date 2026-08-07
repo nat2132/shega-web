@@ -75,7 +75,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-indigo-400" />
+        <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-border border-t-accent" />
       </div>
     );
   }
@@ -85,8 +85,8 @@ export default function AdminDashboard() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
           <AlertTriangle className="h-12 w-12 text-red-400 mx-auto mb-4" />
-          <p className="text-gray-300 text-lg font-medium">{error}</p>
-          <button onClick={() => window.location.reload()} className="mt-4 px-4 py-2 rounded-xl bg-white/[0.06] text-sm text-gray-300 hover:bg-white/[0.1] transition-all">
+          <p className="text-fg-2 text-lg font-medium">{error}</p>
+          <button onClick={() => window.location.reload()} className="mt-4 px-4 py-2 rounded-xl bg-surface text-sm text-fg-2 hover:bg-surface-elevated transition-all">
             Retry
           </button>
         </div>
@@ -98,7 +98,7 @@ export default function AdminDashboard() {
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
       <motion.div variants={item}>
         <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-        <p className="mt-1 text-sm text-gray-500">Shega admin overview</p>
+        <p className="mt-1 text-sm text-muted">Shega admin overview</p>
       </motion.div>
 
       <motion.div variants={item} className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
@@ -106,13 +106,13 @@ export default function AdminDashboard() {
           <motion.div
             key={s.label}
             whileHover={{ y: -2 }}
-            className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-5 transition-all duration-300 hover:border-white/[0.12]"
+            className="rounded-2xl border border-border bg-surface p-5 transition-all duration-300 hover:border-border-soft"
           >
             <div className="flex items-center gap-3 mb-4">
               <div className={cn("flex h-9 w-9 items-center justify-center rounded-lg border", s.iconBgClass)}>
                 <s.icon className="h-4 w-4" />
               </div>
-              <p className="text-sm text-gray-400">{s.label}</p>
+              <p className="text-sm text-muted">{s.label}</p>
             </div>
             <p className="text-2xl font-bold tracking-tight truncate">{s.value}</p>
           </motion.div>
@@ -120,26 +120,26 @@ export default function AdminDashboard() {
       </motion.div>
 
       <motion.div variants={item} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 rounded-2xl backdrop-blur-xl bg-white/[0.03] border border-white/[0.06] overflow-hidden">
-          <div className="border-b border-white/[0.06] px-6 py-4">
-            <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-100">
-              <Activity className="h-4 w-4 text-indigo-400" /> Recent Activity
+        <div className="lg:col-span-2 rounded-2xl backdrop-blur-xl bg-surface border border-border overflow-hidden">
+          <div className="border-b border-border px-6 py-4">
+            <h3 className="flex items-center gap-2 text-sm font-semibold text-fg">
+              <Activity className="h-4 w-4 text-accent" /> Recent Activity
             </h3>
           </div>
           {recentActivity.length === 0 ? (
-            <p className="px-6 py-12 text-center text-sm text-gray-500">No recent activity</p>
+            <p className="px-6 py-12 text-center text-sm text-muted">No recent activity</p>
           ) : (
             <div className="max-h-[300px] overflow-y-auto scrollbar-hide p-2">
               {recentActivity.map((a) => {
                 const Icon = activityIcon[a.action] ?? Activity;
                 return (
-                  <div key={a.id} className="flex items-start gap-3 px-4 py-3 rounded-xl hover:bg-white/[0.02] transition-colors">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-500/10 border border-indigo-500/20">
-                      <Icon className="h-4 w-4 text-indigo-400" />
+                  <div key={a.id} className="flex items-start gap-3 px-4 py-3 rounded-xl hover:bg-black/[0.03] dark:hover:bg-white/[0.02] transition-colors">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent-muted border border-accent/10">
+                      <Icon className="h-4 w-4 text-accent" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-300">{formatAction(a.action)}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">
+                      <p className="text-sm text-fg-2">{formatAction(a.action)}</p>
+                      <p className="text-xs text-muted mt-0.5">
                         {a.resource}
                         {a.time ? ` · ${formatRelativeTime(a.time)}` : ""}
                       </p>
@@ -151,12 +151,12 @@ export default function AdminDashboard() {
           )}
         </div>
 
-        <div className="rounded-2xl backdrop-blur-xl bg-white/[0.03] border border-white/[0.06] overflow-hidden">
-          <div className="border-b border-white/[0.06] px-6 py-4">
-            <h3 className="text-sm font-semibold text-gray-100">Subscription Overview</h3>
+        <div className="rounded-2xl backdrop-blur-xl bg-surface border border-border overflow-hidden">
+          <div className="border-b border-border px-6 py-4">
+            <h3 className="text-sm font-semibold text-fg">Subscription Overview</h3>
           </div>
           <div className="p-6 space-y-4">
-            <OverviewRow label="Basic Users" value={basic} tone="text-indigo-400" />
+            <OverviewRow label="Basic Users" value={basic} tone="text-accent" />
             <OverviewRow label="Premium Users" value={premium} tone="text-emerald-400" />
             <OverviewRow label="Expired Licenses" value={expired} tone="text-red-400" />
           </div>
@@ -168,8 +168,8 @@ export default function AdminDashboard() {
 
 function OverviewRow({ label, value, tone }: { label: string; value: number; tone: string }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 flex items-center justify-between">
-      <span className="text-sm text-gray-400">{label}</span>
+    <div className="rounded-xl border border-border bg-black/[0.02] dark:bg-white/[0.03] px-4 py-3 flex items-center justify-between">
+      <span className="text-sm text-muted">{label}</span>
       <span className={cn("text-lg font-bold", tone)}>{value}</span>
     </div>
   );

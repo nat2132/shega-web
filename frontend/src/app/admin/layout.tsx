@@ -60,14 +60,14 @@ function SidebarLink({
         className={cn(
           "relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
           isActive
-            ? "bg-white/10 text-white"
-            : "text-gray-400 hover:bg-white/5 hover:text-gray-200"
+            ? "bg-surface text-fg"
+            : "text-muted hover:bg-surface hover:text-fg"
         )}
       >
         {isActive && (
           <motion.div
             layoutId="sidebar-active"
-            className="absolute inset-0 rounded-xl bg-white/10"
+            className="absolute inset-0 rounded-xl bg-surface"
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           />
         )}
@@ -85,7 +85,7 @@ function SidebarLink({
           )}
         </AnimatePresence>
         {item.badge && !collapsed && (
-          <span className="relative z-10 ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-indigo-500/20 px-1.5 text-[10px] font-bold text-indigo-400">
+          <span className="relative z-10 ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-accent-muted px-1.5 text-[10px] font-bold text-accent">
             {item.badge}
           </span>
         )}
@@ -110,7 +110,7 @@ function NavGroup({
   return (
     <div className="px-3">
       {!collapsed && (
-        <p className="mb-1 px-3 text-[11px] font-semibold uppercase tracking-widest text-gray-500">
+        <p className="mb-1 px-3 text-[11px] font-semibold uppercase tracking-widest text-muted">
           {title}
         </p>
       )}
@@ -131,31 +131,31 @@ function NavGroup({
 
 function LoadingSkeleton() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-black">
+    <div className="flex min-h-screen items-center justify-center bg-bg">
       <div className="flex flex-col items-center gap-6">
         <div className="relative">
-          <div className="h-14 w-14 animate-spin rounded-full border-2 border-gray-800 border-t-indigo-500" />
+          <div className="h-14 w-14 animate-spin rounded-full border-2 border-border border-t-accent" />
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-3 w-3 rounded-full bg-indigo-500" />
+            <div className="h-3 w-3 rounded-full bg-accent" />
           </div>
         </div>
         <div className="flex flex-col items-center gap-1.5">
-          <p className="text-sm font-medium text-gray-300">Loading admin panel</p>
+          <p className="text-sm font-medium text-fg-2">Loading admin panel</p>
           <div className="flex gap-1">
             <motion.div
               animate={{ opacity: [0, 1, 0] }}
               transition={{ duration: 1.5, repeat: Infinity, delay: 0 }}
-              className="h-1.5 w-1.5 rounded-full bg-gray-600"
+              className="h-1.5 w-1.5 rounded-full bg-muted"
             />
             <motion.div
               animate={{ opacity: [0, 1, 0] }}
               transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
-              className="h-1.5 w-1.5 rounded-full bg-gray-600"
+              className="h-1.5 w-1.5 rounded-full bg-muted"
             />
             <motion.div
               animate={{ opacity: [0, 1, 0] }}
               transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}
-              className="h-1.5 w-1.5 rounded-full bg-gray-600"
+              className="h-1.5 w-1.5 rounded-full bg-muted"
             />
           </div>
         </div>
@@ -216,9 +216,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
   const sidebarContent = (
     <div className="flex h-full flex-col">
-      <div className="flex h-16 items-center gap-3 border-b border-white/10 px-4">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-500/20">
-          <span className="text-sm font-bold text-indigo-400">S</span>
+      <div className="flex h-16 items-center gap-3 border-b border-border px-4">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent-muted">
+          <span className="text-sm font-bold text-accent">S</span>
         </div>
         <AnimatePresence>
           {!collapsed && (
@@ -226,7 +226,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               initial={{ opacity: 0, width: 0 }}
               animate={{ opacity: 1, width: "auto" }}
               exit={{ opacity: 0, width: 0 }}
-              className="truncate text-base font-semibold tracking-tight text-white"
+              className="truncate text-base font-semibold tracking-tight text-fg"
             >
               Shega Admin
             </motion.span>
@@ -234,7 +234,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </AnimatePresence>
         <button
           onClick={() => setMobileOpen(false)}
-          className="ml-auto flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-white/5 hover:text-white lg:hidden"
+          className="ml-auto flex h-8 w-8 items-center justify-center rounded-lg text-muted hover:bg-surface hover:text-fg lg:hidden"
         >
           <X className="h-4 w-4" />
         </button>
@@ -244,16 +244,16 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         <NavGroup title="Navigation" items={navItems} collapsed={collapsed} pathname={pathname} onNavigate={() => setMobileOpen(false)} />
       </nav>
 
-      <div className="border-t border-white/10 p-3">
+      <div className="border-t border-border p-3">
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="mb-1 flex w-full items-center justify-center rounded-xl px-3 py-2.5 text-sm text-gray-400 transition-all hover:bg-white/5 hover:text-gray-200"
+          className="mb-1 flex w-full items-center justify-center rounded-xl px-3 py-2.5 text-sm text-muted transition-all hover:bg-surface hover:text-fg"
         >
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </button>
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-gray-400 transition-all hover:bg-white/5 hover:text-gray-200"
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted transition-all hover:bg-surface hover:text-fg"
         >
           <LogOut className="h-5 w-5 shrink-0" />
           <AnimatePresence>
@@ -273,12 +273,12 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   );
 
   return (
-    <div className="flex min-h-screen bg-black text-white">
+    <div className="flex min-h-screen bg-bg text-fg">
       {/* Desktop sidebar */}
       <motion.aside
         animate={{ width: collapsed ? 72 : 256 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="fixed left-0 top-0 z-50 hidden h-screen flex-col border-r border-white/10 bg-black lg:flex"
+        className="fixed left-0 top-0 z-50 hidden h-screen flex-col border-r border-border bg-surface lg:flex"
       >
         {sidebarContent}
       </motion.aside>
@@ -298,7 +298,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               animate={{ x: 0 }}
               exit={{ x: -300 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="h-full w-72 border-r border-white/10 bg-black"
+              className="h-full w-72 border-r border-border bg-surface"
               onClick={(e) => e.stopPropagation()}
             >
               {sidebarContent}
@@ -316,11 +316,11 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         )}
       >
         {/* Top header */}
-        <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b border-white/10 bg-black/80 backdrop-blur-xl px-4 lg:px-6">
+        <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b border-border bg-bg/80 backdrop-blur-xl px-4 lg:px-6">
           {/* Mobile menu button */}
           <button
             onClick={() => setMobileOpen(true)}
-            className="flex h-9 w-9 items-center justify-center rounded-xl text-gray-400 hover:bg-white/5 hover:text-gray-200 lg:hidden"
+            className="flex h-9 w-9 items-center justify-center rounded-xl text-muted hover:bg-surface hover:text-fg lg:hidden"
           >
             <Menu className="h-5 w-5" />
           </button>
@@ -329,7 +329,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             {/* Theme toggle */}
             <button
               onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-gray-400 transition-all hover:bg-white/10 hover:text-gray-200"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface text-muted transition-all hover:bg-surface-elevated hover:text-fg"
               title={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`}
             >
               {resolvedTheme === "dark" ? (
@@ -340,15 +340,15 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             </button>
 
             {/* User avatar */}
-            <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/20 text-xs font-bold text-indigo-400">
+            <div className="flex items-center gap-3 rounded-xl border border-border bg-surface px-3 py-1.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-muted text-xs font-bold text-accent">
                 {initials}
               </div>
               <div className="hidden sm:block">
-                <p className="text-sm font-medium leading-tight text-gray-200">
+                <p className="text-sm font-medium leading-tight text-fg-2">
                   {user.full_name || "Admin"}
                 </p>
-                <p className="text-xs text-gray-500">Administrator</p>
+                <p className="text-xs text-muted">Administrator</p>
               </div>
             </div>
           </div>

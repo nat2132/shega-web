@@ -95,7 +95,7 @@ export default function PlansPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Plans</h1>
-          <p className="mt-1 text-sm text-gray-500">Manage subscription plans and pricing</p>
+          <p className="mt-1 text-sm text-muted">Manage subscription plans and pricing</p>
         </div>
         <Button onClick={openAdd} icon={Plus}>Add Plan</Button>
       </div>
@@ -103,11 +103,11 @@ export default function PlansPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {loading ? (
           <div className="col-span-full flex items-center justify-center py-16">
-            <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-indigo-400" />
+            <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-border border-t-accent" />
           </div>
         ) : plans.length === 0 ? (
           <div className="col-span-full flex items-center justify-center py-16">
-            <p className="text-sm text-gray-500">No plans yet. Create your first plan.</p>
+            <p className="text-sm text-muted">No plans yet. Create your first plan.</p>
           </div>
         ) : (
           plans.map((plan, i) => (
@@ -118,29 +118,29 @@ export default function PlansPage() {
               transition={{ delay: i * 0.05 }}
               className={cn(
                 "rounded-2xl backdrop-blur-xl border p-5 transition-all duration-300",
-                plan.is_active ? "bg-white/[0.03] border-white/[0.06]" : "bg-white/[0.01] border-white/[0.03] opacity-60"
+                plan.is_active ? "bg-surface border-border" : "bg-black/[0.02] dark:bg-white/[0.01] border-black/[0.05] dark:border-white/[0.05] opacity-60"
               )}
             >
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-100">{plan.name}</h3>
-                  <p className="text-xs text-gray-500 mt-0.5">{plan.duration_months} mo · {plan.device_limit} device(s)</p>
+                  <h3 className="text-lg font-semibold text-fg">{plan.name}</h3>
+                  <p className="text-xs text-muted mt-0.5">{plan.duration_months} mo · {plan.device_limit} device(s)</p>
                 </div>
-                <button onClick={() => toggleActive(plan)} className={cn("transition-colors", plan.is_active ? "text-gray-200" : "text-gray-500")}>
+                <button onClick={() => toggleActive(plan)} className={cn("transition-colors", plan.is_active ? "text-fg" : "text-muted")}>
                   {plan.is_active ? <ToggleRight className="h-6 w-6" /> : <ToggleLeft className="h-6 w-6" />}
                 </button>
               </div>
               <div className="mb-4">
-                <span className="text-3xl font-bold text-white">{formatCurrency(plan.price)}</span>
+                <span className="text-3xl font-bold text-fg">{formatCurrency(plan.price)}</span>
               </div>
               <div className="mb-2">
-                <span className={cn("inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium", plan.is_active ? "bg-emerald-500/10 text-emerald-400" : "bg-white/[0.04] text-gray-500")}>
+                <span className={cn("inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium", plan.is_active ? "bg-emerald-500/10 text-emerald-400" : "bg-surface text-muted")}>
                   {plan.is_active ? "Active" : "Disabled"}
                 </span>
               </div>
               <button
                 onClick={() => openEdit(plan)}
-                className="mt-4 w-full rounded-xl border border-white/[0.06] py-2 text-xs font-medium text-gray-400 hover:bg-white/[0.04] hover:text-gray-200 transition-all flex items-center justify-center gap-1.5"
+                className="mt-4 w-full rounded-xl border border-border py-2 text-xs font-medium text-muted hover:bg-surface hover:text-fg transition-all flex items-center justify-center gap-1.5"
               >
                 <Edit3 className="h-3.5 w-3.5" /> Edit
               </button>
@@ -161,34 +161,34 @@ export default function PlansPage() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-lg rounded-2xl backdrop-blur-xl bg-[#0a0a0f] border border-white/[0.08]"
+              className="w-full max-w-lg rounded-2xl backdrop-blur-xl bg-surface border border-border"
             >
-              <div className="flex items-center justify-between border-b border-white/[0.06] px-6 py-4">
+              <div className="flex items-center justify-between border-b border-border px-6 py-4">
                 <h2 className="text-lg font-semibold">{editing ? "Edit Plan" : "Add Plan"}</h2>
-                <button onClick={() => setModalOpen(false)} className="rounded-lg p-1.5 text-gray-400 hover:bg-white/[0.06] hover:text-gray-200 transition-all"><XIcon className="h-5 w-5" /></button>
+                <button onClick={() => setModalOpen(false)} className="rounded-lg p-1.5 text-muted hover:bg-surface dark:hover:bg-white/[0.06] hover:text-fg transition-all"><XIcon className="h-5 w-5" /></button>
               </div>
               <form onSubmit={handleSubmit} className="space-y-4 p-6">
                 <div>
-                  <label className="mb-1.5 block text-xs font-medium text-gray-400">Plan Name</label>
-                  <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]" />
+                  <label className="mb-1.5 block text-xs font-medium text-muted">Plan Name</label>
+                  <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="h-10 w-full rounded-xl border border-border bg-surface px-3 text-sm text-fg outline-none focus:border-border-soft" />
                 </div>
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <label className="mb-1.5 block text-xs font-medium text-gray-400">Price (ETB)</label>
-                    <input required type="number" min="0" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]" />
+                    <label className="mb-1.5 block text-xs font-medium text-muted">Price (ETB)</label>
+                    <input required type="number" min="0" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="h-10 w-full rounded-xl border border-border bg-surface px-3 text-sm text-fg outline-none focus:border-border-soft" />
                   </div>
                   <div>
-                    <label className="mb-1.5 block text-xs font-medium text-gray-400">Duration (mo)</label>
-                    <input required type="number" min="1" value={form.duration_months} onChange={(e) => setForm({ ...form, duration_months: e.target.value })} className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]" />
+                    <label className="mb-1.5 block text-xs font-medium text-muted">Duration (mo)</label>
+                    <input required type="number" min="1" value={form.duration_months} onChange={(e) => setForm({ ...form, duration_months: e.target.value })} className="h-10 w-full rounded-xl border border-border bg-surface px-3 text-sm text-fg outline-none focus:border-border-soft" />
                   </div>
                   <div>
-                    <label className="mb-1.5 block text-xs font-medium text-gray-400">Device Limit (0=unlimited)</label>
-                    <input required type="number" min="0" value={form.device_limit} onChange={(e) => setForm({ ...form, device_limit: e.target.value })} className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]" />
+                    <label className="mb-1.5 block text-xs font-medium text-muted">Device Limit (0=unlimited)</label>
+                    <input required type="number" min="0" value={form.device_limit} onChange={(e) => setForm({ ...form, device_limit: e.target.value })} className="h-10 w-full rounded-xl border border-border bg-surface px-3 text-sm text-fg outline-none focus:border-border-soft" />
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <input type="checkbox" id="plan_active" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} className="h-4 w-4 rounded border-white/[0.06] bg-white/[0.03] text-gray-200 focus:ring-gray-400" />
-                  <label htmlFor="plan_active" className="text-sm text-gray-300">Active</label>
+                  <input type="checkbox" id="plan_active" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} className="h-4 w-4 rounded border-border bg-surface text-accent focus:ring-accent" />
+                  <label htmlFor="plan_active" className="text-sm text-fg-2">Active</label>
                 </div>
                 <div className="flex justify-end gap-3 pt-2">
                   <Button type="button" variant="ghost" onClick={() => setModalOpen(false)}>Cancel</Button>

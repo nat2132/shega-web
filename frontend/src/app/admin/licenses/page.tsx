@@ -144,25 +144,25 @@ export default function LicensesPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Licenses</h1>
-        <p className="mt-1 text-sm text-gray-500">Manage generated software licenses</p>
+        <p className="mt-1 text-sm text-muted">Manage generated software licenses</p>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[200px] max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
           <input
             type="text"
             placeholder="Search by license key or customer..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && (setPage(1), loadLicenses())}
-            className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] pl-10 pr-4 text-sm text-gray-100 placeholder-gray-500 outline-none transition-all focus:border-white/[0.15] focus:bg-white/[0.05]"
+            className="h-10 w-full rounded-xl border border-border bg-surface pl-10 pr-4 text-sm text-fg placeholder-muted outline-none transition-all focus:border-border-soft focus:bg-surface-elevated"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-          className="h-10 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-300 outline-none focus:border-white/[0.15]"
+          className="h-10 rounded-xl border border-border bg-surface px-3 text-sm text-fg outline-none focus:border-border-soft"
         >
           <option value="">All Status</option>
           <option value="active">Active</option>
@@ -172,11 +172,11 @@ export default function LicensesPage() {
         </select>
       </div>
 
-      <div className="rounded-2xl backdrop-blur-xl bg-white/[0.03] border border-white/[0.06] overflow-hidden">
+      <div className="rounded-2xl backdrop-blur-xl bg-surface border border-border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-white/[0.06] text-xs text-gray-500">
+              <tr className="border-b border-border text-xs text-muted">
                 <th className="px-5 py-4 text-left font-medium">License Key</th>
                 <th className="px-5 py-4 text-left font-medium">Customer</th>
                 <th className="px-5 py-4 text-left font-medium">Plan</th>
@@ -189,28 +189,28 @@ export default function LicensesPage() {
             <tbody>
               {loading ? (
                 <tr><td colSpan={7} className="px-5 py-16 text-center">
-                  <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-indigo-400" />
+                  <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-border border-t-accent" />
                 </td></tr>
               ) : licenses.length === 0 ? (
-                <tr><td colSpan={7} className="px-5 py-16 text-center text-sm text-gray-500">No licenses found</td></tr>
+                <tr><td colSpan={7} className="px-5 py-16 text-center text-sm text-muted">No licenses found</td></tr>
               ) : (
                 licenses.map((l) => (
-                  <motion.tr key={l.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="border-b border-white/[0.03] transition-colors hover:bg-white/[0.02]">
-                    <td className="px-5 py-4 font-mono text-xs text-gray-200">{l.license_key}</td>
-                    <td className="px-5 py-4 text-gray-300">{l.customer_name}</td>
-                    <td className="px-5 py-4 text-gray-400">{l.plan_name}</td>
-                    <td className="px-5 py-4 text-gray-400">{l.platform || "—"}</td>
+                  <motion.tr key={l.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="border-b border-border transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.03]">
+                    <td className="px-5 py-4 font-mono text-xs text-fg">{l.license_key}</td>
+                    <td className="px-5 py-4 text-fg-2">{l.customer_name}</td>
+                    <td className="px-5 py-4 text-muted">{l.plan_name}</td>
+                    <td className="px-5 py-4 text-muted">{l.platform || "—"}</td>
                     <td className="px-5 py-4">
                       <Badge variant={statusVariant[l.status] || "default"} size="sm">{l.status}</Badge>
                     </td>
-                    <td className="px-5 py-4 text-xs text-gray-500">{l.expiry_date ? formatDate(l.expiry_date, { hideTime: true }) : "—"}</td>
+                    <td className="px-5 py-4 text-xs text-muted">{l.expiry_date ? formatDate(l.expiry_date, { hideTime: true }) : "—"}</td>
                     <td className="px-5 py-4">
                       <div className="flex items-center justify-end gap-1">
-                        <button onClick={() => openDetail(l)} title="View" className="rounded-lg p-1.5 text-gray-400 hover:bg-white/[0.06] hover:text-gray-200 transition-all"><EyeIcon className="h-4 w-4" /></button>
-                        <button onClick={() => { setExtendLicense(l); setExtendDays("30"); }} title="Extend" className="rounded-lg p-1.5 text-emerald-400 hover:bg-white/[0.06] transition-all"><Clock className="h-4 w-4" /></button>
-                        <button onClick={() => openDetail(l)} title="Reset Device" className="rounded-lg p-1.5 text-amber-400 hover:bg-white/[0.06] transition-all"><Smartphone className="h-4 w-4" /></button>
+                        <button onClick={() => openDetail(l)} title="View" className="rounded-lg p-1.5 text-muted hover:bg-surface dark:hover:bg-white/[0.06] hover:text-fg transition-all"><EyeIcon className="h-4 w-4" /></button>
+                        <button onClick={() => { setExtendLicense(l); setExtendDays("30"); }} title="Extend" className="rounded-lg p-1.5 text-emerald-400 hover:bg-surface dark:hover:bg-white/[0.06] transition-all"><Clock className="h-4 w-4" /></button>
+                        <button onClick={() => openDetail(l)} title="Reset Device" className="rounded-lg p-1.5 text-amber-400 hover:bg-surface dark:hover:bg-white/[0.06] transition-all"><Smartphone className="h-4 w-4" /></button>
                         {l.status === "active" && (
-                          <button onClick={() => handleDeactivate(l)} title="Deactivate" className="rounded-lg p-1.5 text-red-400 hover:bg-white/[0.06] transition-all"><Ban className="h-4 w-4" /></button>
+                          <button onClick={() => handleDeactivate(l)} title="Deactivate" className="rounded-lg p-1.5 text-red-400 hover:bg-surface dark:hover:bg-white/[0.06] transition-all"><Ban className="h-4 w-4" /></button>
                         )}
                       </div>
                     </td>
@@ -221,11 +221,11 @@ export default function LicensesPage() {
           </table>
         </div>
         {totalPages > 1 && (
-          <div className="flex items-center justify-between border-t border-white/[0.06] px-5 py-3">
-            <p className="text-xs text-gray-500">Page {page} of {totalPages}</p>
+          <div className="flex items-center justify-between border-t border-border px-5 py-3">
+            <p className="text-xs text-muted">Page {page} of {totalPages}</p>
             <div className="flex items-center gap-2">
-              <button disabled={page <= 1} onClick={() => setPage(page - 1)} className="rounded-lg p-2 text-gray-400 hover:bg-white/[0.06] hover:text-gray-200 disabled:opacity-30 transition-all"><ChevronLeft className="h-4 w-4" /></button>
-              <button disabled={page >= totalPages} onClick={() => setPage(page + 1)} className="rounded-lg p-2 text-gray-400 hover:bg-white/[0.06] hover:text-gray-200 disabled:opacity-30 transition-all"><ChevronRight className="h-4 w-4" /></button>
+              <button disabled={page <= 1} onClick={() => setPage(page - 1)} className="rounded-lg p-2 text-muted hover:bg-surface dark:hover:bg-white/[0.06] hover:text-fg disabled:opacity-30 transition-all"><ChevronLeft className="h-4 w-4" /></button>
+              <button disabled={page >= totalPages} onClick={() => setPage(page + 1)} className="rounded-lg p-2 text-muted hover:bg-surface dark:hover:bg-white/[0.06] hover:text-fg disabled:opacity-30 transition-all"><ChevronRight className="h-4 w-4" /></button>
             </div>
           </div>
         )}
@@ -244,14 +244,14 @@ export default function LicensesPage() {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 10 }}
               transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              className="w-full max-w-3xl rounded-2xl backdrop-blur-xl bg-[#0a0a0f] border border-white/[0.08] max-h-[90vh] overflow-y-auto"
+              className="w-full max-w-3xl rounded-2xl backdrop-blur-xl bg-surface border border-border max-h-[90vh] overflow-y-auto"
             >
-              <div className="flex items-center justify-between border-b border-white/[0.06] px-6 py-4 sticky top-0 bg-[#0a0a0f] z-10">
+              <div className="flex items-center justify-between border-b border-border px-6 py-4 sticky top-0 bg-surface z-10">
                 <div>
                   <h2 className="text-lg font-semibold">License Details</h2>
-                  <p className="text-xs text-gray-500 font-mono">{detail.license_key}</p>
+                  <p className="text-xs text-muted font-mono">{detail.license_key}</p>
                 </div>
-                <button onClick={() => setDetail(null)} className="rounded-lg p-1.5 text-gray-400 hover:bg-white/[0.06] hover:text-gray-200 transition-all"><XIcon className="h-5 w-5" /></button>
+                <button onClick={() => setDetail(null)} className="rounded-lg p-1.5 text-muted hover:bg-surface dark:hover:bg-white/[0.06] hover:text-fg transition-all"><XIcon className="h-5 w-5" /></button>
               </div>
 
               <div className="p-6 space-y-6">
@@ -268,18 +268,18 @@ export default function LicensesPage() {
                 </div>
 
                 <div>
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Activated Devices</p>
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Activated Devices</p>
                   {detailLoading ? (
-                    <div className="flex items-center justify-center py-8 text-gray-500 gap-3"><Loader2 className="h-5 w-5 animate-spin" /> Loading devices...</div>
+                    <div className="flex items-center justify-center py-8 text-muted gap-3"><Loader2 className="h-5 w-5 animate-spin" /> Loading devices...</div>
                   ) : devices.length === 0 ? (
-                    <p className="text-sm text-gray-500 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">No activated devices.</p>
+                    <p className="text-sm text-muted rounded-xl border border-border bg-black/[0.02] dark:bg-white/[0.03] px-4 py-3">No activated devices.</p>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {devices.map((d) => (
-                        <div key={d.id} className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 flex items-center justify-between">
+                        <div key={d.id} className="rounded-xl border border-border bg-black/[0.02] dark:bg-white/[0.03] px-4 py-3 flex items-center justify-between">
                           <div>
-                            <p className="text-sm text-gray-200 font-medium flex items-center gap-2"><Smartphone className="h-3.5 w-3.5 text-gray-500" />{d.device_name}</p>
-                            <p className="text-xs text-gray-500 font-mono mt-0.5">{d.device_id} · {d.operating_system}</p>
+                            <p className="text-sm text-fg font-medium flex items-center gap-2"><Smartphone className="h-3.5 w-3.5 text-muted" />{d.device_name}</p>
+                            <p className="text-xs text-muted font-mono mt-0.5">{d.device_id} · {d.operating_system}</p>
                           </div>
                           <Badge variant={d.is_active ? "success" : "danger"} size="sm">{d.is_active ? "Active" : "Inactive"}</Badge>
                         </div>
@@ -310,17 +310,17 @@ export default function LicensesPage() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-sm rounded-2xl backdrop-blur-xl bg-[#0a0a0f] border border-white/[0.08] p-6"
+              className="w-full max-w-sm rounded-2xl backdrop-blur-xl bg-surface border border-border p-6"
             >
               <h3 className="text-lg font-semibold mb-1">Extend License</h3>
-              <p className="text-sm text-gray-400 mb-4">License <span className="font-mono text-gray-200">{extendLicense.license_key}</span></p>
-              <label className="mb-1.5 block text-xs font-medium text-gray-400">Extend by (days)</label>
+              <p className="text-sm text-muted mb-4">License <span className="font-mono text-fg">{extendLicense.license_key}</span></p>
+              <label className="mb-1.5 block text-xs font-medium text-muted">Extend by (days)</label>
               <input
                 type="number"
                 min="1"
                 value={extendDays}
                 onChange={(e) => setExtendDays(e.target.value)}
-                className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15] mb-4"
+                className="h-10 w-full rounded-xl border border-border bg-surface px-3 text-sm text-fg outline-none focus:border-border-soft mb-4"
               />
               <div className="flex justify-end gap-3">
                 <Button variant="ghost" onClick={() => setExtendLicense(null)}>Cancel</Button>
@@ -336,9 +336,9 @@ export default function LicensesPage() {
 
 function Info({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">
-      <p className="text-[10px] text-gray-500 uppercase tracking-wider">{label}</p>
-      <p className="text-sm text-gray-200 mt-0.5 font-medium truncate">{value}</p>
+    <div className="rounded-xl border border-border bg-black/[0.02] dark:bg-white/[0.03] px-4 py-3">
+      <p className="text-[10px] text-muted uppercase tracking-wider">{label}</p>
+      <p className="text-sm text-fg mt-0.5 font-medium truncate">{value}</p>
     </div>
   );
 }

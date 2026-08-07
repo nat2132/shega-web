@@ -54,14 +54,14 @@ export default function DownloadsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Downloads</h1>
-        <p className="mt-1 text-sm text-gray-500">App downloads and release links</p>
+        <p className="mt-1 text-sm text-muted">App downloads and release links</p>
       </div>
 
-      <div className="rounded-2xl backdrop-blur-xl bg-white/[0.03] border border-white/[0.06] overflow-hidden">
+      <div className="rounded-2xl backdrop-blur-xl bg-surface border border-border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-white/[0.06] text-xs text-gray-500">
+              <tr className="border-b border-border text-xs text-muted">
                 <th className="px-5 py-4 text-left font-medium">Platform</th>
                 <th className="px-5 py-4 text-left font-medium">Version</th>
                 <th className="px-5 py-4 text-left font-medium">Min Version</th>
@@ -74,33 +74,33 @@ export default function DownloadsPage() {
             <tbody>
               {loading ? (
                 <tr><td colSpan={7} className="px-5 py-16 text-center">
-                  <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-indigo-400" />
+                  <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-border border-t-accent" />
                 </td></tr>
               ) : versions.length === 0 ? (
-                <tr><td colSpan={7} className="px-5 py-16 text-center text-sm text-gray-500">No app versions published.</td></tr>
+                <tr><td colSpan={7} className="px-5 py-16 text-center text-sm text-muted">No app versions published.</td></tr>
               ) : (
                 versions.map((v) => (
-                  <motion.tr key={v.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="border-b border-white/[0.03] transition-colors hover:bg-white/[0.02]">
+                  <motion.tr key={v.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="border-b border-border transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.03]">
                     <td className="px-5 py-4">
-                      <span className={cn("inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize bg-white/[0.06] text-gray-300")}>
+                      <span className={cn("inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize bg-surface text-fg-2")}>
                         <Download className="h-3 w-3 mr-1" /> {v.platform}
                       </span>
                     </td>
-                    <td className="px-5 py-4 font-mono text-xs text-gray-200">v{v.version}</td>
-                    <td className="px-5 py-4 text-gray-400">{v.min_version || "—"}</td>
+                    <td className="px-5 py-4 font-mono text-xs text-fg">v{v.version}</td>
+                    <td className="px-5 py-4 text-muted">{v.min_version || "—"}</td>
                     <td className="px-5 py-4">
                       <Badge variant={v.is_force_update ? "danger" : "default"} size="sm">{v.is_force_update ? "Yes" : "No"}</Badge>
                     </td>
-                    <td className="px-5 py-4 text-gray-400 max-w-[240px] truncate">{v.release_notes || "—"}</td>
-                    <td className="px-5 py-4 text-xs text-gray-500">{formatDate(v.created_at, { hideTime: true })}</td>
+                    <td className="px-5 py-4 text-muted max-w-[240px] truncate">{v.release_notes || "—"}</td>
+                    <td className="px-5 py-4 text-xs text-muted">{formatDate(v.created_at, { hideTime: true })}</td>
                     <td className="px-5 py-4">
                       <div className="flex items-center justify-end gap-1">
                         {v.download_url && (
                           <>
-                            <button onClick={() => copy(v.download_url, v.id)} title="Copy link" className="rounded-lg p-1.5 text-gray-400 hover:bg-white/[0.06] hover:text-gray-200 transition-all">
+                            <button onClick={() => copy(v.download_url, v.id)} title="Copy link" className="rounded-lg p-1.5 text-muted hover:bg-surface dark:hover:bg-white/[0.06] hover:text-fg transition-all">
                               {copiedId === v.id ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
                             </button>
-                            <a href={v.download_url} target="_blank" rel="noreferrer" title="Open link" className="rounded-lg p-1.5 text-gray-400 hover:bg-white/[0.06] hover:text-gray-200 transition-all">
+                            <a href={v.download_url} target="_blank" rel="noreferrer" title="Open link" className="rounded-lg p-1.5 text-muted hover:bg-surface dark:hover:bg-white/[0.06] hover:text-fg transition-all">
                               <ExternalLink className="h-4 w-4" />
                             </a>
                           </>

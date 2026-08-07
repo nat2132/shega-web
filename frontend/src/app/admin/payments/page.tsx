@@ -134,7 +134,7 @@ export default function PaymentsPage() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
           <AlertTriangle className="h-12 w-12 text-red-400 mx-auto mb-4" />
-          <p className="text-gray-300 text-lg font-medium">{error}</p>
+          <p className="text-fg-2 text-lg font-medium">{error}</p>
           <Button onClick={loadPayments} className="mt-4">Retry</Button>
         </div>
       </div>
@@ -145,42 +145,42 @@ export default function PaymentsPage() {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Payment Requests</h1>
-        <p className="mt-1 text-sm text-gray-500">Verify and approve Telebirr payments</p>
+        <p className="mt-1 text-sm text-muted">Verify and approve Telebirr payments</p>
       </div>
 
-      <div className="flex flex-wrap items-center gap-1 border-b border-white/[0.06]">
+      <div className="flex flex-wrap items-center gap-1 border-b border-border">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => { setActiveTab(tab.key); setPage(1); }}
             className={cn(
               "relative px-5 py-3 text-sm font-medium transition-colors",
-              activeTab === tab.key ? "text-gray-200" : "text-gray-500 hover:text-gray-300"
+              activeTab === tab.key ? "text-fg" : "text-muted hover:text-fg-2"
             )}
           >
             {tab.label}
-            {activeTab === tab.key && <motion.div layoutId="payment-tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-400" />}
+            {activeTab === tab.key && <motion.div layoutId="payment-tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-muted" />}
           </button>
         ))}
       </div>
 
       <div className="relative flex-1 min-w-[200px] max-w-sm">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
         <input
           type="text"
           placeholder="Search by transaction ID or customer..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && (setPage(1), loadPayments())}
-          className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] pl-10 pr-4 text-sm text-gray-100 placeholder-gray-500 outline-none transition-all focus:border-white/[0.15] focus:bg-white/[0.05]"
+          className="h-10 w-full rounded-xl border border-border bg-surface pl-10 pr-4 text-sm text-fg placeholder-muted outline-none transition-all focus:border-border-soft focus:bg-surface-elevated"
         />
       </div>
 
-      <div className="rounded-2xl backdrop-blur-xl bg-white/[0.03] border border-white/[0.06] overflow-hidden">
+      <div className="rounded-2xl backdrop-blur-xl bg-surface border border-border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-white/[0.06] text-xs text-gray-500">
+              <tr className="border-b border-border text-xs text-muted">
                 <th className="px-4 py-4 text-left font-medium">Customer</th>
                 <th className="px-4 py-4 text-left font-medium">Business</th>
                 <th className="px-4 py-4 text-left font-medium">Email</th>
@@ -196,41 +196,41 @@ export default function PaymentsPage() {
             <tbody>
               {loading ? (
                 <tr><td colSpan={10} className="px-4 py-16 text-center">
-                  <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-indigo-400" />
+                  <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-border border-t-accent" />
                 </td></tr>
               ) : payments.length === 0 ? (
-                <tr><td colSpan={10} className="px-4 py-16 text-center text-sm text-gray-500">No payment requests found</td></tr>
+                <tr><td colSpan={10} className="px-4 py-16 text-center text-sm text-muted">No payment requests found</td></tr>
               ) : (
                 payments.map((p) => (
-                  <tr key={p.id} className="border-b border-white/[0.03] transition-colors hover:bg-white/[0.02]">
-                    <td className="px-4 py-4 font-medium text-gray-200">{p.customer_name || "—"}</td>
-                    <td className="px-4 py-4 text-gray-400">{p.business_name || "—"}</td>
-                    <td className="px-4 py-4 text-gray-400">{p.customer_email || "—"}</td>
+                  <tr key={p.id} className="border-b border-border transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.03]">
+                    <td className="px-4 py-4 font-medium text-fg">{p.customer_name || "—"}</td>
+                    <td className="px-4 py-4 text-muted">{p.business_name || "—"}</td>
+                    <td className="px-4 py-4 text-muted">{p.customer_email || "—"}</td>
                     <td className="px-4 py-4">
                       <Badge variant="default" size="sm">{p.plan_name || "—"}</Badge>
                     </td>
-                    <td className="px-4 py-4 font-medium text-gray-200">{formatCurrency(Number(p.amount))}</td>
-                    <td className="px-4 py-4 font-mono text-[10px] text-gray-300">{p.transaction_id || `#${p.id}`}</td>
+                    <td className="px-4 py-4 font-medium text-fg">{formatCurrency(Number(p.amount))}</td>
+                    <td className="px-4 py-4 font-mono text-[10px] text-fg-2">{p.transaction_id || `#${p.id}`}</td>
                     <td className="px-4 py-4">
                       {p.receipt_image ? (
-                        <button onClick={() => setReceiptImage(p.receipt_image!)} className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs text-gray-300 hover:bg-white/[0.06] transition-all">
+                        <button onClick={() => setReceiptImage(p.receipt_image!)} className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs text-fg-2 hover:bg-black/[0.03] dark:hover:bg-white/[0.06] transition-all">
                           <ImageIcon className="h-3 w-3" /> View
                         </button>
                       ) : (
-                        <span className="text-xs text-gray-500">—</span>
+                        <span className="text-xs text-muted">—</span>
                       )}
                     </td>
-                    <td className="px-4 py-4 text-[10px] text-gray-500">{formatDate(p.created_at)}</td>
+                    <td className="px-4 py-4 text-[10px] text-muted">{formatDate(p.created_at)}</td>
                     <td className="px-4 py-4">
                       <Badge variant={statusBadge[p.status] || "default"} size="sm">{statusLabel[p.status]}</Badge>
                     </td>
                     <td className="px-4 py-4">
                       <div className="flex items-center justify-end gap-1">
-                        <button onClick={() => setDetail(p)} className="rounded-lg p-1.5 text-gray-400 hover:bg-white/[0.06] hover:text-gray-200 transition-all" title="View / Approve">
+                        <button onClick={() => setDetail(p)} className="rounded-lg p-1.5 text-muted hover:bg-surface dark:hover:bg-white/[0.06] hover:text-fg transition-all" title="View / Approve">
                           <Eye className="h-4 w-4" />
                         </button>
                         {p.status === "pending" && (
-                          <button onClick={() => { setRejectModal(p); setRejectReason(""); }} className="rounded-lg p-1.5 text-red-400 hover:bg-white/[0.06] transition-all" title="Reject">
+                          <button onClick={() => { setRejectModal(p); setRejectReason(""); }} className="rounded-lg p-1.5 text-red-400 hover:bg-surface dark:hover:bg-white/[0.06] transition-all" title="Reject">
                             <XCircle className="h-4 w-4" />
                           </button>
                         )}
@@ -243,11 +243,11 @@ export default function PaymentsPage() {
           </table>
         </div>
         {totalPages > 1 && (
-          <div className="flex items-center justify-between border-t border-white/[0.06] px-5 py-3">
-            <p className="text-xs text-gray-500">Page {page} of {totalPages} ({total} total)</p>
+          <div className="flex items-center justify-between border-t border-border px-5 py-3">
+            <p className="text-xs text-muted">Page {page} of {totalPages} ({total} total)</p>
             <div className="flex items-center gap-2">
-              <button disabled={page <= 1} onClick={() => setPage(page - 1)} className="rounded-lg p-2 text-gray-400 hover:bg-white/[0.06] hover:text-gray-200 disabled:opacity-30 transition-all"><ChevronLeft className="h-4 w-4" /></button>
-              <button disabled={page >= totalPages} onClick={() => setPage(page + 1)} className="rounded-lg p-2 text-gray-400 hover:bg-white/[0.06] hover:text-gray-200 disabled:opacity-30 transition-all"><ChevronRight className="h-4 w-4" /></button>
+              <button disabled={page <= 1} onClick={() => setPage(page - 1)} className="rounded-lg p-2 text-muted hover:bg-surface dark:hover:bg-white/[0.06] hover:text-fg disabled:opacity-30 transition-all"><ChevronLeft className="h-4 w-4" /></button>
+              <button disabled={page >= totalPages} onClick={() => setPage(page + 1)} className="rounded-lg p-2 text-muted hover:bg-surface dark:hover:bg-white/[0.06] hover:text-fg disabled:opacity-30 transition-all"><ChevronRight className="h-4 w-4" /></button>
             </div>
           </div>
         )}
@@ -266,19 +266,19 @@ export default function PaymentsPage() {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 10 }}
               transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              className="w-full max-w-3xl rounded-2xl backdrop-blur-xl bg-[#0a0a0f] border border-white/[0.08] max-h-[90vh] overflow-y-auto"
+              className="w-full max-w-3xl rounded-2xl backdrop-blur-xl bg-surface border border-border max-h-[90vh] overflow-y-auto"
             >
-              <div className="flex items-center justify-between border-b border-white/[0.06] px-6 py-4 sticky top-0 bg-[#0a0a0f] z-10">
+              <div className="flex items-center justify-between border-b border-border px-6 py-4 sticky top-0 bg-surface z-10">
                 <div>
                   <h2 className="text-lg font-semibold">Payment Details</h2>
-                  <p className="text-xs text-gray-500">Transaction {detail.transaction_id || `#${detail.id}`}</p>
+                  <p className="text-xs text-muted">Transaction {detail.transaction_id || `#${detail.id}`}</p>
                 </div>
-                <button onClick={() => { setDetail(null); setAdminNotes(""); }} className="rounded-lg p-1.5 text-gray-400 hover:bg-white/[0.06] hover:text-gray-200 transition-all"><X className="h-5 w-5" /></button>
+                <button onClick={() => { setDetail(null); setAdminNotes(""); }} className="rounded-lg p-1.5 text-muted hover:bg-surface dark:hover:bg-white/[0.06] hover:text-fg transition-all"><X className="h-5 w-5" /></button>
               </div>
 
               <div className="space-y-6 p-6">
                 <div>
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Customer Information</p>
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Customer Information</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <Info label="Name" value={detail.customer_name as string} />
                     <Info label="Email" value={detail.customer_email as string} />
@@ -287,7 +287,7 @@ export default function PaymentsPage() {
                 </div>
 
                 <section>
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Subscription Information</p>
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Subscription Information</p>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <Info label="Selected Plan" value={detail.plan_name as string} />
                     <Info label="Amount" value={formatCurrency(Number(detail.amount))} />
@@ -297,8 +297,8 @@ export default function PaymentsPage() {
 
                 {detail.receipt_image && (
                   <section>
-                    <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Payment Information</p>
-                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 flex items-center justify-center min-h-[180px]">
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Payment Information</p>
+                    <div className="rounded-xl border border-border bg-black/[0.02] dark:bg-white/[0.03] p-4 flex items-center justify-center min-h-[180px]">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={detail.receipt_image} alt="Receipt" className="max-h-[260px] rounded-lg object-contain cursor-pointer hover:opacity-90 transition-opacity" onClick={() => setReceiptImage(detail.receipt_image!)} />
                     </div>
@@ -306,14 +306,14 @@ export default function PaymentsPage() {
                 )}
 
                 {detail.status === "pending" && (
-                  <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-                    <label className="mb-1.5 block text-xs font-medium text-gray-400">Admin Notes (optional)</label>
+                  <div className="rounded-xl border border-border bg-black/[0.02] dark:bg-white/[0.03] p-4">
+                    <label className="mb-1.5 block text-xs font-medium text-muted">Admin Notes (optional)</label>
                     <textarea
                       value={adminNotes}
                       onChange={(e) => setAdminNotes(e.target.value)}
                       rows={2}
                       placeholder="Add notes about this payment..."
-                      className="w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2 text-sm text-gray-100 outline-none focus:border-white/[0.15] resize-none"
+                      className="w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm text-fg outline-none focus:border-border-soft resize-none"
                     />
                   </div>
                 )}
@@ -325,7 +325,7 @@ export default function PaymentsPage() {
                   </div>
                 )}
                 {detail.status !== "pending" && detail.admin_notes && (
-                  <p className="text-xs text-gray-400">Admin notes: {detail.admin_notes}</p>
+                  <p className="text-xs text-muted">Admin notes: {detail.admin_notes}</p>
                 )}
               </div>
             </motion.div>
@@ -345,18 +345,18 @@ export default function PaymentsPage() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-lg rounded-2xl backdrop-blur-xl bg-[#0a0a0f] border border-white/[0.08] p-6"
+              className="w-full max-w-lg rounded-2xl backdrop-blur-xl bg-surface border border-border p-6"
             >
               <h3 className="text-lg font-semibold mb-2">Reject Payment</h3>
-              <p className="text-sm text-gray-400 mb-4">
-                Reject the payment from <span className="text-gray-200 font-medium">{rejectModal.customer_name}</span>? A reason is required.
+              <p className="text-sm text-muted mb-4">
+                Reject the payment from <span className="text-fg font-medium">{rejectModal.customer_name}</span>? A reason is required.
               </p>
               <textarea
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
                 rows={4}
                 placeholder="Reason for rejection (sent to the customer)..."
-                className="w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2 text-sm text-gray-100 outline-none focus:border-white/[0.15] resize-none mb-4"
+                className="w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm text-fg outline-none focus:border-border-soft resize-none mb-4"
               />
               <div className="flex justify-end gap-3">
                 <Button variant="ghost" onClick={() => setRejectModal(null)}>Cancel</Button>
@@ -390,9 +390,9 @@ export default function PaymentsPage() {
 
 function Info({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">
-      <p className="text-[10px] text-gray-500 uppercase tracking-wider">{label}</p>
-      <p className="text-sm text-gray-200 mt-0.5 font-medium truncate">{value || "—"}</p>
+    <div className="rounded-xl border border-border bg-black/[0.02] dark:bg-white/[0.03] px-4 py-3">
+      <p className="text-[10px] text-muted uppercase tracking-wider">{label}</p>
+      <p className="text-sm text-fg mt-0.5 font-medium truncate">{value || "—"}</p>
     </div>
   );
 }
