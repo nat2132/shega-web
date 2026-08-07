@@ -132,7 +132,10 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = DEBUG
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:3000,http://localhost:8000').split(',')
+CORS_ALLOWED_ORIGINS = os.getenv(
+    'CORS_ALLOWED_ORIGINS',
+    'http://localhost:3000,http://localhost:8000,https://shega.vercel.app'
+).split(',')
 CORS_ALLOW_CREDENTIALS = True
 
 SECURE_BROWSER_XSS_FILTER = True
