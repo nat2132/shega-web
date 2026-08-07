@@ -35,9 +35,8 @@ def seed():
         print('Customer user created: customer1 / customer123')
 
     plans_data = [
-        {'name': 'Starter', 'duration_months': 3, 'device_limit': 1, 'price': 1999.00},
-        {'name': 'Business', 'duration_months': 6, 'device_limit': 3, 'price': 3499.00},
-        {'name': 'Enterprise', 'duration_months': 12, 'device_limit': 0, 'price': 5999.00},
+        {'name': 'Subscription', 'duration_months': 1, 'device_limit': 1, 'price': 2999.00},
+        {'name': 'Subscription', 'duration_months': 3, 'device_limit': 1, 'price': 6999.00},
     ]
 
     for plan_data in plans_data:

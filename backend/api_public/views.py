@@ -329,9 +329,8 @@ class PlansListView(APIView):
             'price': float(p.price),
             'duration_months': p.duration_months,
             'features': [
-                '1 device' if p.device_limit == 1
-                else ('Unlimited devices' if p.device_limit == 0 else f'{p.device_limit} devices'),
                 f'{p.duration_months} month subscription',
+                'Unlimited access to all features',
             ],
             'description': p.name,
         } for p in plans]
