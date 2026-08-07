@@ -70,19 +70,24 @@ class AdminUserUpdateSerializer(serializers.ModelSerializer):
 
 class BusinessListSerializer(serializers.ModelSerializer):
     business_name = serializers.CharField(source='get_full_name', read_only=True)
+    company_name = serializers.SerializerMethodField()
     customer_profile_id = serializers.SerializerMethodField()
     customer_status = serializers.SerializerMethodField()
     license_count = serializers.SerializerMethodField()
     total_paid = serializers.SerializerMethodField()
+    current_plan = serializers.SerializerMethodField()
+    license_status = serializers.SerializerMethodField()
+    license_expiry = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = [
-            'id', 'email', 'username', 'phone', 'business_name',
+            'id', 'email', 'username', 'phone', 'business_name', 'company_name',
             'business_type', 'is_active', 'is_customer',
             'email_verified', 'phone_verified',
             'customer_profile_id', 'customer_status',
             'license_count', 'total_paid',
+            'current_plan', 'license_status', 'license_expiry',
             'date_joined', 'last_login', 'created_at', 'updated_at',
             'notes',
         ]
@@ -95,6 +100,22 @@ class BusinessListSerializer(serializers.ModelSerializer):
     def get_customer_status(self, obj):
         profile = getattr(obj, 'customer_profile', None)
         return profile.status if profile else None
+
+    def get_company_name(self, obj):
+        profile = getattr(obj, 'customer_profile', None)
+        return profile.company_name if profile and profile.company_name else (obj.business_name or obj.get_full_name())
+
+    def get_current_plan(self, obj):
+        license = next(iter(obj.licenses.all()), None)
+        return license.plan.name if license and license.plan else None
+
+    def get_license_status(self, obj):
+        license = next(iter(obj.licenses.all()), None)
+        return license.status if license else None
+
+    def get_license_expiry(self, obj):
+        license = next(iter(obj.licenses.all()), None)
+        return license.expiry_date.isoformat() if license and license.expiry_date else None
 
     def get_license_count(self, obj):
         return obj.licenses.count()
@@ -148,12 +169,13 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
     plan_name = serializers.CharField(source='plan.name')
     plan_price = serializers.DecimalField(source='plan.price', max_digits=10, decimal_places=2)
     days_remaining = serializers.SerializerMethodField()
+    platform = serializers.SerializerMethodField()
 
     class Meta:
         model = License
         fields = [
             'id', 'license_key', 'customer', 'customer_name', 'customer_email',
-            'plan', 'plan_name', 'plan_price',
+            'plan', 'plan_name', 'plan_price', 'platform',
             'status', 'start_date', 'expiry_date', 'device_limit',
             'is_trial', 'days_remaining', 'notes',
             'created_at', 'updated_at',
@@ -168,6 +190,10 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
             delta = obj.expiry_date - timezone.now().date()
             return max(delta.days, 0)
         return 0
+
+    def get_platform(self, obj):
+        active = [d for d in obj.device_activations.all() if d.is_active]
+        return active[0].operating_system if active else None
 
 
 class SubscriptionDetailSerializer(serializers.ModelSerializer):

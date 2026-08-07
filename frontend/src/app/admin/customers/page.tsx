@@ -4,87 +4,110 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
-  Plus,
   Eye,
-  Edit3,
-  Ban,
+  X as XIcon,
+  Loader2,
   ChevronLeft,
   ChevronRight,
-  X,
-  CreditCard,
-  Key,
-  Loader2,
 } from "lucide-react";
 import api from "@/lib/api";
-import { formatDate, formatCurrency, cn } from "@/lib/utils";
-import { Button } from "@/components/ui/Button";
+import { formatDate, formatCurrency } from "@/lib/utils";
 import { Badge } from "@/components/ui/Badge";
-import type { User, Payment, License, LicensePlan, PaginatedResponse } from "@/lib/types";
+import type { PaginatedResponse, License, DeviceActivation } from "@/lib/types";
 
-function businessId(user: User): string {
-  return `SHG-${String(user.id).padStart(6, "0")}`;
+interface AdminCustomer {
+  id: number;
+  email: string;
+  phone?: string;
+  business_name: string;
+  company_name: string;
+  current_plan: string | null;
+  license_status: string | null;
+  license_expiry: string | null;
+  is_active: boolean;
+  total_paid: number;
+  date_joined: string;
 }
 
-function userBusinessName(user: User): string {
-  return user.profile?.company_name || user.business_name || "—";
+interface BusinessDetail {
+  id: number;
+  email: string;
+  phone?: string;
+  business_name: string;
+  company_name: string;
+  first_name?: string;
+  last_name?: string;
+  date_joined: string;
+  licenses?: License[];
+  recent_payments?: PaymentLike[];
 }
 
-function planName(p: number | LicensePlan | undefined): string {
-  if (typeof p === "object" && p) return (p as LicensePlan).name || "N/A";
-  return "N/A";
+interface PaymentLike {
+  id: number;
+  transaction_id?: string;
+  plan?: { name?: string } | number;
+  amount: string | number;
+  status: string;
+  created_at: string;
 }
 
-export default function UsersPage() {
-  const [customers, setCustomers] = useState<User[]>([]);
+function licenseStatusVariant(status: string): "success" | "warning" | "danger" | "default" {
+  if (status === "active") return "success";
+  if (status === "suspended") return "warning";
+  return "danger";
+}
+
+export default function CustomersPage() {
+  const [customers, setCustomers] = useState<AdminCustomer[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing] = useState<User | null>(null);
-  const [form, setForm] = useState({ full_name: "", email: "", phone: "", company_name: "", is_active: true });
+  const [loading, setLoading] = useState(true);
 
-  const [detailUser, setDetailUser] = useState<User | null>(null);
-  const [detailTab, setDetailTab] = useState<"overview" | "payments" | "licenses">("overview");
-  const [detailPayments, setDetailPayments] = useState<Payment[]>([]);
-  const [detailLicenses, setDetailLicenses] = useState<License[]>([]);
+  const [detail, setDetail] = useState<BusinessDetail | null>(null);
+  const [devices, setDevices] = useState<DeviceActivation[]>([]);
+  const [activeLicenseId, setActiveLicenseId] = useState<number | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
 
-  const pageSize = 10;
   const totalPages = Math.ceil(total / pageSize);
 
-  useEffect(() => {
-    loadCustomers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, statusFilter]);
-
   async function loadCustomers() {
+    setLoading(true);
     try {
       const params: Record<string, unknown> = { page, page_size: pageSize };
       if (search) params.search = search;
       if (statusFilter) params.is_active = statusFilter === "active";
-      const { data } = await api.get<PaginatedResponse<User>>("/admin/customers/", { params });
+      const { data } = await api.get<PaginatedResponse<AdminCustomer>>("/admin/businesses/", { params });
       setCustomers(data.results);
       setTotal(data.count);
     } catch {
       /* ignore */
+    } finally {
+      setLoading(false);
     }
   }
 
-  async function openDetail(user: User) {
-    setDetailUser(user);
-    setDetailTab("overview");
-    setDetailPayments([]);
-    setDetailLicenses([]);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadCustomers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, statusFilter]);
+
+  async function openDetail(userId: number) {
     setDetailLoading(true);
+    setDevices([]);
+    setActiveLicenseId(null);
     try {
-      const params: Record<string, unknown> = { search: user.email, page_size: 20 };
-      const [pRes, lRes] = await Promise.all([
-        api.get<PaginatedResponse<Payment>>("/admin/payments/", { params }),
-        api.get<PaginatedResponse<License>>("/admin/licenses/", { params }),
-      ]);
-      setDetailPayments(pRes.data.results ?? []);
-      setDetailLicenses(lRes.data.results ?? []);
+      const { data } = await api.get<BusinessDetail>(`/admin/businesses/${userId}/`);
+      setDetail(data);
+      const license = data.licenses?.find((l) => l.status === "active") ?? data.licenses?.[0];
+      if (license) {
+        setActiveLicenseId(license.id);
+        const devRes = await api.get<PaginatedResponse<DeviceActivation>>(`/licenses/device-activations/`, { params: { license: license.id, page_size: 50 } });
+        setDevices(devRes.data.results ?? []);
+      }
     } catch {
       /* ignore */
     } finally {
@@ -92,56 +115,11 @@ export default function UsersPage() {
     }
   }
 
-  function openAdd() {
-    setEditing(null);
-    setForm({ full_name: "", email: "", phone: "", company_name: "", is_active: true });
-    setModalOpen(true);
-  }
-
-  function openEdit(c: User) {
-    setEditing(c);
-    setForm({
-      full_name: c.full_name || "",
-      email: c.email,
-      phone: c.phone || "",
-      company_name: c.profile?.company_name || "",
-      is_active: c.is_active,
-    });
-    setModalOpen(true);
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    try {
-      if (editing) {
-        await api.patch(`/admin/customers/${editing.id}/`, form);
-      } else {
-        await api.post("/admin/customers/", form);
-      }
-      setModalOpen(false);
-      loadCustomers();
-    } catch {
-      /* ignore */
-    }
-  }
-
-  async function toggleBlock(c: User) {
-    try {
-      await api.patch(`/admin/customers/${c.id}/`, { is_active: !c.is_active });
-      loadCustomers();
-    } catch {
-      /* ignore */
-    }
-  }
-
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Users</h1>
-          <p className="mt-1 text-sm text-gray-500">Manage users, their businesses and subscription status</p>
-        </div>
-        <Button onClick={openAdd} icon={Plus}>Add User</Button>
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Customers</h1>
+        <p className="mt-1 text-sm text-gray-500">Manage customer registrations and subscriptions</p>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
@@ -152,8 +130,8 @@ export default function UsersPage() {
             placeholder="Search by name, email or business..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && loadCustomers()}
-            className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] pl-10 pr-4 text-sm text-gray-100 placeholder-gray-500 outline-none transition-all focus:border-white/[0.15] focus:bg-white/[0.05] focus:ring-1 focus:ring-white/[0.1]"
+            onKeyDown={(e) => e.key === "Enter" && (setPage(1), loadCustomers())}
+            className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] pl-10 pr-4 text-sm text-gray-100 placeholder-gray-500 outline-none transition-all focus:border-white/[0.15] focus:bg-white/[0.05]"
           />
         </div>
         <select
@@ -172,51 +150,38 @@ export default function UsersPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-white/[0.06] text-xs text-gray-500">
-                <th className="px-5 py-4 text-left font-medium">Name</th>
+                <th className="px-5 py-4 text-left font-medium">Business Name</th>
+                <th className="px-5 py-4 text-left font-medium">Owner Name</th>
                 <th className="px-5 py-4 text-left font-medium">Email</th>
-                <th className="px-5 py-4 text-left font-medium">Business</th>
-                <th className="px-5 py-4 text-left font-medium">Business ID</th>
-                <th className="px-5 py-4 text-left font-medium">Subscription</th>
-                <th className="px-5 py-4 text-left font-medium">Registered</th>
+                <th className="px-5 py-4 text-left font-medium">Current Plan</th>
+                <th className="px-5 py-4 text-left font-medium">License Status</th>
+                <th className="px-5 py-4 text-left font-medium">Expiry Date</th>
                 <th className="px-5 py-4 text-right font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {customers.map((c) => (
-                <motion.tr
-                  key={c.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="border-b border-white/[0.03] transition-colors hover:bg-white/[0.02]"
-                >
-                  <td className="px-5 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.06] text-xs font-bold text-gray-300">
-                        {c.full_name?.charAt(0)?.toUpperCase() || "?"}
-                      </div>
-                      <span className="font-medium text-gray-200">{c.full_name || c.email}</span>
-                    </div>
-                  </td>
-                  <td className="px-5 py-4 text-gray-400">{c.email}</td>
-                  <td className="px-5 py-4 text-gray-400">{userBusinessName(c)}</td>
-                  <td className="px-5 py-4 font-mono text-xs text-gray-300">{businessId(c)}</td>
-                  <td className="px-5 py-4">
-                    <Badge variant={c.is_active ? "success" : "default"} size="sm">
-                      {c.is_active ? "Active" : "Inactive"}
-                    </Badge>
-                  </td>
-                  <td className="px-5 py-4 text-xs text-gray-500">{formatDate(c.date_joined, { hideTime: true })}</td>
-                  <td className="px-5 py-4">
-                    <div className="flex items-center justify-end gap-1">
-                      <button onClick={() => openDetail(c)} className="rounded-lg p-2 text-gray-400 hover:bg-white/[0.06] hover:text-gray-200 transition-all" title="View Details"><Eye className="h-4 w-4" /></button>
-                      <button onClick={() => openEdit(c)} className="rounded-lg p-2 text-gray-400 hover:bg-white/[0.06] hover:text-gray-200 transition-all" title="Edit"><Edit3 className="h-4 w-4" /></button>
-                      <button onClick={() => toggleBlock(c)} className="rounded-lg p-2 text-gray-400 hover:bg-white/[0.06] hover:text-gray-400 transition-all" title={c.is_active ? "Block" : "Unblock"}><Ban className="h-4 w-4" /></button>
-                    </div>
-                  </td>
-                </motion.tr>
-              ))}
-              {customers.length === 0 && (
-                <tr><td colSpan={7} className="px-5 py-12 text-center text-sm text-gray-500">No users found</td></tr>
+              {loading ? (
+                <tr><td colSpan={7} className="px-5 py-16 text-center">
+                  <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-indigo-400" />
+                </td></tr>
+              ) : customers.length === 0 ? (
+                <tr><td colSpan={7} className="px-5 py-16 text-center text-sm text-gray-500">No customers found</td></tr>
+              ) : (
+                customers.map((c) => (
+                  <motion.tr key={c.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="border-b border-white/[0.03] transition-colors hover:bg-white/[0.02]">
+                    <td className="px-5 py-4 font-medium text-gray-200">{c.company_name || c.business_name || "—"}</td>
+                    <td className="px-5 py-4 text-gray-400">{c.business_name || "—"}</td>
+                    <td className="px-5 py-4 text-gray-400">{c.email}</td>
+                    <td className="px-5 py-4 text-gray-300">{c.current_plan || "—"}</td>
+                    <td className="px-5 py-4">
+                      <Badge variant={licenseStatusVariant(c.license_status || "none")} size="sm">{c.license_status ? c.license_status : "No License"}</Badge>
+                    </td>
+                    <td className="px-5 py-4 text-xs text-gray-500">{c.license_expiry ? formatDate(c.license_expiry, { hideTime: true }) : "—"}</td>
+                    <td className="px-5 py-4">
+                      <button onClick={() => openDetail(c.id)} title="View Details" className="rounded-lg p-2 text-gray-400 hover:bg-white/[0.06] hover:text-gray-200 transition-all"><Eye className="h-4 w-4" /></button>
+                    </td>
+                  </motion.tr>
+                ))
               )}
             </tbody>
           </table>
@@ -233,7 +198,7 @@ export default function UsersPage() {
       </div>
 
       <AnimatePresence>
-        {modalOpen && (
+        {detail && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -241,216 +206,136 @@ export default function UsersPage() {
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
           >
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-lg rounded-2xl backdrop-blur-xl bg-[#0a0a0f] border border-white/[0.08] shadow-premium-lg"
-            >
-              <div className="flex items-center justify-between border-b border-white/[0.06] px-6 py-4">
-                <h2 className="text-lg font-semibold">{editing ? "Edit User" : "Add User"}</h2>
-                <button onClick={() => setModalOpen(false)} className="rounded-lg p-1.5 text-gray-400 hover:bg-white/[0.06] hover:text-gray-200 transition-all"><X className="h-5 w-5" /></button>
-              </div>
-              <form onSubmit={handleSubmit} className="space-y-4 p-6">
-                <div>
-                  <label className="mb-1.5 block text-xs font-medium text-gray-400">Full Name</label>
-                  <input
-                    required
-                    value={form.full_name}
-                    onChange={(e) => setForm({ ...form, full_name: e.target.value })}
-                    className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-xs font-medium text-gray-400">Email</label>
-                  <input
-                    required
-                    type="email"
-                    value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-xs font-medium text-gray-400">Phone</label>
-                  <input
-                    value={form.phone}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                    className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-xs font-medium text-gray-400">Company Name</label>
-                  <input
-                    value={form.company_name}
-                    onChange={(e) => setForm({ ...form, company_name: e.target.value })}
-                    className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm text-gray-100 outline-none focus:border-white/[0.15]"
-                  />
-                </div>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="checkbox"
-                    id="is_active"
-                    checked={form.is_active}
-                    onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
-                    className="h-4 w-4 rounded border-white/[0.06] bg-white/[0.03] text-gray-200 focus:ring-gray-400"
-                  />
-                  <label htmlFor="is_active" className="text-sm text-gray-300">Active</label>
-                </div>
-                <div className="flex justify-end gap-3 pt-2">
-                  <Button type="button" variant="ghost" onClick={() => setModalOpen(false)}>Cancel</Button>
-                  <Button type="submit">{editing ? "Update" : "Create"}</Button>
-                </div>
-              </form>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {detailUser && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
+              initial={{ scale: 0.95, opacity: 0, y: 10 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 10 }}
               transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              className="w-full max-w-3xl rounded-2xl backdrop-blur-xl bg-[#0a0a0f] border border-white/[0.08] shadow-premium-lg max-h-[90vh] overflow-y-auto"
+              className="w-full max-w-4xl rounded-2xl backdrop-blur-xl bg-[#0a0a0f] border border-white/[0.08] max-h-[90vh] overflow-y-auto"
             >
               <div className="flex items-center justify-between border-b border-white/[0.06] px-6 py-4 sticky top-0 bg-[#0a0a0f] z-10">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.06] text-sm font-bold text-gray-200">
-                    {detailUser.full_name?.charAt(0)?.toUpperCase() || "?"}
+                    {(detail.company_name || detail.business_name || detail.email).charAt(0)?.toUpperCase() || "?"}
                   </div>
                   <div>
-                    <h2 className="text-lg font-semibold">{detailUser.full_name || detailUser.email}</h2>
-                    <p className="text-xs text-gray-500 font-mono">{businessId(detailUser)}</p>
+                    <h2 className="text-lg font-semibold">{detail.company_name || detail.business_name || detail.email}</h2>
+                    <p className="text-xs text-gray-500">{detail.email}</p>
                   </div>
                 </div>
-                <button onClick={() => { setDetailUser(null); setDetailTab("overview"); }} className="rounded-lg p-1.5 text-gray-400 hover:bg-white/[0.06] hover:text-gray-200 transition-all">
-                  <X className="h-5 w-5" />
-                </button>
+                <button onClick={() => setDetail(null)} className="rounded-lg p-1.5 text-gray-400 hover:bg-white/[0.06] hover:text-gray-200 transition-all"><XIcon className="h-5 w-5" /></button>
               </div>
 
-              <div className="flex gap-1 px-6 pt-4 border-b border-white/[0.06]">
-                {([["overview", "Overview"], ["payments", "Payment History"], ["licenses", "Licenses"]] as const).map(([key, label]) => (
-                  <button key={key} onClick={() => setDetailTab(key)}
-                    className={cn("relative px-4 py-2.5 text-sm font-medium transition-colors",
-                      detailTab === key ? "text-gray-200" : "text-gray-500 hover:text-gray-300"
-                    )}>
-                    {label}
-                    {detailTab === key && <motion.div layoutId="user-tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-400" />}
-                  </button>
-                ))}
-              </div>
-
-              <div className="p-6 space-y-5">
-                {detailTab === "overview" && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {[
-                      ["Full Name", detailUser.full_name || "—"],
-                      ["Email", detailUser.email],
-                      ["Phone", detailUser.phone_number || detailUser.phone || "—"],
-                      ["Business", userBusinessName(detailUser)],
-                      ["Business ID", businessId(detailUser)],
-                      ["Subscription Status", detailUser.is_active ? "Active" : "Inactive"],
-                      ["Registered", detailUser.date_joined ? formatDate(detailUser.date_joined, { hideTime: true }) : "—"],
-                      ["Type", detailUser.is_staff ? "Staff" : detailUser.is_admin ? "Admin" : "Customer"],
-                    ].map(([label, value]) => (
-                      <div key={label} className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">
-                        <p className="text-xs text-gray-500">{label}</p>
-                        <p className="text-sm text-gray-200 mt-0.5 font-medium">{value}</p>
-                      </div>
-                    ))}
+              {detailLoading ? (
+                <div className="flex items-center justify-center py-16 text-gray-500 gap-3"><Loader2 className="h-5 w-5 animate-spin" /> Loading customer details...</div>
+              ) : (
+                <div className="p-6 space-y-6">
+                  <div>
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Account Information</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      <Info label="Owner Name" value={detail.business_name || "—"} />
+                      <Info label="Email" value={detail.email} />
+                      <Info label="Phone" value={detail.phone || "—"} />
+                      <Info label="Business Name" value={detail.company_name || "—"} />
+                      <Info label="Registered" value={formatDate(detail.date_joined, { hideTime: true })} />
+                    </div>
                   </div>
-                )}
-                {detailTab === "payments" && (
-                  detailLoading ? (
-                    <div className="flex items-center justify-center py-12 text-gray-500 gap-3">
-                      <Loader2 className="h-5 w-5 animate-spin" /> Loading payment history...
-                    </div>
-                  ) : detailPayments.length === 0 ? (
-                    <div className="text-center py-12">
-                      <CreditCard className="h-10 w-10 text-gray-500 mx-auto mb-3" />
-                      <p className="text-sm text-gray-400">No payment records found for this user.</p>
-                    </div>
-                  ) : (
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="border-b border-white/[0.06] text-xs text-gray-500">
-                            <th className="px-4 py-3 text-left font-medium">Transaction</th>
-                            <th className="px-4 py-3 text-left font-medium">Plan</th>
-                            <th className="px-4 py-3 text-left font-medium">Amount</th>
-                            <th className="px-4 py-3 text-left font-medium">Date</th>
-                            <th className="px-4 py-3 text-left font-medium">Status</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {detailPayments.map((p) => (
-                            <tr key={p.id} className="border-b border-white/[0.03] last:border-0">
-                              <td className="px-4 py-3 font-mono text-[10px] text-gray-300">{p.transaction_id || `#${p.id}`}</td>
-                              <td className="px-4 py-3 text-gray-300">{p.plan_selected || planName(p.plan)}</td>
-                              <td className="px-4 py-3 text-gray-300">{formatCurrency(p.amount)}</td>
-                              <td className="px-4 py-3 text-gray-500">{formatDate(p.created_at, { hideTime: true })}</td>
-                              <td className="px-4 py-3">
-                                <Badge variant={p.status === "approved" ? "success" : p.status === "pending" ? "warning" : "danger"} size="sm">{p.status}</Badge>
-                              </td>
+
+                  <div>
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Subscription Information</p>
+                    {(detail.licenses ?? []).length === 0 ? (
+                      <p className="text-sm text-gray-500 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-6 text-center">No active licenses for this customer.</p>
+                    ) : (
+                      <div className="overflow-x-auto rounded-xl border border-white/[0.06]">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b border-white/[0.06] text-xs text-gray-500">
+                              <th className="px-4 py-3 text-left font-medium">License Key</th>
+                              <th className="px-4 py-3 text-left font-medium">Plan</th>
+                              <th className="px-4 py-3 text-left font-medium">Status</th>
+                              <th className="px-4 py-3 text-left font-medium">Expiry</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )
-                )}
-                {detailTab === "licenses" && (
-                  detailLoading ? (
-                    <div className="flex items-center justify-center py-12 text-gray-500 gap-3">
-                      <Loader2 className="h-5 w-5 animate-spin" /> Loading licenses...
-                    </div>
-                  ) : detailLicenses.length === 0 ? (
-                    <div className="text-center py-12">
-                      <Key className="h-10 w-10 text-gray-500 mx-auto mb-3" />
-                      <p className="text-sm text-gray-400">No licenses found for this user.</p>
-                    </div>
-                  ) : (
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="border-b border-white/[0.06] text-xs text-gray-500">
-                            <th className="px-4 py-3 text-left font-medium">License Key</th>
-                            <th className="px-4 py-3 text-left font-medium">Plan</th>
-                            <th className="px-4 py-3 text-left font-medium">Activated</th>
-                            <th className="px-4 py-3 text-left font-medium">Expiry</th>
-                            <th className="px-4 py-3 text-left font-medium">Status</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {detailLicenses.map((l) => (
-                            <tr key={l.id} className="border-b border-white/[0.03] last:border-0">
-                              <td className="px-4 py-3 font-mono text-[11px] text-gray-200">{l.license_key}</td>
-                              <td className="px-4 py-3 text-gray-300">{planName(l.plan)}</td>
-                              <td className="px-4 py-3 text-gray-500">{l.issued_date ? formatDate(l.issued_date, { hideTime: true }) : formatDate(l.start_date, { hideTime: true })}</td>
-                              <td className="px-4 py-3 text-gray-500">{l.expiry_date ? formatDate(l.expiry_date, { hideTime: true }) : "—"}</td>
-                              <td className="px-4 py-3">
-                                <Badge variant={l.status === "active" ? "success" : l.status === "suspended" ? "warning" : "danger"} size="sm">{l.status}</Badge>
-                              </td>
+                          </thead>
+                          <tbody>
+                            {detail.licenses?.map((l) => (
+                              <tr key={l.id} className="border-b border-white/[0.03] last:border-0">
+                                <td className="px-4 py-3 font-mono text-xs text-gray-200">{l.license_key}</td>
+                                <td className="px-4 py-3 text-gray-300">{planName(l.plan)}</td>
+                                <td className="px-4 py-3"><Badge variant={licenseStatusVariant(l.status)} size="sm">{l.status}</Badge></td>
+                                <td className="px-4 py-3 text-gray-500">{l.expiry_date ? formatDate(l.expiry_date, { hideTime: true }) : "—"}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+
+                  {(detail.recent_payments ?? []).length > 0 && (
+                    <div>
+                      <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Recent Payments</p>
+                      <div className="overflow-x-auto rounded-xl border border-white/[0.06]">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b border-white/[0.06] text-xs text-gray-500">
+                              <th className="px-4 py-3 text-left font-medium">Transaction</th>
+                              <th className="px-4 py-3 text-left font-medium">Amount</th>
+                              <th className="px-4 py-3 text-left font-medium">Date</th>
+                              <th className="px-4 py-3 text-left font-medium">Status</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody>
+                            {detail.recent_payments?.map((p) => (
+                              <tr key={p.id} className="border-b border-white/[0.03] last:border-0">
+                                <td className="px-4 py-3 font-mono text-[10px] text-gray-300">{p.transaction_id || `#${p.id}`}</td>
+                                <td className="px-4 py-3 text-gray-300">{formatCurrency(Number(p.amount))}</td>
+                                <td className="px-4 py-3 text-gray-500">{formatDate(p.created_at, { hideTime: true })}</td>
+                                <td className="px-4 py-3"><Badge variant={p.status === "approved" ? "success" : p.status === "pending" ? "warning" : "danger"} size="sm">{p.status}</Badge></td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
-                  )
-                )}
-              </div>
+                  )}
+
+                  <div>
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Activated Devices {activeLicenseId ? `(License #${activeLicenseId})` : ""}</p>
+                    {devices.length === 0 ? (
+                      <p className="text-sm text-gray-500 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">No activated devices.</p>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {devices.map((d) => (
+                          <div key={d.id} className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 flex items-center justify-between">
+                            <div>
+                              <p className="text-sm text-gray-200 font-medium">{d.device_name}</p>
+                              <p className="text-xs text-gray-500 font-mono">{d.device_id}</p>
+                            </div>
+                            <Badge variant={d.is_active ? "success" : "danger"} size="sm">{d.is_active ? "Active" : "Inactive"}</Badge>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+function planName(plan: License["plan"]): string {
+  if (typeof plan === "object" && plan) return (plan as { name?: string }).name || "N/A";
+  return "N/A";
+}
+
+function Info({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">
+      <p className="text-[10px] text-gray-500 uppercase tracking-wider">{label}</p>
+      <p className="text-sm text-gray-200 mt-0.5 font-medium truncate">{value}</p>
     </div>
   );
 }

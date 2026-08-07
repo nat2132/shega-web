@@ -6,15 +6,12 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard,
-  Users,
-  Building2,
-  Key,
-  Package,
+  BadgeCheck,
   CreditCard,
-  FileText,
-  Bell,
+  Key,
+  Tag,
+  Download,
   Settings,
-  Search,
   ChevronLeft,
   ChevronRight,
   LogOut,
@@ -22,14 +19,6 @@ import {
   Moon,
   Menu,
   X,
-  Shield,
-  LifeBuoy,
-  Flag,
-  Download,
-  BarChart3,
-  DollarSign,
-  ClipboardList,
-  AlertTriangle,
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { useTheme } from "@/hooks/useTheme";
@@ -42,27 +31,13 @@ interface NavItem {
   badge?: number;
 }
 
-const mainNav: NavItem[] = [
+const navItems: NavItem[] = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/customers", label: "Users", icon: Users },
-  { href: "/admin/businesses", label: "Businesses", icon: Building2 },
-  { href: "/admin/payments", label: "Payments", icon: CreditCard },
+  { href: "/admin/payments", label: "Payment Requests", icon: CreditCard },
+  { href: "/admin/customers", label: "Customers", icon: BadgeCheck },
   { href: "/admin/licenses", label: "Licenses", icon: Key },
-  { href: "/admin/subscriptions", label: "Subscriptions", icon: Package },
-  { href: "/admin/plans", label: "Plans", icon: FileText },
-];
-
-const systemNav: NavItem[] = [
-  { href: "/admin/invoices", label: "Invoices", icon: AlertTriangle },
-  { href: "/admin/trials", label: "Trials", icon: ClipboardList },
-  { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/admin/reports", label: "Reports", icon: DollarSign },
-  { href: "/admin/support", label: "Support Tickets", icon: LifeBuoy },
-  { href: "/admin/admins", label: "Admins", icon: Shield },
-  { href: "/admin/features", label: "Feature Flags", icon: Flag },
-  { href: "/admin/versions", label: "App Versions", icon: Download },
-  { href: "/admin/audit-logs", label: "Audit Logs", icon: ClipboardList },
-  { href: "/admin/notifications", label: "Notifications", icon: Bell },
+  { href: "/admin/plans", label: "Plans", icon: Tag },
+  { href: "/admin/downloads", label: "Downloads", icon: Download },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
@@ -196,7 +171,6 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const { setTheme, resolvedTheme } = useTheme();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
 
   const mounted = useSyncExternalStore(
     () => () => {},
@@ -224,16 +198,6 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     logout();
     router.push("/auth/login");
   }, [logout, router]);
-
-  const handleSearch = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      if (searchQuery.trim()) {
-        router.push(`/admin/search?q=${encodeURIComponent(searchQuery.trim())}`);
-      }
-    },
-    [searchQuery, router]
-  );
 
   if (!mounted || isLoading) {
     return <LoadingSkeleton />;
@@ -277,8 +241,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       </div>
 
       <nav className="flex-1 space-y-6 overflow-y-auto py-4 scrollbar-hide">
-        <NavGroup title="Main" items={mainNav} collapsed={collapsed} pathname={pathname} onNavigate={() => setMobileOpen(false)} />
-        <NavGroup title="System" items={systemNav} collapsed={collapsed} pathname={pathname} onNavigate={() => setMobileOpen(false)} />
+        <NavGroup title="Navigation" items={navItems} collapsed={collapsed} pathname={pathname} onNavigate={() => setMobileOpen(false)} />
       </nav>
 
       <div className="border-t border-white/10 p-3">
@@ -362,19 +325,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             <Menu className="h-5 w-5" />
           </button>
 
-          {/* Search bar */}
-          <form onSubmit={handleSearch} className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search businesses, customers..."
-              className="h-10 w-full rounded-xl border border-white/10 bg-white/5 pl-10 pr-4 text-sm text-white placeholder-gray-500 outline-none transition-all focus:border-indigo-500/40 focus:bg-white/[0.07] focus:ring-1 focus:ring-indigo-500/20"
-            />
-          </form>
-
-          <div className="flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-2">
             {/* Theme toggle */}
             <button
               onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
@@ -386,14 +337,6 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               ) : (
                 <Moon className="h-4 w-4" />
               )}
-            </button>
-
-            {/* Notifications */}
-            <button className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-gray-400 transition-all hover:bg-white/10 hover:text-gray-200">
-              <Bell className="h-4 w-4" />
-              <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-500 text-[9px] font-bold text-white">
-                3
-              </span>
             </button>
 
             {/* User avatar */}

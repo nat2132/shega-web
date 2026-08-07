@@ -1,7 +1,7 @@
 import logging
 from datetime import timedelta, datetime, date
 
-from django.db.models import Count, Sum, Q, Avg
+from django.db.models import Count, Sum, Q, Avg, Prefetch
 from django.db.models.functions import TruncDay, TruncWeek, TruncMonth, TruncYear
 from django.utils import timezone
 from django.contrib.auth import get_user_model
@@ -295,7 +295,7 @@ def dashboard_view(request):
 
 
 class BusinessViewSet(BaseAdminViewMixin, viewsets.ModelViewSet):
-    queryset = User.objects.filter(is_customer=True).select_related('customer_profile').prefetch_related('licenses')
+    queryset = User.objects.filter(is_customer=True).select_related('customer_profile').prefetch_related('licenses', 'licenses__plan')
     search_fields = ['email', 'phone', 'business_name', 'username', 'first_name', 'last_name']
     filterset_fields = ['is_active', 'business_type', 'email_verified']
     ordering_fields = ['created_at', 'date_joined', 'business_name', 'email']
@@ -308,6 +308,9 @@ class BusinessViewSet(BaseAdminViewMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         qs = super().get_queryset()
+        qs = qs.prefetch_related(
+            Prefetch('licenses', queryset=License.objects.select_related('plan').order_by('-created_at'))
+        )
         return apply_filters(qs, self.request)
 
     def perform_create(self, serializer):

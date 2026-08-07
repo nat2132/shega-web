@@ -167,6 +167,7 @@ export interface DeviceActivation {
   device_name: string;
   hardware_id: string;
   ip_address: string;
+  operating_system?: string;
   is_active: boolean;
   activated_at: string;
   last_seen: string;
