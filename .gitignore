@@ -2,6 +2,7 @@ __pycache__/
 *.py[cod]
 *.pyc
 db.sqlite3
+staticfiles/
 .env
 .env.*
 *.log
