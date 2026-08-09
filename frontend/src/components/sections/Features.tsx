@@ -50,7 +50,7 @@ function FeatureCard({ feature }: { feature: (typeof features)[number] }) {
 
 export default function Features() {
   return (
-    <section className="relative overflow-hidden py-24 sm:py-32">
+    <section id="features" className="relative overflow-hidden py-24 sm:py-32">
       <div className="absolute inset-0 bg-grid pointer-events-none opacity-50" />
       <div className="absolute inset-0 bg-glow pointer-events-none" />
 

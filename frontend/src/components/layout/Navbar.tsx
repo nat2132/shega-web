@@ -17,12 +17,12 @@ const languages = [
 ];
 
 const navLinks = [
-  { label: "nav.home", href: "#" },
-  { label: "nav.features", href: "#features" },
-  { label: "nav.pricing", href: "#pricing" },
-  { label: "nav.mobileApp", href: "#mobile-app" },
-  { label: "nav.faq", href: "#faq" },
-  { label: "nav.contact", href: "#contact" },
+  { label: "nav.home", href: "/" },
+  { label: "nav.features", href: "/#features" },
+  { label: "nav.pricing", href: "/#pricing" },
+  { label: "nav.mobileApp", href: "/#mobile-app" },
+  { label: "nav.faq", href: "/#faq" },
+  { label: "nav.contact", href: "/#contact" },
 ];
 
 function Navbar() {
@@ -127,7 +127,7 @@ function Navbar() {
           </button>
 
           <Link
-            href="#how-it-works"
+            href="/#how-it-works"
             className="btn-primary gap-1.5 px-4 py-1.5 text-[13px]"
           >
             {t("nav.startFreeTrial") as string}
@@ -191,7 +191,7 @@ function Navbar() {
                     ))}
                   </div>
                   <Link
-                    href="#how-it-works"
+                    href="/#how-it-works"
                     onClick={() => setMobileOpen(false)}
                     className="btn-primary flex items-center justify-center gap-2 py-2.5"
                   >
