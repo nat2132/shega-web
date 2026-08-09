@@ -1,5 +1,9 @@
 from django.utils import timezone
 
+from datetime import timedelta
+
+from django.utils import timezone
+
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -136,11 +140,16 @@ class MobilePaymentCreateView(APIView):
     """
     permission_classes = [permissions.IsAuthenticated]
 
+    # Limit a single account to 3 payment submissions per rolling day.
+    DAILY_SUBMISSION_LIMIT = 3
+
     def post(self, request):
         from licenses.models import LicensePlan
+        from accounts.security_log import log_security_event
 
         plan_id = request.data.get('plan_id')
         transaction_id = (request.data.get('transaction_id') or '').strip()
+        ip_address = request.META.get('REMOTE_ADDR', '0.0.0.0')
 
         if not plan_id:
             return Response({'plan_id': ['This field is required.']}, status=status.HTTP_400_BAD_REQUEST)
@@ -152,10 +161,64 @@ class MobilePaymentCreateView(APIView):
         except LicensePlan.DoesNotExist:
             return Response({'plan_id': ['Invalid plan selected.']}, status=status.HTTP_400_BAD_REQUEST)
 
+        # 1) Duplicate transaction id guard (user may only submit a given ref once).
         if Payment.objects.filter(customer=request.user, transaction_id=transaction_id).exists():
+            log_security_event(
+                "payment_duplicate_transaction",
+                level="info",
+                user=request.user.email,
+                plan=plan.name,
+                ip=ip_address,
+            )
             return Response(
                 {'transaction_id': ['This transaction number has already been submitted.']},
                 status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # 2) Daily submission cap per account (rolling 24h window).
+        day_ago = timezone.now() - timedelta(hours=24)
+        submissions_today = Payment.objects.filter(
+            customer=request.user, created_at__gte=day_ago
+        ).count()
+        if submissions_today >= self.DAILY_SUBMISSION_LIMIT:
+            log_security_event(
+                "payment_daily_limit",
+                level="warning",
+                user=request.user.email,
+                plan=plan.name,
+                count=submissions_today,
+                ip=ip_address,
+            )
+            return Response(
+                {
+                    'detail': (
+                        f'You may submit a maximum of {self.DAILY_SUBMISSION_LIMIT} '
+                        'payments per day. Please wait before submitting again.'
+                    ),
+                },
+                status=status.HTTP_429_TOO_MANY_REQUESTS,
+            )
+
+        # 3) No second *pending* payment for the same plan while one awaits review.
+        if Payment.objects.filter(
+            customer=request.user, plan=plan, status=Payment.Status.PENDING
+        ).exists():
+            log_security_event(
+                "payment_pending_for_plan",
+                level="info",
+                user=request.user.email,
+                plan=plan.name,
+                ip=ip_address,
+            )
+            return Response(
+                {
+                    'detail': (
+                        'You already have a pending payment for this plan. '
+                        'Please wait for it to be reviewed before submitting another.'
+                    ),
+                    'plan_id': [plan.id],
+                },
+                status=status.HTTP_409_CONFLICT,
             )
 
         payment = Payment.objects.create(
@@ -165,6 +228,15 @@ class MobilePaymentCreateView(APIView):
             transaction_id=transaction_id,
             payment_method=Payment.PaymentMethod.TELEBIRR,
             status=Payment.Status.PENDING,
+        )
+
+        log_security_event(
+            "payment_submitted",
+            level="info",
+            user=request.user.email,
+            plan=plan.name,
+            payment_id=payment.id,
+            ip=ip_address,
         )
 
         return Response({

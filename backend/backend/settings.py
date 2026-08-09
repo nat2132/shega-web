@@ -105,6 +105,48 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.User'
 
+# Login brute-force protection policy.
+# After this many failed attempts within the window (counted per identifier +
+# IP, persisted in the accounts_loginattempt table), the account is locked out
+# for the window duration. Both values drive LoginView directly.
+LOGIN_LOCKOUT_THRESHOLD = 5          # failed attempts
+LOGIN_LOCKOUT_WINDOW_MINUTES = 15    # lockout / reset window
+
+# Cache backend for rate-limit counters. A shared cache (Redis) is strongly
+# recommended on multi-worker deploys so DRF throttles are enforced per-client
+# across all workers. `django-redis` is required for the Redis variant; if it is
+# not installed or REDIS_URL is unset we fall back to locmem, which still
+# throttles per worker and is fine for single-worker/dev setups. Security-
+# critical, persistent counters (login lockout, daily payment caps) are stored
+# in the DB and therefore survive restarts regardless of this setting.
+REDIS_URL = os.getenv('REDIS_URL')
+try:
+    import django_redis  # noqa: F401
+    _HAS_DJANGO_REDIS = True
+except ImportError:  # pragma: no cover - dependency guard
+    _HAS_DJANGO_REDIS = False
+
+if REDIS_URL and _HAS_DJANGO_REDIS:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': REDIS_URL,
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            },
+            'KEY_PREFIX': 'shega',
+            'TIMEOUT': 3600,
+        }
+    }
+else:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'shega-local-cache',
+            'TIMEOUT': 3600,
+        }
+    }
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -124,8 +166,14 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '100/hour',
-        'user': '1000/hour',
+        'anon': '20/min',          # anonymous: 20/min
+        'user': '120/min',         # authenticated: 120/min
+        'login': '5/min',          # login burst (per IP)
+        'register_ip': '5/hour',   # registrations per IP
+        'register_email': '3/day', # registrations per (IP + email)
+        'password_reset': '5/hour',
+        'password_reset_confirm': '5/hour',
+        'admin_user': '600/hour',  # admin API per staff member
         'license_verify': '50/minute',
     },
 }
@@ -155,18 +203,40 @@ SESSION_COOKIE_SECURE = not DEBUG
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'shega_json': {
+            'format': '%(asctime)s %(levelname)s [%(name)s] %(message)s',
+        },
+    },
     'handlers': {
         'file': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
             'filename': BASE_DIR / 'logs' / 'error.log',
         },
+        'security_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs' / 'security.log',
+            'formatter': 'shega_json',
+        },
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'shega_json',
+        },
     },
     'loggers': {
         'django': {
-            'handlers': ['file'],
+            'handlers': ['file', 'console'],
             'level': 'ERROR',
             'propagate': True,
+        },
+        # Security events (logins, registrations, payments, lockouts).
+        'shega.security': {
+            'handlers': ['security_file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
         },
     },
 }

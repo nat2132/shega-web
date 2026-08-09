@@ -17,6 +17,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from accounts.models import User
 from accounts.permissions import IsAdminUser
+from admin_api.throttles import AdminUserRateThrottle
 from customers.models import CustomerProfile
 from licenses.models import License, LicensePlan, DeviceActivation, LicenseAuditLog
 from payments.models import Payment, Invoice
@@ -131,6 +132,7 @@ def apply_filters(queryset, request, extra_fields=None):
 
 class BaseAdminViewMixin:
     permission_classes = [IsAuthenticated, IsAdminUser]
+    throttle_classes = [AdminUserRateThrottle]
     pagination_class = StandardPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
 
