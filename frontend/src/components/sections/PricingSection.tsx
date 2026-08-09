@@ -22,6 +22,7 @@ type PlanType = {
 };
 
 function PricingCard({ plan, index, isQuarterly }: { plan: PlanType; index: number; isQuarterly: boolean }) {
+  const { t } = useTranslations();
   const isPopular = !!plan.popular;
 
   return (
@@ -83,7 +84,7 @@ function PricingCard({ plan, index, isQuarterly }: { plan: PlanType; index: numb
             className="mt-2 inline-flex items-center gap-1 text-[12px] font-medium text-[#f59e0b]"
           >
             <Star className="h-3 w-3 fill-[#f59e0b]" />
-            Best Value — Most Popular Plan
+            {t("pricing.bestValue") as string}
           </motion.div>
         )}
       </div>
@@ -138,12 +139,12 @@ function PricingSection() {
           viewport={{ once: true, margin: "-60px" }}
           className="text-center mb-16"
         >
-          <div className="pill-blue pill-apple mb-5 inline-flex">Simple Pricing</div>
+          <div className="pill-blue pill-apple mb-5 inline-flex">{t("pricing.badge") as string}</div>
           <h2 className="font-display text-[clamp(1.75rem,3vw,2.5rem)] font-semibold text-[var(--fg)] leading-[1.1] tracking-[-0.015em] mb-4">
-            Plans That Grow With Your Business
+            {t("pricing.heading") as string}
           </h2>
           <p className="text-[17px] text-[var(--muted)] max-w-2xl mx-auto leading-relaxed mb-8">
-            Choose the plan that fits your business. Upgrade anytime.
+            {t("pricing.lead") as string}
           </p>
 
           <div className="inline-flex items-center gap-1 rounded-full border border-[var(--border)] p-0.5">
@@ -162,7 +163,7 @@ function PricingSection() {
                   transition={{ type: "spring", stiffness: 400, damping: 28 }}
                 />
               )}
-              <span className="relative z-10">1 Month</span>
+              <span className="relative z-10">{t("pricing.toggle.monthly") as string}</span>
             </motion.button>
             <motion.button
               onClick={() => setIsQuarterly(true)}
@@ -179,7 +180,7 @@ function PricingSection() {
                   transition={{ type: "spring", stiffness: 400, damping: 28 }}
                 />
               )}
-              <span className="relative z-10">3 Months</span>
+              <span className="relative z-10">{t("pricing.toggle.threeMonths") as string}</span>
             </motion.button>
           </div>
         </motion.div>

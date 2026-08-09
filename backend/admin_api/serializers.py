@@ -131,12 +131,14 @@ class BusinessDetailSerializer(serializers.ModelSerializer):
     customer_profile = serializers.SerializerMethodField()
     licenses = serializers.SerializerMethodField()
     recent_payments = serializers.SerializerMethodField()
+    company_name = serializers.SerializerMethodField()
+    owner_name = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = [
             'id', 'email', 'username', 'phone', 'first_name', 'last_name',
-            'business_name', 'business_type', 'address',
+            'business_name', 'company_name', 'owner_name', 'business_type', 'address',
             'is_active', 'is_customer', 'is_admin',
             'email_verified', 'phone_verified',
             'customer_profile', 'licenses', 'recent_payments',
@@ -144,6 +146,13 @@ class BusinessDetailSerializer(serializers.ModelSerializer):
             'notes',
         ]
         read_only_fields = fields
+
+    def get_owner_name(self, obj):
+        return obj.get_full_name() or obj.email
+
+    def get_company_name(self, obj):
+        profile = getattr(obj, 'customer_profile', None)
+        return profile.company_name if profile and profile.company_name else (obj.business_name or obj.get_full_name())
 
     def get_customer_profile(self, obj):
         profile = getattr(obj, 'customer_profile', None)

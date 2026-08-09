@@ -2,18 +2,18 @@
 
 import { motion } from "framer-motion";
 import { useTranslations } from "@/hooks/useTranslations";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Download } from "lucide-react";
 import Link from "next/link";
 import BlurText from "@/components/reactbits/BlurText";
 import { useState } from "react";
 
 const screens = [
-  { file: "dashboard-mobile.jpg", label: "Dashboard" },
-  { file: "invetory-mobile.jpg", label: "Inventory" },
-  { file: "sales-mobile.jpg", label: "Sales" },
-  { file: "reports-mobile.jpg", label: "Reports" },
-  { file: "business-assistant-mobile.jpg", label: "AI Assistant" },
-  { file: "product-order-mobile.jpg", label: "Purchase Orders" },
+  { file: "dashboard-mobile.jpg", key: "screenshots.mobile.dashboard" },
+  { file: "invetory-mobile.jpg", key: "screenshots.mobile.inventory" },
+  { file: "sales-mobile.jpg", key: "screenshots.mobile.sales" },
+  { file: "reports-mobile.jpg", key: "screenshots.mobile.reports" },
+  { file: "business-assistant-mobile.jpg", key: "screenshots.mobile.aiAssistant" },
+  { file: "product-order-mobile.jpg", key: "screenshots.mobile.purchaseOrders" },
 ];
 
 const idlePositions = [
@@ -53,6 +53,7 @@ function PhoneFrame({ src, label }: { src: string; label: string }) {
 function MobileScreenshotFan() {
   const [hovered, setHovered] = useState(false);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+  const { t } = useTranslations();
 
   return (
     <>
@@ -81,6 +82,7 @@ function MobileScreenshotFan() {
           {screens.map((screen, i) => {
             const idle = idlePositions[i];
             const fan = fanPositions[i];
+            const label = t(screen.key) as string;
             return (
               <motion.div
                 key={screen.file}
@@ -103,7 +105,7 @@ function MobileScreenshotFan() {
                       : { duration: 0.2 }
                   }
                 >
-                  <PhoneFrame src={`/images/screens/${screen.file}`} label={screen.label} />
+                  <PhoneFrame src={`/images/screens/${screen.file}`} label={label} />
                 </motion.div>
               </motion.div>
             );
@@ -114,7 +116,7 @@ function MobileScreenshotFan() {
           className="mt-3 text-xs text-[var(--muted)]"
           animate={{ opacity: hovered ? 0.4 : 1 }}
         >
-          Hover to explore all screens
+          {t("hero.hoverHint") as string}
         </motion.p>
       </div>
     </>
@@ -186,6 +188,13 @@ function HeroSection() {
                 className="btn-secondary btn-large gap-2"
               >
                 {t("hero.secondaryCta") as string}
+              </Link>
+              <Link
+                href="/download"
+                className="btn-secondary btn-large gap-2 items-center justify-center"
+              >
+                <Download className="h-4 w-4" />
+                {t("hero.downloadCta") as string}
               </Link>
             </motion.div>
           </motion.div>

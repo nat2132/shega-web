@@ -1,85 +1,22 @@
 "use client";
 
+import { useState, useCallback, useEffect } from "react";
 import { motion, type Variants } from "framer-motion";
-import { Download, Smartphone, HardDrive, Wifi, Check } from "lucide-react";
+import { Download, Check, Smartphone, HardDrive, Wifi, Loader2 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-
-const releaseNotes = [
-  {
-    version: "2.1.0",
-    date: "June 1, 2026",
-    changes: [
-      "Added multi-warehouse support",
-      "Improved barcode scanning performance",
-      "New debt aging reports",
-      "Enhanced POS interface with dark mode",
-      "Fixed invoice PDF generation issues",
-      "Performance improvements and bug fixes",
-    ],
-  },
-  {
-    version: "2.0.1",
-    date: "April 15, 2026",
-    changes: [
-      "Fixed database sync issue on slow connections",
-      "Improved receipt printer compatibility",
-      "Updated currency exchange rate API",
-      "Minor UI fixes",
-    ],
-  },
-  {
-    version: "2.0.0",
-    date: "March 1, 2026",
-    changes: [
-      "Complete UI redesign with modern look",
-      "Offline mode support",
-      "Real-time cloud sync",
-      "Employee management module",
-      "Advanced analytics dashboard",
-      "API access for integrations",
-    ],
-  },
-  {
-    version: "1.3.0",
-    date: "January 10, 2026",
-    changes: [
-      "Supplier management module",
-      "Purchase order system",
-      "Price history tracking",
-      "Export reports to PDF/Excel",
-    ],
-  },
-  {
-    version: "1.2.0",
-    date: "November 20, 2025",
-    changes: [
-      "Debt management system",
-      "Payment reminders",
-      "Customer credit tracking",
-      "Notification preferences",
-    ],
-  },
-];
-
-const installSteps = [
-  {
-    title: "Download the App",
-    description: "Click the download button above to get the Shega APK for Android.",
-  },
-  {
-    title: "Install the APK",
-    description: "Locate the downloaded file and tap to install. Allow installation from unknown sources if prompted.",
-  },
-  {
-    title: "Launch Shega",
-    description: "Once installation is complete, launch Shega from your app drawer. Sign in with your account to get started.",
-  },
-  {
-    title: "Activate License",
-    description: "Enter your license key in the activation screen. If you don't have one, start your 7-day free trial directly from the app.",
-  },
-];
+import { useDeviceType } from "@/hooks/useDeviceType";
+import { useTranslations } from "@/hooks/useTranslations";
+import {
+  fetchLatestRelease,
+  fetchRecentReleases,
+  findApkAsset,
+  triggerApkDownload,
+  formatReleaseLabel,
+  parseReleaseNotes,
+  GitHubRelease,
+  GitHubAsset,
+} from "@/lib/githubRelease";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -91,7 +28,73 @@ const itemVariants: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1] as const } },
 };
 
+type DownloadStatus = "idle" | "preparing" | "started" | "error";
+
 export default function DownloadPage() {
+  const isMobile = useDeviceType();
+  const { t } = useTranslations();
+
+  const [release, setRelease] = useState<GitHubRelease | null>(null);
+  const [apk, setApk] = useState<GitHubAsset | null>(null);
+  const [recentReleases, setRecentReleases] = useState<GitHubRelease[]>([]);
+  const [status, setStatus] = useState<DownloadStatus>("idle");
+  const [message, setMessage] = useState<string>("");
+
+  // Resolve the latest release info on load so the version/label can reflect
+  // the actual current version without any code change after a new publish.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const latest = await fetchLatestRelease(true);
+        if (!cancelled) {
+          setRelease(latest);
+          setApk(findApkAsset(latest));
+        }
+        fetchRecentReleases(5, true)
+          .then((list) => {
+            if (!cancelled) setRecentReleases(list);
+          })
+          .catch(() => {
+            /* release notes are optional */
+          });
+      } catch {
+        /* keep static labels; the Download button still reports errors */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleDownload = useCallback(async () => {
+    if (status === "preparing" || status === "started") return;
+    setStatus("preparing");
+    setMessage("");
+    try {
+      const latest = await fetchLatestRelease(true);
+      const asset = findApkAsset(latest);
+      if (!asset) {
+        setStatus("error");
+        setMessage(t("download.versionUnavailable") as string);
+        return;
+      }
+      setRelease(latest);
+      setApk(asset);
+      await triggerApkDownload(asset);
+      setStatus("started");
+    } catch {
+      setStatus("error");
+      setMessage(t("download.downloadFailed") as string);
+    }
+  }, [status, t]);
+
+  const versionLabel = release ? formatReleaseLabel(release, apk) : "";
+  const apkName = apk?.name ?? "";
+  const installSteps = t(
+    "download.installSteps",
+  ) as unknown as Array<{ title: string; description: string }>;
+
   return (
     <div className="min-h-screen bg-bg flex flex-col">
       <Navbar />
@@ -108,13 +111,18 @@ export default function DownloadPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
             >
-              <div className="pill pill-glass mb-6 inline-flex">Latest version 2.1.0</div>
+              <div className="pill pill-glass mb-6 inline-flex">
+                {apk
+                  ? `${t("download.latestVersion")} ${apk.name.replace(/\.apk$/i, "").replace(/^Shega[- ]?/i, "v")}`
+                  : release
+                    ? `${t("download.latestVersion")} ${release.tag_name.replace(/^v/i, "")}`
+                    : (t("download.latestVersion") as string)}
+              </div>
               <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl leading-[1.1]">
-                Download <span className="text-gradient">Shega</span>
+                {t("download.title") as string}
               </h1>
               <p className="mt-4 text-lg leading-relaxed text-muted max-w-2xl mx-auto">
-                Get the latest version of Shega for Android. Run your business
-                smarter with our all-in-one inventory and sales management platform.
+                {t("download.subtitle") as string}
               </p>
             </motion.div>
 
@@ -129,20 +137,59 @@ export default function DownloadPage() {
                   <Smartphone className="h-8 w-8 text-foreground" />
                 </div>
                 <h2 className="mb-2 text-2xl font-bold text-foreground tracking-tight">
-                  Shega for Android
+                  {t("download.androidTitle") as string}
                 </h2>
-                <p className="mb-6 text-sm text-muted">
-                  Version 2.1.0 &middot; Released June 1, 2026 &middot; 45 MB
-                </p>
-                <a
-                  href="#"
-                  className="btn-glass-primary inline-flex h-12 items-center gap-2.5 px-8 text-sm rounded-xl"
-                >
-                  <Download className="h-5 w-5" />
-                  Download for Android
-                </a>
+                <p className="mb-6 text-sm text-muted">{versionLabel}</p>
+
+                {isMobile ? (
+                  <button
+                    onClick={handleDownload}
+                    disabled={status === "preparing" || status === "started"}
+                    className="btn-glass-primary inline-flex h-12 items-center gap-2.5 px-8 text-sm rounded-xl cursor-pointer disabled:opacity-70"
+                  >
+                    {status === "preparing" ? (
+                      <>
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        {t("download.preparing") as string}
+                      </>
+                    ) : status === "started" ? (
+                      <>
+                        <Check className="h-5 w-5" />
+                        {t("download.downloadStarted") as string}
+                      </>
+                    ) : status === "error" ? (
+                      <>
+                        <Download className="h-5 w-5" />
+                        {t("download.tryAgain") as string}
+                      </>
+                    ) : (
+                      <>
+                        <Download className="h-5 w-5" />
+                        {t("download.downloadAndroid") as string}
+                      </>
+                    )}
+                  </button>
+                ) : (
+                  <div className="inline-flex flex-col items-center gap-3">
+                    <span className="inline-flex h-12 items-center gap-2.5 px-8 text-sm rounded-xl bg-white/[0.06] border border-white/[0.06] text-muted">
+                      <Smartphone className="h-5 w-5" />
+                      {t("download.comingSoon") as string}
+                    </span>
+                    <p className="text-xs text-muted/70 max-w-xs">
+                      {t("download.mobileNote") as string}
+                    </p>
+                  </div>
+                )}
+
+                {status === "error" && message && (
+                  <p className="mt-4 text-sm text-red-400" role="alert">
+                    {message}
+                  </p>
+                )}
+
                 <p className="mt-4 text-xs text-muted/70">
-                  Shega-2.1.0.apk &middot; Android 8.0 or later
+                  {apkName && `${apkName} &middot; `}
+                  {t("download.androidRequired") as string}
                 </p>
               </motion.div>
 
@@ -152,14 +199,14 @@ export default function DownloadPage() {
                 transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
               >
                 <h3 className="mb-6 text-xl font-semibold text-foreground tracking-tight">
-                  System Requirements
+                  {t("download.systemRequirements") as string}
                 </h3>
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   {[
-                    { icon: Smartphone, label: "Operating System", value: "Android 8.0+" },
-                    { icon: HardDrive, label: "RAM", value: "2 GB minimum" },
-                    { icon: HardDrive, label: "Storage", value: "200 MB free" },
-                    { icon: Wifi, label: "Internet", value: "Required for sync" },
+                    { icon: Smartphone, label: t("download.os") as string, value: t("download.osValue") as string },
+                    { icon: HardDrive, label: t("download.ram") as string, value: t("download.ramValue") as string },
+                    { icon: HardDrive, label: t("download.storage") as string, value: t("download.storageValue") as string },
+                    { icon: Wifi, label: t("download.internet") as string, value: t("download.internetValue") as string },
                   ].map((req) => (
                     <div
                       key={req.label}
@@ -184,7 +231,7 @@ export default function DownloadPage() {
                 viewport={{ once: true, margin: "-60px" }}
               >
                 <h3 className="mb-6 text-xl font-semibold text-foreground tracking-tight">
-                  Installation Guide
+                  {t("download.installGuide") as string}
                 </h3>
                 <div className="space-y-3">
                   {installSteps.map((step, i) => (
@@ -216,33 +263,42 @@ export default function DownloadPage() {
                 transition={{ duration: 0.6, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
               >
                 <h3 className="mb-5 text-lg font-semibold text-foreground tracking-tight">
-                  Release Notes
+                  {t("download.releaseNotes") as string}
                 </h3>
-                <div className="space-y-6">
-                  {releaseNotes.map((release) => (
-                    <div key={release.version} className="border-b border-white/[0.04] pb-5 last:border-0 last:pb-0">
-                      <div className="mb-2 flex items-baseline justify-between">
-                        <span className="text-sm font-semibold text-foreground">
-                          v{release.version}
-                        </span>
-                        <span className="text-xs text-muted">
-                          {release.date}
-                        </span>
-                      </div>
-                      <ul className="space-y-1.5">
-                        {release.changes.map((change) => (
-                          <li
-                            key={change}
-                            className="flex items-start gap-2 text-xs text-muted leading-relaxed"
-                          >
-                            <Check className="mt-0.5 h-3 w-3 shrink-0 text-foreground/30" />
-                            {change}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
+                {recentReleases.length > 0 ? (
+                  <div className="space-y-6">
+                    {recentReleases.map((rel) => {
+                      const changes = parseReleaseNotes(rel.body);
+                      return (
+                        <div key={rel.id ?? rel.tag_name} className="border-b border-white/[0.04] pb-5 last:border-0 last:pb-0">
+                          <div className="mb-2 flex items-baseline justify-between">
+                            <span className="text-sm font-semibold text-foreground">
+                              {rel.name || rel.tag_name}
+                            </span>
+                            <span className="text-xs text-muted">
+                              {new Date(rel.published_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                            </span>
+                          </div>
+                          {changes.length > 0 && (
+                            <ul className="space-y-1.5">
+                              {changes.map((change, i) => (
+                                <li
+                                  key={i}
+                                  className="flex items-start gap-2 text-xs text-muted leading-relaxed"
+                                >
+                                  <Check className="mt-0.5 h-3 w-3 shrink-0 text-foreground/30" />
+                                  {change}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted">{t("download.versionUnavailable") as string}</p>
+                )}
               </motion.div>
             </div>
           </div>

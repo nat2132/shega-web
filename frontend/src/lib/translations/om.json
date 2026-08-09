@@ -19,7 +19,9 @@
     "subheadline": "Kuuusaa hordofi, gurgurtaa bulchi, daatiwwan qindeessi, fi baasii to'aa — hunda platform tokko irraa, daldaltoota Itiyoophiyaatiif tolfame.",
     "primaryCta": "Jalqabi",
     "secondaryCta": "Dabalataan Baradhu",
+    "downloadCta": "App Buufadhu",
     "badge": "Beeta Amma Baname",
+    "hoverHint": "Skreenoota hunda ilaaluuf harkisa",
     "trustBadges": {
       "offline": "Offline Hojjeta",
       "ethiopianCalendar": "Guyyaa Itiyoophiyaa",
@@ -51,8 +53,11 @@
   },
   "features": {
     "mobile": {
+      "badge": "App Bilbilaa",
       "title": "Bilbila Keessanii Bija Keessan Bakka Kamuu Bulchaa",
       "subtitle": "Kuusaa bulchi, gurgurtaa hordofi, fi daldala kee bakka kamiiyyuu irraa to'achuu.",
+      "cardTitle": "Android irratti jira",
+      "cardSubtitle": "App buufadhu",
       "items": {
         "inventoryManagement": "Inventory Bulchuu",
         "sales": "Gurgurtaa fi POS",
@@ -134,6 +139,10 @@
     }
   },
   "pricing": {
+    "badge": "Gatii Salphaa",
+    "heading": "Karoora Bija Keessaan Walitti Dagaatan",
+    "lead": "Karoora bijaa keetti tolu filadhu. Yeroo barbaaddettan ol qacari.",
+    "bestValue": "Gatii Irra Gaarii — Karoora Baay'ee Filatamaa",
     "toggle": {
       "monthly": "Ji'aan",
       "threeMonths": "Ji'aa 3 Iffaa"
@@ -207,7 +216,8 @@
           "Kuusaa",
           "Gurgurtaa",
           "Quunnamoota",
-          "Qindaa'ina Kuusaa Fooyyessuu"
+          "Qindaa'ina Kuusaa Fooyyessuu",
+          "PDF ykn CSV itti gad ba'aa"
         ],
         "cta": "Bu'ura Filadhu"
       },
@@ -243,6 +253,9 @@
       }
     },
     "comparison": {
+      "badge": "Madaallee Amalootaa",
+      "included": "Dabalameera",
+      "notIncluded": "Hin dabalamin",
       "title": "Amaloota Hunda Wal bira Kaa'i",
       "subtitle": "Karoora hunda keessatti waan argattan sirriitti ilaalaa.",
       "columns": {
@@ -292,12 +305,12 @@
     "title": "Shega Guyyaa 7 Bilis Yaali",
     "subtitle": "Kaardii kreeditii hin barbaachisu. Yeroo yalii kee keessatti amaloota hunda daawwadhu.",
     "benefits": {
-      "noCard": "✅ Guyyaa 7 Bilis Yaali",
+      "noCard": "Guyyaa 7 Bilis Yaali",
       "fullAccess": "Dandeettii Hunda",
       "easySetup": "Sassata Saffisaa",
       "cancelAnytime": "Yeroo Barbaadee Dhiisi",
-      "noCommitment": "✅ Dirqama Hin Barbaachisu",
-      "allFeatures": "✅ Amaloota Hunda Hiramuu"
+      "noCommitment": "Dirqama Hin Barbaachisu",
+      "allFeatures": "Amaloota Hunda Hiramuu"
     },
     "cta": "Jalqabi"
   },
@@ -413,7 +426,7 @@
       {
         "step": "1",
         "title": "App Buufadhu",
-        "desc": "SHEGA Google Play Store irraa ykn desktop app Windows, macOS, ykn Linux irratti buufadhu."
+        "desc": "Website kana irraa buufadhu."
       },
       {
         "step": "2",
@@ -478,5 +491,49 @@
     "om": "Oromoo",
     "ti": "Tigrignaa",
     "select": "Afaan Filadhu"
+  },
+"download": {
+    "title": "Shega Buufadhu",
+    "latestVersion": "Gosa dhihoo",
+    "subtitle": "Gosa dhihoo Shega Android irratti buufadhu. Platforma bulkiin kuusaa fi gurgurtaa guutuun biijaa kee bulchi.",
+    "androidTitle": "Shega Androidf",
+    "preparing": "Buufachaa jira...",
+    "downloadStarted": "Buufichi jalqabe",
+    "tryAgain": "Itti Deebi'i",
+    "downloadAndroid": "Androiddiif Buufadhu",
+    "comingSoon": "Dhiyoootti",
+    "mobileNote": "App Androidi meeshaalee bilbilaa irratti argama. Itti jalqabuuf bilbila keessan irratti buufadhaa.",
+    "versionUnavailable": "Gosa dhihoo har'a hin argamu.",
+    "downloadFailed": "Buufachuun hin danda'ame. Maaloo irra deddeebi'ii yaali.",
+    "androidRequired": "Android 8.0 ykn itti aanee",
+    "systemRequirements": "Barbaachisuu Sisete",
+    "os": "Sisitemii Hojjii",
+    "ram": "RAM",
+    "storage": "Kuusaa",
+    "internet": "Intarneetii",
+    "osValue": "Android 8.0+",
+    "ramValue": "2 GB xinnuu",
+    "storageValue": "200 MB bilisaa",
+    "internetValue": "Synchronizationiif barbaachisaa",
+    "installGuide": "Karaa Installachuu",
+    "installSteps": [
+      {
+        "title": "App Buufadhu",
+        "description": "APK Shegaa argachuuf baaton gubbaa irra jiru tuqi."
+      },
+      {
+        "title": "APK Install Godhii",
+        "description": "Fayilaa buufadtani argachuuf isa tuqi. Yoo gaafatame, install meeshaalee hin beekamne irraa eeyyami."
+      },
+      {
+        "title": "Shega Banii",
+        "description": "Installation fixummatti, bilbilarraan Shega banii. Akkaataa galtee bilbila keessaaniin jalqabi."
+      },
+      {
+        "title": "Itti Galmaa'i",
+        "description": "Karoora filadhu irratti Teelebiirr itti galmaa'i. Yoo hanga amma; qoricha hin qabduu fi trial bilisaa 7 guyyaa app keessaa jalqi."
+      }
+    ],
+"releaseNotes": "Galmee Baafannaa"
   }
 }

@@ -53,7 +53,7 @@ function MobileFeatures() {
         >
           <div className="pill-blue pill-apple mb-5 inline-flex">
             <Smartphone className="h-3.5 w-3.5 mr-1.5" />
-            Mobile App
+            {t("features.mobile.badge") as string}
           </div>
           <h2 className="font-display text-[clamp(1.75rem,3vw,2.5rem)] font-semibold text-[var(--fg)] leading-[1.1] tracking-[-0.015em] mb-4 flex justify-center">
             <BlurText
@@ -103,8 +103,8 @@ function MobileFeatures() {
           <div className="card-elevated max-w-md mx-auto p-6 inline-flex flex-col items-center gap-3">
             <Smartphone className="h-8 w-8 text-[var(--accent)]" />
             <div>
-              <p className="text-[14px] font-medium text-[var(--fg)]">Available for Android</p>
-              <p className="text-[12px] text-[var(--muted)] mt-1">Download the app</p>
+              <p className="text-[14px] font-medium text-[var(--fg)]">{t("features.mobile.cardTitle") as string}</p>
+              <p className="text-[12px] text-[var(--muted)] mt-1">{t("features.mobile.cardSubtitle") as string}</p>
             </div>
           </div>
         </motion.div>

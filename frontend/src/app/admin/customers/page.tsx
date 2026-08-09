@@ -35,6 +35,7 @@ interface BusinessDetail {
   phone?: string;
   business_name: string;
   company_name: string;
+  owner_name: string;
   first_name?: string;
   last_name?: string;
   date_joined: string;
@@ -232,9 +233,8 @@ export default function CustomersPage() {
                   <div>
                     <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Account Information</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                      <Info label="Owner Name" value={detail.business_name || "—"} />
+                      <Info label="Owner Name" value={detail.owner_name || "—"} />
                       <Info label="Email" value={detail.email} />
-                      <Info label="Phone" value={detail.phone || "—"} />
                       <Info label="Business Name" value={detail.company_name || "—"} />
                       <Info label="Registered" value={formatDate(detail.date_joined, { hideTime: true })} />
                     </div>
@@ -259,7 +259,7 @@ export default function CustomersPage() {
                             {detail.licenses?.map((l) => (
                               <tr key={l.id} className="border-b border-border last:border-0">
                                 <td className="px-4 py-3 font-mono text-xs text-fg">{l.license_key}</td>
-                                <td className="px-4 py-3 text-fg-2">{planName(l.plan)}</td>
+                                <td className="px-4 py-3 text-fg-2">{planName(l)}</td>
                                 <td className="px-4 py-3"><Badge variant={licenseStatusVariant(l.status)} size="sm">{l.status}</Badge></td>
                                 <td className="px-4 py-3 text-muted">{l.expiry_date ? formatDate(l.expiry_date, { hideTime: true }) : "—"}</td>
                               </tr>
@@ -326,9 +326,9 @@ export default function CustomersPage() {
   );
 }
 
-function planName(plan: License["plan"]): string {
-  if (typeof plan === "object" && plan) return (plan as { name?: string }).name || "N/A";
-  return "N/A";
+function planName(l: Pick<License, "plan"> & { plan_name?: string | null; plan_details?: { name?: string } | null }): string {
+  if (typeof l.plan === "object" && l.plan) return (l.plan as { name?: string }).name || "N/A";
+  return l.plan_name || l.plan_details?.name || "N/A";
 }
 
 function Info({ label, value }: { label: string; value: string }) {

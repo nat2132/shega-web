@@ -10,16 +10,21 @@
     "startFreeTrial": "Get Started"
   },
   "hero": {
-    "headline": "The Complete Inventory & Sales Management System for Ethiopian Businesses",
-    "subheadline": "Track inventory, manage sales, organize customers, and monitor finances — all from one platform designed for Ethiopian businesses.",
+    "headline": "The Complete Inventory & Sales Management System for Businesses",
+    "subheadline": "Track inventory, manage sales, organize customers, and monitor finances — all from one platform designed for businesses.",
     "primaryCta": "Get Started",
     "secondaryCta": "Learn More",
-    "badge": "Beta Now Open"
+    "downloadCta": "Download App",
+    "badge": "Beta Now Open",
+    "hoverHint": "Hover to explore all screens"
   },
   "features": {
     "mobile": {
+      "badge": "Mobile App",
       "title": "Manage Your Business from Anywhere",
       "subtitle": "Manage inventory, track sales, and stay on top of your business from anywhere.",
+      "cardTitle": "Available for Android",
+      "cardSubtitle": "Download the app",
       "items": {
         "inventoryManagement": "Inventory Management",
         "sales": "Sales",
@@ -46,6 +51,14 @@
     }
   },
   "pricing": {
+    "badge": "Simple Pricing",
+    "heading": "Plans That Grow With Your Business",
+    "lead": "Choose the plan that fits your business. Upgrade anytime.",
+    "bestValue": "Best Value — Most Popular Plan",
+    "toggle": {
+      "monthly": "1 Month",
+      "threeMonths": "3 Months"
+    },
     "mobile": {
       "title": "Mobile Plans",
       "subtitle": "Start on mobile and upgrade as you grow.",
@@ -61,7 +74,8 @@
           "Inventory",
           "Sales",
           "Contacts",
-          "Stock Adjustments"
+          "Stock Adjustments",
+          "Export to PDF or CSV"
         ],
         "cta": "Choose Basic"
       },
@@ -97,6 +111,9 @@
       }
     },
     "comparison": {
+      "badge": "Feature Comparison",
+      "included": "Included",
+      "notIncluded": "Not included",
       "title": "Compare All Features",
       "subtitle": "See exactly what you get with each plan.",
       "columns": {
@@ -132,10 +149,10 @@
     "title": "Try SHEGA Free for 7 Days",
     "subtitle": "No credit card required. Explore all features during your trial period.",
     "benefits": {
-      "noCard": "✅ 7-Day Free Trial",
-      "fullAccess": "✅ Full Premium Access",
-      "noCommitment": "✅ No Commitment Required",
-      "allFeatures": "✅ All Features Unlocked"
+      "noCard": "7-Day Free Trial",
+      "fullAccess": "Full Premium Access",
+      "noCommitment": "No Commitment Required",
+      "allFeatures": "All Features Unlocked"
     },
     "cta": "Get Started"
   },
@@ -147,7 +164,7 @@
       {
         "step": "1",
         "title": "Download the App",
-        "desc": "Get SHEGA from the Google Play Store."
+        "desc": "Download it from this website."
       },
       {
         "step": "2",
@@ -317,5 +334,49 @@
     "mobileApp": "Mobile App",
     "contact": "Contact",
     "downloadMobile": "Download for Android"
+  },
+  "download": {
+    "title": "Download Shega",
+    "latestVersion": "Latest version",
+    "subtitle": "Get the latest version of Shega for Android. Run your business smarter with our all-in-one inventory and sales management platform.",
+    "androidTitle": "Shega for Android",
+    "preparing": "Preparing download...",
+    "downloadStarted": "Download started",
+    "tryAgain": "Try Again",
+    "downloadAndroid": "Download for Android",
+    "comingSoon": "Coming Soon",
+    "mobileNote": "The Android app is available on mobile devices. Download it on your phone to get started.",
+    "versionUnavailable": "The latest version is currently unavailable.",
+    "downloadFailed": "Unable to prepare the download. Please try again.",
+    "androidRequired": "Android 8.0 or later",
+    "systemRequirements": "System Requirements",
+    "os": "Operating System",
+    "ram": "RAM",
+    "storage": "Storage",
+    "internet": "Internet",
+    "osValue": "Android 8.0+",
+    "ramValue": "2 GB minimum",
+    "storageValue": "200 MB free",
+    "internetValue": "Required for sync",
+    "installGuide": "Installation Guide",
+    "installSteps": [
+      {
+        "title": "Download the App",
+        "description": "Click the download button above to get the Shega APK for Android."
+      },
+      {
+        "title": "Install the APK",
+        "description": "Locate the downloaded file and tap to install. Allow installation from unknown sources if prompted."
+      },
+      {
+        "title": "Launch Shega",
+        "description": "Once installation is complete, launch Shega from your app drawer. Sign in with your account to get started."
+      },
+      {
+        "title": "Subscribe",
+        "description": "Choose a plan and subscribe via Telebirr. If you don't have a subscription yet, start your 7-day free trial directly from the app."
+      }
+    ],
+    "releaseNotes": "Release Notes"
   }
 }

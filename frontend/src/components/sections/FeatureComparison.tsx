@@ -50,7 +50,7 @@ function FeatureComparison() {
           viewport={{ once: true, margin: "-60px" }}
           className="text-center mb-16"
         >
-          <div className="pill-blue pill-apple mb-5 inline-flex">Feature Comparison</div>
+          <div className="pill-blue pill-apple mb-5 inline-flex">{t("pricing.comparison.badge") as string}</div>
           <h2 className="font-display text-[clamp(1.75rem,3vw,2.5rem)] font-semibold text-[var(--fg)] leading-[1.1] tracking-[-0.015em] mb-4">
             {t("pricing.comparison.title") as string}
           </h2>
@@ -127,11 +127,11 @@ function FeatureComparison() {
         <div className="flex items-center justify-center gap-6 mt-6 text-[12px] text-[var(--muted)]">
           <div className="flex items-center gap-1.5">
             <Check className="h-3.5 w-3.5 text-[var(--accent)]" />
-            Included
+            {t("pricing.comparison.included") as string}
           </div>
           <div className="flex items-center gap-1.5">
             <X className="h-3.5 w-3.5 text-[var(--border)]" />
-            Not included
+            {t("pricing.comparison.notIncluded") as string}
           </div>
         </div>
       </div>

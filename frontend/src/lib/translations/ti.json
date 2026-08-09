@@ -18,8 +18,10 @@
     "headline": "ብሓደ ኃይለኛ ፕላትፎርም ዅሉ ንግድኹም ምምሕር",
     "subheadline": "ክምችት ተከታተሉ፣ ሽያጭ ኣመሓድሩ፣ ደንበኛታት ኣደላድሉ፣ ወጪዎች ተቆጻጸሩ — ኩሉ ኣብ ሓደ ፕላትፎርም።",
     "primaryCta": "ጀምሩ",
-    "secondaryCta": "ተወሳኺ ፍለጡ",
-    "badge": "ቤታ ሕጂ ተኸፊቱ",
+"secondaryCta": "ተወሳኺ ፍለጡ",
+    "downloadCta": "ኤፕሊኬሽን ኣውረዱ",
+    "badge": "ቤታ ሕጂ ተከፊቱ",
+    "hoverHint": "ኩሉን ስክሪንታት ንምርኣት ዓራም ኣንቀሳቕስ",
     "trustBadges": {
       "offline": "ኣብ ኦፋይን ይሰርሕ",
       "ethiopianCalendar": "የኢትዮጵያ ቀን መቁጠሪያ",
@@ -51,8 +53,11 @@
   },
   "features": {
     "mobile": {
+      "badge": "ሞባይል ኤፕሊኬሽን",
       "title": "ንግድኻ ካብ ዝኾነ ቦታ ኣመሓድር",
       "subtitle": "ክምችት ኣመሓድሩ፣ ሽያጫት ተከታተሉ፣ ንግድኹም ካብ ዝኾነ ቦታ ተቆጻጸሩ።",
+      "cardTitle": "ን Android ኣሎ",
+      "cardSubtitle": "ኤፕልኬሽን ኣውረዱ",
       "items": {
         "inventoryManagement": "Inventory ምምሕራጥ",
         "sales": "ሽያጭ እና POS",
@@ -134,6 +139,10 @@
     }
   },
   "pricing": {
+    "badge": "ቀሊል ዋጋ",
+    "heading": "ምስ ዕብየት ንግድኩም ዝዓቢ ፕላናት",
+    "lead": "ንንግድኩም ዚሰማማዕ ፕላን ምረጹ — ግዜ ዝኾነ እዋን ኣመሓድሩ።",
+    "bestValue": "ምርጽ ዋጋ — ብዝያዳ ተመራጺ ፕላን",
     "toggle": {
       "monthly": "ወርሐዊ",
       "threeMonths": "ነዚ 3 ወር"
@@ -207,7 +216,8 @@
           "ክምችት",
           "ሽያጭ",
           "ግንኙነታት",
-          "ምምዕራይ ክምችት"
+          "ምምዕራይ ክምችት",
+          "ናብ PDF ወይም CSV ምውጻእ"
         ],
         "cta": "መሰረታዊ ምረጹ"
       },
@@ -243,6 +253,9 @@
       }
     },
     "comparison": {
+      "badge": "ምንጽጓር ኣምርንቲ",
+      "included": "ተኻቶ",
+      "notIncluded": "ኣይተኻቶን",
       "title": "ኩሎም ኣምርንቲ ኣነጻጽሩ",
       "subtitle": "ኣብ ነፍሲ ወከፍ ፕላን እንታይ ከም እትረኽቡ ርአ።",
       "columns": {
@@ -292,12 +305,12 @@
     "title": "ሼጋ ን7 መዓልቲ ብነጻ ፍተኑ",
     "subtitle": "ክረዲት ካርድ ኣየድልን። ኣብ እዋን ፈተናኹም ኩሎም ኣምርንቲ ዳህስሱ።",
     "benefits": {
-      "noCard": "✅ ናይ 7 መዓልቲ ነጻ ሙከራ",
+      "noCard": "ናይ 7 መዓልቲ ነጻ ሙከራ",
       "fullAccess": "ሙሉ ባህር'ያት",
       "easySetup": "ቀላል ምዋቃስ",
       "cancelAnytime": "ብዘጋጅነት ምቁራጽ",
-      "noCommitment": "✅ ዋሕስ ኣየድልን",
-      "allFeatures": "✅ ኩሎም ኣምርንቲ ተከፊቶም"
+      "noCommitment": "ዋሕስ ኣየድልን",
+      "allFeatures": "ኩሎም ኣምርንቲ ተከፊቶም"
     },
     "cta": "ጀምሩ"
   },
@@ -413,7 +426,7 @@
       {
         "step": "1",
         "title": "ኤፕሊኬሽን ኣውረዱ",
-        "desc": "ሼጋ ካብ ጉግል ፕሌይ ስቶር ኣውረዱ ወይም የዴስክቶፕ ስሪት ንዊንዶውስ፣ ማክኦኤስ ወይም ሊኑክስ ኣውረዱ።"
+        "desc": "ካብ እዚ ዌጽስ ኣውረዱ።"
       },
       {
         "step": "2",
@@ -478,5 +491,49 @@
     "om": "ኦሮምኛ",
     "ti": "ትግርኛ",
     "select": "ቋንቋ ምረጡ"
+  },
+  "download": {
+    "title": "ሼጋ ኣውረዱ",
+    "latestVersion": "ናይ ሕጂ ዓይነት",
+    "subtitle": "ናይ ሕጂ ዓይነት ሼጋ ን Android ኣውረዱ። ንግድኩም ብሓደ ዘየተሓሓዝ ክምችትን ሽያጭን ኣመሓዳሪ መድረኽ ብብልህነት ኣመሓድሩ።",
+    "androidTitle": "ሼጋ ን Android",
+    "preparing": "ይዳሎ ኣሎ...",
+    "downloadStarted": "ምውራድ ተጀሚሩ",
+    "tryAgain": "ደጊምካ ፈትኑ",
+    "downloadAndroid": "ን Android ኣውረዱ",
+    "comingSoon": "ቀልጢፉ",
+    "mobileNote": "ኣፕ Android ኣብ ሞባይላት ይርከብ። ንምጅማር ኣብ ስልክኩም ኣውርድዎ።",
+    "versionUnavailable": "ናይ ሕጂ ዓይነት ሕጂ ኣይርከብን።",
+    "downloadFailed": "ምውራድ ክንዳሎ ኣይተኻኣለን። ጸጋው ደጊምኩም ፈትኑ።",
+    "androidRequired": "Android 8.0 ወይ ዝዓበየ",
+    "systemRequirements": "ናይ ስርዓት መስፈርታት",
+    "os": "ስርዓተ ክወና",
+    "ram": "RAM",
+    "storage": "ማከማቹ",
+    "internet": "ኢንተርኔት",
+    "osValue": "Android 8.0+",
+    "ramValue": "2 GB ብውሑድ",
+    "storageValue": "200 MB ነጻ",
+    "internetValue": "ንማመሳሰል ኣድላይ",
+    "installGuide": "ናይ ግጥሚ መምርሒ",
+    "installSteps": [
+      {
+        "title": "ኣፕ ኣውረዱ",
+        "description": "ናይ ሼጋ Android APK ንምርካብ ኣብ ላዕሊ ዘሎ ናይ ምውራድ ቁልፊ ተጠቕሙ።"
+      },
+      {
+        "title": "APK ግጠሙ",
+        "description": "ነቲ ዝወረደ ፋይል ርአ ንምግጣም ጠውቕዎ። እንተተሓቲቱ ካብ ዘይተፈልጠ ምንጭ ምግጣም ፍቐዱ።"
+      },
+      {
+        "title": "ሼጋ ኣእቱ",
+        "description": "ምግጣም ስለ ዝተገብረ ካብ ሞባይልኩም ሼጋ ኣእቱ። ንምጅማር ብመለለይኹም ተመዝገቡ።"
+      },
+      {
+        "title": "ተመዝገቡ",
+        "description": "ፕላን ምረጹ ንብቴሌብር ተመዝገቡ። እንተዘይነበረኩም ንዕላዊ ምዝገባ ኣብ ኣፕ ናይ 7 መዓልቲ ነጻ ሙከራ ጀምሩ።"
+      }
+    ],
+    "releaseNotes": "ናይ ልቀት ማስታወሻታት"
   }
 }
