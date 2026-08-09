@@ -17,7 +17,7 @@ function DesktopFeatures() {
           viewport={{ once: true, margin: "-60px" }}
           className="text-center mb-16"
         >
-          <div className="pill-blue pill-apple mb-5 inline-flex">
+<div className="pill-blue pill-apple mb-5 inline-flex">
             <Monitor className="h-3.5 w-3.5 mr-1.5" />
             {t("features.desktop.badge") as string}
           </div>
