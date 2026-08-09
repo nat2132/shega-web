@@ -45,8 +45,12 @@
       }
     },
     "desktop": {
-      "title": "Coming Soon",
-      "subtitle": "The desktop application is currently in development. Stay tuned for updates!",
+      "badge": "Desktop Application",
+      "title": "Powerful Desktop Application",
+      "subtitle": "Manage users, employees, and advanced reporting with a full-featured desktop interface.",
+      "comingSoon": "Coming Soon",
+      "comingSoonDesc": "The desktop application is currently in development. Stay tuned for updates!",
+      "notifyMe": "Notify me when available",
       "items": {}
     }
   },

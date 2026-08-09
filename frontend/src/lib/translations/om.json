@@ -78,6 +78,10 @@
       }
     },
     "desktop": {
+      "badge": "App Dhasktii",
+      "comingSoon": "Dhiyootti",
+      "comingSoonDesc": "App dhasktiin yeroo ammaa qopheessa jira. Odeeffannoo itti aanuuf nagaa eeggadhu!",
+      "notifyMe": "Yeroo argamu na beeksisi",
       "title": "Bulchiinsa Bija Guutuu Dhaabbata Guddateef",
       "subtitle": "Fayyadamtoota, hojjattoota, fi gabaasa sadarkaa olaa bulchuuf meeshaalee dhasktii cimaa.",
       "items": {

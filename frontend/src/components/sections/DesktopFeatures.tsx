@@ -19,7 +19,7 @@ function DesktopFeatures() {
         >
           <div className="pill-blue pill-apple mb-5 inline-flex">
             <Monitor className="h-3.5 w-3.5 mr-1.5" />
-            Desktop Application
+            {t("features.desktop.badge") as string}
           </div>
           <h2 className="font-display text-[clamp(1.75rem,3vw,2.5rem)] font-semibold text-[var(--fg)] leading-[1.1] tracking-[-0.015em] mb-4 flex justify-center">
             <BlurText
@@ -47,13 +47,13 @@ function DesktopFeatures() {
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--accent)]/8 border border-[var(--accent)]/12 mx-auto mb-6">
               <Clock className="h-8 w-8 text-[var(--accent)]" />
             </div>
-            <h3 className="text-2xl font-bold text-[var(--fg)] mb-3">Coming Soon</h3>
+            <h3 className="text-2xl font-bold text-[var(--fg)] mb-3">{t("features.desktop.comingSoon") as string}</h3>
             <p className="text-[var(--muted)] leading-relaxed">
-              The desktop application is currently in development. Stay tuned for updates!
+              {t("features.desktop.comingSoonDesc") as string}
             </p>
             <div className="mt-6 flex items-center justify-center gap-2 text-sm text-[var(--muted)]">
               <span className="w-px h-4 bg-[var(--border)]" />
-              <span>Notify me when available</span>
+              <span>{t("features.desktop.notifyMe") as string}</span>
             </div>
           </div>
         </motion.div>
