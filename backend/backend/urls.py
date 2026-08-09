@@ -19,7 +19,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from api_public.views import PlansListView, SubscriptionStatusView
+from api_public.views import PlansListView, SubscriptionStatusView, GithubReleaseProxyView, GithubReleaseListView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,6 +30,8 @@ urlpatterns = [
     path('api/payments/', include('payments.urls')),
     path('api/notifications/', include('notifications.urls')),
     path('api/license/', include('api_public.urls')),
+    path('api/github/release/', GithubReleaseProxyView.as_view(), name='github-release-latest'),
+    path('api/github/releases/', GithubReleaseListView.as_view(), name='github-release-list'),
     path('api/plans/', PlansListView.as_view()),
     path('api/subscription/status/', SubscriptionStatusView.as_view()),
 ]

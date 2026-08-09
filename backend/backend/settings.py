@@ -112,6 +112,13 @@ AUTH_USER_MODEL = 'accounts.User'
 LOGIN_LOCKOUT_THRESHOLD = 5          # failed attempts
 LOGIN_LOCKOUT_WINDOW_MINUTES = 15    # lockout / reset window
 
+# GitHub releases proxy. The frontend (static Vercel deploy) cannot hold a
+# secret, so it asks the backend for release info; the backend authenticates
+# to the (private) GitHub repo using a fine-grained token set here.
+GITHUB_OWNER = os.getenv('GITHUB_OWNER', 'nat2132')
+GITHUB_REPO = os.getenv('GITHUB_REPO', 'shega-mobile')
+GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')  # fine-grained PAT; never log it
+
 # Cache backend for rate-limit counters. A shared cache (Redis) is strongly
 # recommended on multi-worker deploys so DRF throttles are enforced per-client
 # across all workers. `django-redis` is required for the Redis variant; if it is
@@ -174,6 +181,7 @@ REST_FRAMEWORK = {
         'password_reset': '5/hour',
         'password_reset_confirm': '5/hour',
         'admin_user': '600/hour',  # admin API per staff member
+        'github': '60/minute',    # public GitHub-release proxy
         'license_verify': '50/minute',
     },
 }

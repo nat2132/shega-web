@@ -397,3 +397,104 @@ class SubscriptionStatusView(APIView):
             'started_at': None,
             'license_key': None,
         })
+
+
+# ---------------------------------------------------------------------------
+# GitHub releases proxy
+# ---------------------------------------------------------------------------
+# The marketing site is a statically-built Next.js app on Vercel, so it cannot
+# hold a secret. It fetches release info from the (private) shega-mobile repo
+# through this endpoint instead, which authenticates to GitHub using a
+# fine-grained PAT stored in the GITHUB_TOKEN env var on the server. The
+# response body is passed through verbatim — it matches the shape the frontend
+# already expects from githubRelease.ts.
+#
+# Responses are cached server-side for GITHUB_CACHE_TTL so a burst of visitors
+# does not burn the GitHub API quota.
+
+
+import json
+import urllib.error
+import urllib.request
+from django.conf import settings
+from django.core.cache import cache
+from rest_framework.permissions import AllowAny
+
+from .throttles import GithubProxyThrottle
+
+
+GITHUB_API_BASE = "https://api.github.com/repos"
+GITHUB_CACHE_TTL = 600  # 10 minutes
+
+
+def _github_request(api_path: str):
+    """Fetch a GitHub API path using the configured token + cache.
+
+    Returns the parsed JSON. Raises ``urllib.error.HTTPError`` for non-2xx
+    responses (callers translate into an HTTP response).
+    """
+    owner = getattr(settings, "GITHUB_OWNER", "nat2132")
+    repo = getattr(settings, "GITHUB_REPO", "shega-mobile")
+    token = getattr(settings, "GITHUB_TOKEN", None)
+    url = f"{GITHUB_API_BASE}/{owner}/{repo}{api_path}"
+
+    cache_key = f"github_proxy:{url}"
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return cached
+
+    req = urllib.request.Request(
+        url,
+        headers={
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+            "User-Agent": "shega-website",
+            **({"Authorization": f"Bearer {token}"} if token else {}),
+        },
+        method="GET",
+    )
+    with urllib.request.urlopen(req, timeout=15) as response:
+        raw = response.read().decode("utf-8")
+
+    data = json.loads(raw) if raw else None
+    cache.set(cache_key, data, GITHUB_CACHE_TTL)
+    return data
+
+
+class GithubReleaseProxyView(APIView):
+    """Latest GitHub release JSON (mirrors /repos/{o}/{r}/releases/latest)."""
+
+    permission_classes = [AllowAny]
+    throttle_classes = [GithubProxyThrottle]
+
+    def get(self, request):
+        try:
+            data = _github_request("/releases/latest")
+        except urllib.error.HTTPError as exc:
+            return Response(
+                {"detail": "Release not found." if exc.code == 404 else "GitHub API error."},
+                status=exc.code if exc.code in (404, 403, 429) else 502,
+            )
+        except urllib.error.URLError:
+            return Response({"detail": "GitHub API unreachable."}, status=502)
+        return Response(data)
+
+
+class GithubReleaseListView(APIView):
+    """Recent releases JSON (mirrors /repos/{o}/{r}/releases?per_page=...)."""
+
+    permission_classes = [AllowAny]
+    throttle_classes = [GithubProxyThrottle]
+
+    def get(self, request):
+        limit = min(max(int(request.GET.get("limit", 5) or 5), 1), 20)
+        try:
+            data = _github_request(f"/releases?per_page={limit}")
+        except urllib.error.HTTPError as exc:
+            return Response(
+                {"detail": "Releases not found." if exc.code == 404 else "GitHub API error."},
+                status=exc.code if exc.code in (404, 403, 429) else 502,
+            )
+        except urllib.error.URLError:
+            return Response({"detail": "GitHub API unreachable."}, status=502)
+        return Response(data)

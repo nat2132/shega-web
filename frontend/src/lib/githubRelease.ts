@@ -34,10 +34,10 @@ interface CachedReleaseList {
   fetchedAt: number;
 }
 
-const OWNER = "nat2132";
-const REPO = "shega-mobile";
-const API_URL = `https://api.github.com/repos/${OWNER}/${REPO}/releases/latest`;
-const LIST_API_URL = `https://api.github.com/repos/${OWNER}/${REPO}/releases`;
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL || "https://shega-api-dah3.onrender.com/api";
+const API_URL = `${API_BASE}/github/release/`;
+const LIST_API_URL = `${API_BASE}/github/releases/`;
 
 const CACHE_KEY = "shega_latest_release";
 const CACHE_LIST_KEY = "shega_recent_releases";
@@ -173,7 +173,7 @@ export async function fetchRecentReleases(limit = 5, useCache = true): Promise<G
 
   let response: Response;
   try {
-    response = await fetch(`${LIST_API_URL}?per_page=${limit}`, {
+    response = await fetch(`${LIST_API_URL}?limit=${limit}`, {
       headers: {
         Accept: "application/vnd.github.v3+json",
       },
