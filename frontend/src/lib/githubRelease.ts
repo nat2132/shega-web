@@ -128,7 +128,7 @@ export async function fetchLatestRelease(useCache = true): Promise<GitHubRelease
   try {
     response = await fetch(API_URL, {
       headers: {
-        Accept: "application/vnd.github.v3+json",
+        Accept: "application/json",
       },
     });
   } catch {
@@ -175,7 +175,7 @@ export async function fetchRecentReleases(limit = 5, useCache = true): Promise<G
   try {
     response = await fetch(`${LIST_API_URL}?limit=${limit}`, {
       headers: {
-        Accept: "application/vnd.github.v3+json",
+        Accept: "application/json",
       },
     });
   } catch {
