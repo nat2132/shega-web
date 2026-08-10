@@ -372,9 +372,14 @@ class SubscriptionStatusView(APIView):
             expires_at = license.expiry_date or None
             started_at = license.start_date or None
             plan_name = license.plan.name if license.plan else None
-            if license.status == 'active' and license.expiry_date >= timezone.now().date():
+            today = timezone.now().date()
+            # Guard against a NULL expiry_date: comparing None to a date raises
+            # TypeError and 500s the whole endpoint. Treat a NULL expiry as
+            # "unknown" and fall through to the status-based default instead of
+            # crashing.
+            if license.status == 'active' and license.expiry_date and license.expiry_date >= today:
                 subscription_status = 'active'
-            elif license.status in ('active', 'suspended') and license.expiry_date < timezone.now().date():
+            elif license.expiry_date and license.status in ('active', 'suspended') and license.expiry_date < today:
                 subscription_status = 'expired'
             elif license.status in ('expired', 'revoked', 'suspended'):
                 subscription_status = 'expired'
