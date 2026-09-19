@@ -30,6 +30,8 @@ urlpatterns = [
     path('api/payments/', include('payments.urls')),
     path('api/notifications/', include('notifications.urls')),
     path('api/license/', include('api_public.urls')),
+    path('api/sync/', include('sync.urls')),
+    path('api/mor/', include('mor.urls')),
     path('api/github/release/', GithubReleaseProxyView.as_view(), name='github-release-latest'),
     path('api/github/releases/', GithubReleaseListView.as_view(), name='github-release-list'),
     path('api/plans/', PlansListView.as_view()),

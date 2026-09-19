@@ -34,6 +34,8 @@ INSTALLED_APPS = [
     'notifications',
     'api_public',
     'admin_api',
+    'sync',
+    'mor',
 ]
 
 MIDDLEWARE = [
@@ -119,6 +121,14 @@ GITHUB_OWNER = os.getenv('GITHUB_OWNER', 'nat2132')
 GITHUB_REPO = os.getenv('GITHUB_REPO', 'shega-mobile')
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')  # fine-grained PAT; never log it
 
+# Ministry of Revenues (MoR) taxpayer-verification gateway (Section U).
+# Server-only credentials: clients NEVER ship MoR keys. When unset the gateway
+# answers `unavailable` and app surfaces "Verification unavailable" honestly.
+MOR_API_BASE_URL = os.getenv('MOR_API_BASE_URL', '')   # e.g. https://api.mor.gov.et
+MOR_API_KEY = os.getenv('MOR_API_KEY', '')             # MoR-supplied credential
+MOR_VERIFY_PATH = os.getenv('MOR_VERIFY_PATH', '/v1/taxpayer/verify')
+MOR_CACHE_SECONDS = int(os.getenv('MOR_CACHE_SECONDS', str(12 * 60 * 60)))
+
 # Cache backend for rate-limit counters. A shared cache (Redis) is strongly
 # recommended on multi-worker deploys so DRF throttles are enforced per-client
 # across all workers. `django-redis` is required for the Redis variant; if it is
@@ -183,6 +193,8 @@ REST_FRAMEWORK = {
         'admin_user': '600/hour',  # admin API per staff member
         'github': '60/minute',    # public GitHub-release proxy
         'license_verify': '50/minute',
+        'sync': '500/min',        # cloud sync transport (push/pull/status/register)
+        'mor_verify': '30/min',   # MoR taxpayer verification per user
     },
 }
 

@@ -1,0 +1,397 @@
+// SHEGA admin backend — Prisma schema (MySQL 8.0)
+//
+// Table and column names mirror the legacy Django backend's tables so a
+// one-time data migration from PostgreSQL lands with zero mapping surprises.
+// JSON fields (Django JSONField) are stored as LongText like Django does on
+// MySQL; the application parses them.
+//
+// NOTE: ids are Int (32-bit); the legacy data must fit within 2^31-1.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── accounts ────────────────────────────────────────────────────────────────
+
+model User {
+  id              Int       @id @default(autoincrement())
+  password        String    @db.VarChar(128)
+  last_login      DateTime? @db.DateTime(0)
+  is_superuser    Boolean   @default(false) @db.TinyInt
+  username        String    @unique @db.VarChar(150)
+  first_name      String    @default("") @db.VarChar(150)
+  last_name       String    @default("") @db.VarChar(150)
+  email           String    @default("") @db.VarChar(254)
+  is_staff        Boolean   @default(false) @db.TinyInt
+  is_active       Boolean   @default(true) @db.TinyInt
+  date_joined     DateTime  @db.DateTime(0)
+  phone           String?   @unique @db.VarChar(20)
+  business_name   String    @default("") @db.VarChar(255)
+  business_type   String    @default("") @db.VarChar(50)
+  address         String    @db.LongText
+  is_customer     Boolean   @default(false) @db.TinyInt
+  is_admin        Boolean   @default(false) @db.TinyInt
+  email_verified  Boolean   @default(false) @db.TinyInt
+  phone_verified  Boolean   @default(false) @db.TinyInt
+  created_at      DateTime  @db.DateTime(0)
+  updated_at      DateTime  @db.DateTime(0)
+  notes           String    @db.LongText
+
+  customer_profile    CustomerProfile?
+  licenses            License[]
+  payments            Payment[]
+  invoices            Invoice[]
+  notifications       Notification[]
+  license_audit_logs  LicenseAuditLog[]
+  reviewed_payments   Payment[]            @relation("PaymentReviewedBy")
+  audit_logs          AuditLog[]
+  admin_sessions      AdminSession[]
+  business_members    BusinessMembership[] @relation("BusinessMembershipBusiness")
+  business_memberships BusinessMembership[] @relation("BusinessMembershipUser")
+  invited_business_members BusinessMembership[] @relation("BusinessMembershipInvitedBy")
+  login_attempts      LoginAttempt[]
+  support_tickets     SupportTicket[]      @relation("SupportTicketBusiness")
+  assigned_tickets    SupportTicket[]      @relation("SupportTicketAssigned")
+  support_replies     SupportReply[]
+  refresh_tokens      RefreshToken[]
+
+  @@map("accounts_user")
+}
+
+model BusinessMembership {
+  id            Int      @id @default(autoincrement())
+  user_id       Int
+  business_id   Int
+  status        String   @default("active") @db.VarChar(20)
+  role          String   @default("cashier") @db.VarChar(20)
+  permissions   String   @default("{}") @db.LongText
+  is_active     Boolean  @default(true) @db.TinyInt
+  invited_by_id Int?
+  created_at    DateTime @db.DateTime(0)
+  updated_at    DateTime @db.DateTime(0)
+
+  user       User  @relation("BusinessMembershipUser", fields: [user_id], references: [id], onDelete: Cascade)
+  business   User  @relation("BusinessMembershipBusiness", fields: [business_id], references: [id], onDelete: Cascade)
+  invited_by User? @relation("BusinessMembershipInvitedBy", fields: [invited_by_id], references: [id], onDelete: SetNull)
+
+  @@unique([user_id, business_id])
+  @@map("accounts_businessmembership")
+}
+
+model LoginAttempt {
+  id         Int       @id @default(autoincrement())
+  identifier String    @db.VarChar(254)
+  ip_address String    @db.VarChar(45)
+  user_id    Int?
+  success    Boolean   @default(false) @db.TinyInt
+  outcome    String    @db.VarChar(10)
+  user_agent String    @db.LongText
+  timestamp  DateTime  @db.DateTime(0)
+
+  user User? @relation(fields: [user_id], references: [id], onDelete: SetNull)
+
+  @@index([identifier, timestamp(sort: Desc)])
+  @@index([ip_address, timestamp(sort: Desc)])
+  @@map("accounts_loginattempt")
+}
+
+// ─── customers ───────────────────────────────────────────────────────────────
+
+model CustomerProfile {
+  id           Int      @id @default(autoincrement())
+  user_id      Int      @unique
+  company_name String   @db.VarChar(255)
+  tin_number   String   @default("") @db.VarChar(100)
+  city         String   @default("") @db.VarChar(100)
+  region       String   @default("") @db.VarChar(100)
+  country      String   @default("Ethiopia") @db.VarChar(100)
+  website      String   @default("") @db.VarChar(200)
+  status       String   @default("active") @db.VarChar(20)
+  notes        String   @db.LongText
+  created_at   DateTime @db.DateTime(0)
+  updated_at   DateTime @db.DateTime(0)
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("customers_customerprofile")
+}
+
+// ─── licenses ────────────────────────────────────────────────────────────────
+
+model Plan {
+  id              Int       @id @default(autoincrement())
+  name            String    @db.VarChar(100)
+  duration_months Int
+  device_limit    Int       @default(1)
+  price           Decimal   @db.Decimal(10, 2)
+  is_active       Boolean   @default(true) @db.TinyInt
+  created_at      DateTime  @db.DateTime(0)
+
+  licenses License[]
+
+  payments Payment[]
+
+  @@map("licenses_licenseplan")
+}
+
+model License {
+  id           Int       @id @default(autoincrement())
+  license_key  String    @unique @db.VarChar(20)
+  customer_id  Int
+  plan_id      Int
+  status       String    @default("active") @db.VarChar(20)
+  start_date   DateTime  @db.Date
+  expiry_date  DateTime? @db.Date
+  device_limit Int
+  notes        String    @default("") @db.LongText
+  is_trial     Boolean   @default(false) @db.TinyInt
+  created_at   DateTime  @db.DateTime(0)
+  updated_at   DateTime  @db.DateTime(0)
+
+  customer User @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  plan     Plan @relation(fields: [plan_id], references: [id], onDelete: Restrict)
+
+  device_activations DeviceActivation[]
+  audit_logs         LicenseAuditLog[]
+  payments           Payment[]
+  invoices           Invoice[]
+
+  @@index([status])
+  @@index([license_key, status])
+  @@index([expiry_date])
+  @@map("licenses_license")
+}
+
+model DeviceActivation {
+  id              Int       @id @default(autoincrement())
+  license_id      Int
+  device_id       String    @db.VarChar(255)
+  device_name     String    @db.VarChar(255)
+  activation_date DateTime  @db.DateTime(0)
+  last_seen       DateTime  @db.DateTime(0)
+  ip_address      String    @db.VarChar(45)
+  operating_system String   @db.VarChar(255)
+  is_active       Boolean   @default(true) @db.TinyInt
+
+  license License @relation(fields: [license_id], references: [id], onDelete: Cascade)
+
+  @@unique([license_id, device_id])
+  @@map("licenses_deviceactivation")
+}
+
+model LicenseAuditLog {
+  id           Int       @id @default(autoincrement())
+  license_id   Int
+  action       String    @db.VarChar(20)
+  details      String    @default("{}") @db.LongText
+  ip_address   String?   @db.VarChar(45)
+  created_by_id Int?
+  created_at   DateTime  @db.DateTime(0)
+
+  license    License @relation(fields: [license_id], references: [id], onDelete: Cascade)
+  created_by User?   @relation(fields: [created_by_id], references: [id], onDelete: SetNull)
+
+  @@index([action])
+  @@index([created_at])
+  @@map("licenses_licenseauditlog")
+}
+
+// ─── payments ────────────────────────────────────────────────────────────────
+
+model Payment {
+  id             Int       @id @default(autoincrement())
+  customer_id    Int
+  license_id     Int?
+  plan_id        Int?
+  amount         Decimal   @db.Decimal(10, 2)
+  transaction_id String    @unique @db.VarChar(100)
+  receipt_image  String?   @db.VarChar(100)
+  payment_method String    @db.VarChar(20)
+  status         String    @default("pending") @db.VarChar(20)
+  admin_notes    String    @default("") @db.LongText
+  reviewed_by_id Int?
+  reviewed_at    DateTime? @db.DateTime(0)
+  created_at     DateTime  @db.DateTime(0)
+  updated_at     DateTime  @db.DateTime(0)
+
+  customer    User                 @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  license     License?             @relation(fields: [license_id], references: [id], onDelete: SetNull)
+  plan        Plan?                @relation(fields: [plan_id], references: [id], onDelete: SetNull)
+  reviewed_by User?                @relation("PaymentReviewedBy", fields: [reviewed_by_id], references: [id], onDelete: SetNull)
+  invoice     Invoice?
+
+  @@index([status])
+  @@map("payments_payment")
+}
+
+model Invoice {
+  id             Int       @id @default(autoincrement())
+  invoice_number String    @unique @db.VarChar(50)
+  customer_id    Int
+  payment_id     Int?      @unique
+  license_id     Int?
+  amount         Decimal   @db.Decimal(10, 2)
+  status         String    @default("draft") @db.VarChar(20)
+  due_date       DateTime  @db.Date
+  paid_at        DateTime? @db.DateTime(0)
+  created_at     DateTime  @db.DateTime(0)
+
+  customer User     @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  payment  Payment? @relation(fields: [payment_id], references: [id], onDelete: SetNull)
+  license  License? @relation(fields: [license_id], references: [id], onDelete: SetNull)
+
+  @@map("payments_invoice")
+}
+
+// ─── notifications ───────────────────────────────────────────────────────────
+
+model Notification {
+  id                Int      @id @default(autoincrement())
+  recipient_id      Int
+  notification_type String   @db.VarChar(30)
+  title             String   @db.VarChar(255)
+  message           String   @db.LongText
+  is_read           Boolean  @default(false) @db.TinyInt
+  link              String   @default("") @db.VarChar(500)
+  created_at        DateTime @db.DateTime(0)
+
+  recipient User @relation(fields: [recipient_id], references: [id], onDelete: Cascade)
+
+  @@index([recipient_id])
+  @@map("notifications_notification")
+}
+
+// ─── auth (new mechanism; no legacy table to map) ────────────────────────────
+
+model RefreshToken {
+  id              Int       @id @default(autoincrement())
+  user_id         Int
+  jti             String    @unique @db.VarChar(64)
+  token_hash      String    @unique @db.VarChar(64)
+  expires_at      DateTime  @db.DateTime(0)
+  revoked_at      DateTime? @db.DateTime(0)
+  replaced_by_jti String?   @db.VarChar(64)
+  ip_address      String?   @db.VarChar(45)
+  user_agent      String    @default("") @db.VarChar(500)
+  created_at      DateTime  @db.DateTime(0)
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("auth_refreshtoken")
+}
+
+// ─── admin_api ───────────────────────────────────────────────────────────────
+
+model SystemSetting {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique @db.VarChar(255)
+  value       String   @db.LongText
+  type        String   @default("string") @db.VarChar(20)
+  description String   @default("") @db.LongText
+  created_at  DateTime @db.DateTime(0)
+  updated_at  DateTime @db.DateTime(0)
+
+  @@map("admin_api_systemsetting")
+}
+
+model FeatureFlag {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(255)
+  code        String   @unique @db.VarChar(100)
+  enabled     Boolean  @default(false) @db.TinyInt
+  is_beta     Boolean  @default(false) @db.TinyInt
+  description String   @default("") @db.LongText
+  created_at  DateTime @db.DateTime(0)
+  updated_at  DateTime @db.DateTime(0)
+
+  @@map("admin_api_featureflag")
+}
+
+model AppVersion {
+  id              Int      @id @default(autoincrement())
+  platform        String   @db.VarChar(20)
+  version         String   @db.VarChar(20)
+  min_version     String   @default("") @db.VarChar(20)
+  is_force_update Boolean  @default(false) @db.TinyInt
+  release_notes   String   @default("") @db.LongText
+  download_url    String   @default("") @db.VarChar(200)
+  created_at      DateTime @db.DateTime(0)
+
+  @@unique([platform, version])
+  @@map("admin_api_appversion")
+}
+
+model SupportTicket {
+  id            Int      @id @default(autoincrement())
+  business_id   Int
+  subject       String   @db.VarChar(255)
+  description   String   @db.LongText
+  priority      String   @default("medium") @db.VarChar(20)
+  status        String   @default("open") @db.VarChar(20)
+  assigned_to_id Int?
+  platform      String   @default("other") @db.VarChar(20)
+  created_at    DateTime @db.DateTime(0)
+  updated_at    DateTime @db.DateTime(0)
+
+  business    User        @relation("SupportTicketBusiness", fields: [business_id], references: [id], onDelete: Cascade)
+  assigned_to User?       @relation("SupportTicketAssigned", fields: [assigned_to_id], references: [id], onDelete: SetNull)
+  replies     SupportReply[]
+
+  @@index([status])
+  @@map("admin_api_supportticket")
+}
+
+model SupportReply {
+  id          Int      @id @default(autoincrement())
+  ticket_id   Int
+  admin_id    Int?
+  message     String   @db.LongText
+  is_internal Boolean  @default(false) @db.TinyInt
+  created_at  DateTime @db.DateTime(0)
+
+  ticket SupportTicket @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
+  admin  User?         @relation(fields: [admin_id], references: [id], onDelete: SetNull)
+
+  @@map("admin_api_supportreply")
+}
+
+model AuditLog {
+  id            Int       @id @default(autoincrement())
+  admin_id      Int?
+  action        String    @db.VarChar(100)
+  resource_type String    @db.VarChar(100)
+  resource_id   String    @default("") @db.VarChar(255)
+  details       String    @db.LongText
+  before_state  String    @db.LongText
+  after_state   String    @db.LongText
+  ip_address    String?   @db.VarChar(45)
+  user_agent    String    @default("") @db.VarChar(500)
+  created_at    DateTime  @db.DateTime(0)
+
+  admin User? @relation(fields: [admin_id], references: [id], onDelete: SetNull)
+
+  @@index([admin_id])
+  @@index([created_at])
+  @@map("admin_api_auditlog")
+}
+
+model AdminSession {
+  id          Int       @id @default(autoincrement())
+  admin_id    Int
+  ip_address  String?   @db.VarChar(45)
+  user_agent  String    @default("") @db.VarChar(500)
+  login_time  DateTime  @db.DateTime(0)
+  logout_time DateTime? @db.DateTime(0)
+  is_active   Boolean   @default(true) @db.TinyInt
+
+  admin User @relation(fields: [admin_id], references: [id], onDelete: Cascade)
+
+  @@index([admin_id])
+  @@map("admin_api_adminsession")
+}

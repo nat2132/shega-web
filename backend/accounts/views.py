@@ -8,17 +8,21 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes, force_str
 
 from rest_framework import generics, permissions, status
+from rest_framework.exceptions import NotFound, PermissionDenied, ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.filters import SearchFilter, OrderingFilter
 
-from .models import User, LoginAttempt
+from .models import User, LoginAttempt, BusinessMembership
 from .serializers import (
     UserSerializer,
     UserCreateSerializer,
     ChangePasswordSerializer,
     ProfileUpdateSerializer,
+    BusinessMembershipSerializer,
+    MemberAddSerializer,
+    MemberRoleSerializer,
 )
 from .permissions import IsAdminUser, IsOwnerOrAdmin
 from .throttles import (
@@ -214,6 +218,166 @@ class CustomerDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticated, IsOwnerOrAdmin)
     queryset = User.objects.filter(is_customer=True)
+
+
+# ---------------------------------------------------------------------------
+# Multi-business membership (member-scoped access)
+# ---------------------------------------------------------------------------
+
+
+def _is_owner_or_admin(user, business):
+    """A business may be managed by its own customer account or staff/admin."""
+    return (user == business) or user.is_admin or user.is_staff or user.is_superuser
+
+
+def _can_manage_members(user, business):
+    """Owners/admins may always manage the roster; a member needs team.manage.
+
+    Mirrors the shared RBAC: manager and above carry ``team.manage``; cashier
+    and other members never do.
+    """
+    if _is_owner_or_admin(user, business):
+        return True
+    if not getattr(user, 'is_authenticated', False):
+        return False
+    membership = BusinessMembership.objects.filter(
+        user=user, business=business, is_active=True
+    ).first()
+    return bool(membership and membership.can('team.manage'))
+
+
+class MyMembershipsView(APIView):
+    """The businesses the requesting account may operate (owned + memberships)."""
+
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        owned = []
+        if request.user.is_customer:
+            owned = [UserSerializer(request.user).data]
+        memberships = BusinessMembershipSerializer(
+            BusinessMembership.objects.filter(user=request.user, is_active=True)
+            .select_related('business', 'user')
+            .order_by('-created_at'),
+            many=True,
+        ).data
+        return Response({'owned': owned, 'memberships': memberships})
+
+
+class BusinessMembersView(generics.ListCreateAPIView):
+    """List members of a business, or add a member by their existing account.
+
+    Only the business owner (customer account) or an admin may inspect or
+    change membership — a member can never read or edit another business.
+    """
+
+    serializer_class = BusinessMembershipSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_business(self):
+        try:
+            return User.objects.get(pk=self.kwargs['pk'], is_customer=True)
+        except User.DoesNotExist:
+            raise NotFound('business not found')
+
+    def check_permissions(self, request):
+        super().check_permissions(request)
+        if not _can_manage_members(request.user, self.get_business()):
+            raise PermissionDenied(
+                'only the business owner or a member with team.manage may manage members'
+            )
+
+    def get_queryset(self):
+        return BusinessMembership.objects.filter(
+            business=self.get_business()
+        ).select_related('user', 'business').order_by('-created_at')
+
+    def create(self, request, *args, **kwargs):
+        business = self.get_business()
+        serializer = MemberAddSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = (serializer.validated_data.get('email') or '').strip().lower()
+        phone = serializer.validated_data.get('phone') or ''
+        member = None
+        if email:
+            member = User.objects.filter(email__iexact=email).first()
+        if not member and phone:
+            member = User.objects.filter(phone=phone).first()
+        if not member:
+            raise NotFound('no account found for the provided email or phone')
+        if member == business:
+            raise ValidationError({'detail': 'The business owner is already a member.'})
+        membership, created = BusinessMembership.objects.get_or_create(
+            user=member,
+            business=business,
+            defaults={
+                'role': serializer.validated_data.get('role', 'cashier'),
+                'permissions': serializer.validated_data.get('permissions') or {},
+                'is_active': True,
+                'invited_by': request.user,
+            },
+        )
+        if not created:
+            membership.role = serializer.validated_data.get('role', membership.role)
+            if 'permissions' in serializer.validated_data:
+                membership.permissions = serializer.validated_data.get('permissions') or {}
+            membership.status = 'active'
+            membership.save()
+        return Response(
+            BusinessMembershipSerializer(membership).data,
+            status=status.HTTP_201_CREATED,
+        )
+
+
+class BusinessMembershipDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """Update a member's role / active state, or remove the membership."""
+
+    serializer_class = BusinessMembershipSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_membership(self):
+        try:
+            return BusinessMembership.objects.select_related('user', 'business').get(
+                pk=self.kwargs['mpk'],
+                business_id=self.kwargs['pk'],
+            )
+        except BusinessMembership.DoesNotExist:
+            raise NotFound('membership not found')
+
+    def check_permissions(self, request):
+        super().check_permissions(request)
+        business = self.get_membership().business
+        if not _can_manage_members(request.user, business):
+            raise PermissionDenied(
+                'only the business owner or a member with team.manage may manage members'
+            )
+
+    def retrieve(self, request, *args, **kwargs):
+        return Response(BusinessMembershipSerializer(self.get_membership()).data)
+
+    def partial_update(self, request, *args, **kwargs):
+        membership = self.get_membership()
+        if membership.role == 'owner':
+            raise ValidationError({'detail': 'The owner role cannot be edited.'})
+        serializer = MemberRoleSerializer(data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        if 'role' in serializer.validated_data:
+            membership.role = serializer.validated_data['role']
+        if 'permissions' in serializer.validated_data:
+            membership.permissions = serializer.validated_data.get('permissions') or {}
+        if 'is_active' in serializer.validated_data:
+            membership.status = 'active' if serializer.validated_data['is_active'] else 'disabled'
+        if 'status' in serializer.validated_data:
+            membership.status = serializer.validated_data['status']
+        membership.save()
+        return Response(BusinessMembershipSerializer(membership).data)
+
+    def destroy(self, request, *args, **kwargs):
+        membership = self.get_membership()
+        if membership.role == 'owner':
+            raise ValidationError({'detail': 'The owner role cannot be removed.'})
+        membership.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 # ---------------------------------------------------------------------------

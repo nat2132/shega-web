@@ -12,5 +12,8 @@ urlpatterns = [
     path('password-reset/confirm/', views.PasswordResetConfirmView.as_view(), name='password-reset-confirm'),
     path('customers/', views.CustomerListView.as_view(), name='customer-list'),
     path('customers/<int:pk>/', views.CustomerDetailView.as_view(), name='customer-detail'),
+    path('memberships/', views.MyMembershipsView.as_view(), name='my-memberships'),
+    path('businesses/<int:pk>/members/', views.BusinessMembersView.as_view(), name='business-members'),
+    path('businesses/<int:pk>/members/<int:mpk>/', views.BusinessMembershipDetailView.as_view(), name='business-membership-detail'),
     path('refresh/', TokenRefreshView.as_view(), name='token-refresh'),
 ]

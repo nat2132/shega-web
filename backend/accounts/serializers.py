@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import User
+from .models import BusinessMembership, User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -83,3 +83,56 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
             'email', 'phone', 'business_name', 'business_type',
             'address', 'notes', 'first_name', 'last_name',
         )
+
+
+class BusinessMembershipSerializer(serializers.ModelSerializer):
+    user_name = serializers.SerializerMethodField()
+    user_email = serializers.SerializerMethodField()
+    business_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = BusinessMembership
+        fields = ('id', 'user_id', 'user_name', 'user_email', 'business_id',
+                  'business_name', 'role', 'permissions', 'status', 'is_active',
+                  'created_at', 'updated_at')
+        read_only_fields = ('id', 'user_id', 'user_name', 'user_email', 'business_id',
+                            'business_name', 'created_at', 'updated_at')
+
+    def get_user_name(self, obj):
+        return obj.user.get_full_name() or obj.user.username or ''
+
+    def get_user_email(self, obj):
+        return obj.user.email or obj.user.username or ''
+
+    def get_business_name(self, obj):
+        return obj.business.business_name or obj.business.username or ''
+
+
+class MemberAddSerializer(serializers.Serializer):
+    """Add a member to a business by their existing account identity."""
+    email = serializers.EmailField(required=False, allow_blank=True)
+    phone = serializers.CharField(required=False, allow_blank=True)
+    role = serializers.ChoiceField(
+        choices=[c for c in BusinessMembership.Role.choices if c[0] != 'owner'],
+        default='cashier',
+    )
+    permissions = serializers.JSONField(required=False, default=dict)
+
+    def validate(self, attrs):
+        if not (attrs.get('email') or attrs.get('phone')):
+            raise serializers.ValidationError(
+                {'detail': 'Provide either email or phone to find the account.'}
+            )
+        return attrs
+
+
+class MemberRoleSerializer(serializers.Serializer):
+    role = serializers.ChoiceField(
+        choices=[c for c in BusinessMembership.Role.choices if c[0] != 'owner'],
+        required=False,
+    )
+    is_active = serializers.BooleanField(required=False)
+    status = serializers.ChoiceField(
+        choices=BusinessMembership.Status.choices, required=False
+    )
+    permissions = serializers.JSONField(required=False)
