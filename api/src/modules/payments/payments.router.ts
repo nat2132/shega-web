@@ -183,6 +183,23 @@ paymentsRouter.post(
   }),
 );
 
+paymentsRouter.post(
+  "/:id(\\d+)/request-info",
+  wrap(async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const message = z.string().min(1).parse(req.body?.message);
+    const payment = await prisma.payment.findUnique({ where: { id } });
+    if (!payment) {
+      throw notFound("Payment not found.");
+    }
+    const updated = await prisma.payment.update({
+      where: { id },
+      data: { admin_notes: message, status: "pending", updated_at: new Date() },
+    });
+    res.json(serializePaymentDetail(updated));
+  }),
+);
+
 paymentsRouter.get(
   "/search",
   wrap(async (req: Request, res: Response) => {

@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
- * Django accounts.User — table `accounts_user`.
- * Password is stored Django-style (pbkdf2_sha256 or bcrypt); never Laravel hashes.
+ * Django accounts.User - `accounts_user`.
+ * Password: Django pbkdf2_sha256 splitted by iter count. JWT subject = user.id.
  */
 class User extends Authenticatable
 {
@@ -72,10 +74,20 @@ class User extends Authenticatable
         return (string) $this->password;
     }
 
-    public function businesses(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function businesses(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'accounts_businessmembership', 'user_id', 'business_id')
-            ->withPivot('status', 'role', 'is_active')
+            ->withPivot('status', 'role', 'permissions', 'is_active', 'invited_by_id')
             ->withTimestamps();
+    }
+
+    public function refreshTokens(): HasMany
+    {
+        return $this->hasMany(RefreshToken::class, 'user_id');
+    }
+
+    public function loginAttempts(): HasMany
+    {
+        return $this->hasMany(LoginAttempt::class, 'user_id');
     }
 }

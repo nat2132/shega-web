@@ -13,8 +13,11 @@ export default function RegisterPage() {
   const router = useRouter();
   const { register } = useAuthStore();
   const [form, setForm] = useState({
-    full_name: "",
+    business_name: "",
+    first_name: "",
+    last_name: "",
     email: "",
+    phone: "",
     password: "",
     password2: "",
   });
@@ -31,18 +34,26 @@ export default function RegisterPage() {
       toast.error("Passwords do not match.");
       return;
     }
+    if (form.password.length < 8) {
+      toast.error("Password must be at least 8 characters.");
+      return;
+    }
     setIsLoading(true);
     try {
       await register({
-        name: form.full_name,
+        first_name: form.first_name,
+        last_name: form.last_name,
         email: form.email,
+        phone: form.phone,
+        business_name: form.business_name,
         password: form.password,
         password2: form.password2,
       });
-      toast.success("Admin account created!");
-      router.push("/admin/");
-    } catch {
-      toast.error("Registration failed. Please check your information.");
+      toast.success("Welcome to Shega!");
+      router.push("/customer");
+    } catch (error) {
+      const detail = (error as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
+      toast.error(detail || "Registration failed. Please check your information.");
     } finally {
       setIsLoading(false);
     }
@@ -67,19 +78,35 @@ export default function RegisterPage() {
               <Image src="/images/logo.png" alt="Shega" width={36} height={36} />
               <span className="text-2xl font-bold text-foreground">shega</span>
             </Link>
-            <h1 className="text-xl font-semibold text-foreground">Admin Registration</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Create an administrator account</p>
+            <h1 className="text-xl font-semibold text-foreground">Create your account</h1>
+            <p className="mt-1 text-sm text-muted-foreground">Sign up to manage your subscription online</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="full_name" className="mb-1.5 block text-sm font-medium text-foreground">Full Name</label>
-              <input id="full_name" name="full_name" type="text" required value={form.full_name} onChange={handleChange} className={inputClass} placeholder="Admin Name" />
+              <label htmlFor="business_name" className="mb-1.5 block text-sm font-medium text-foreground">Business Name</label>
+              <input id="business_name" name="business_name" type="text" value={form.business_name} onChange={handleChange} className={inputClass} placeholder="e.g. Natol Trading Plc" />
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label htmlFor="first_name" className="mb-1.5 block text-sm font-medium text-foreground">First Name</label>
+                <input id="first_name" name="first_name" type="text" required value={form.first_name} onChange={handleChange} className={inputClass} placeholder="First name" />
+              </div>
+              <div>
+                <label htmlFor="last_name" className="mb-1.5 block text-sm font-medium text-foreground">Last Name</label>
+                <input id="last_name" name="last_name" type="text" value={form.last_name} onChange={handleChange} className={inputClass} placeholder="Last name" />
+              </div>
             </div>
 
             <div>
               <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-foreground">Email</label>
-              <input id="email" name="email" type="email" required value={form.email} onChange={handleChange} className={inputClass} placeholder="admin@example.com" />
+              <input id="email" name="email" type="email" required value={form.email} onChange={handleChange} className={inputClass} placeholder="you@example.com" />
+            </div>
+
+            <div>
+              <label htmlFor="phone" className="mb-1.5 block text-sm font-medium text-foreground">Phone</label>
+              <input id="phone" name="phone" type="tel" value={form.phone} onChange={handleChange} className={inputClass} placeholder="+251 9XX XXX XXX" />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
@@ -104,7 +131,7 @@ export default function RegisterPage() {
               className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-foreground text-sm font-semibold text-background transition-all duration-200 hover:opacity-90 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50"
             >
               {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
-              {isLoading ? "Creating admin account..." : "Create Admin Account"}
+              {isLoading ? "Creating account..." : "Create Account"}
             </button>
           </form>
 

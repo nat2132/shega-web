@@ -89,7 +89,7 @@ export default function LicensesPage() {
     setDetailLoading(true);
     setDevices([]);
     try {
-      const res = await api.get<PaginatedResponse<DeviceActivation>>(`/licenses/device-activations/`, { params: { license: l.id, page_size: 50 } });
+      const res = await api.get<PaginatedResponse<DeviceActivation>>(`/licenses/device-activations`, { params: { license: l.id, page_size: 50 } });
       setDevices(res.data.results ?? []);
     } catch {
       /* ignore */
@@ -103,7 +103,7 @@ export default function LicensesPage() {
     setActionLoading(true);
     try {
       const days = parseInt(extendDays, 10);
-      await api.post(`/admin/subscriptions/${extendLicense.id}/extend/`, { days });
+      await api.post(`/admin/subscriptions/${extendLicense.id}/extend`, { days });
       setExtendLicense(null);
       loadLicenses();
     } catch {
@@ -115,7 +115,7 @@ export default function LicensesPage() {
 
   async function handleDeactivate(l: AdminSubscription) {
     try {
-      await api.post(`/licenses/licenses/${l.id}/suspend/`, { reason: "Deactivated by admin" });
+      await api.post(`/licenses/licenses/${l.id}/suspend`, { reason: "Deactivated by admin" });
       loadLicenses();
       if (detail?.id === l.id) {
         setDetail({ ...detail, status: "suspended" });
@@ -131,7 +131,7 @@ export default function LicensesPage() {
     try {
       const active = devices.filter((d) => d.is_active);
       for (const device of active) {
-        await api.post(`/licenses/licenses/${l.id}/deactivate_device/`, { device_id: device.device_id });
+        await api.post(`/licenses/licenses/${l.id}/deactivate_device`, { device_id: device.device_id });
       }
       openDetail(l);
     } catch {

@@ -18,6 +18,7 @@ import {
   LogOut,
   Menu,
   ChevronDown,
+  Sparkles,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
@@ -25,6 +26,7 @@ import { useAuthStore } from '@/store/authStore';
 
 const sidebarLinks = [
   { href: '/customer', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/customer/subscription', label: 'Subscription', icon: Sparkles },
   { href: '/customer/licenses', label: 'My Licenses', icon: Key },
   { href: '/customer/payments', label: 'Payments', icon: CreditCard },
   { href: '/customer/invoices', label: 'Invoices', icon: FileText },
@@ -49,20 +51,16 @@ export default function CustomerLayout({ children }: { children: ReactNode }) {
   }, [loadUser]);
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated && !user?.is_staff) {
-      toast.error("Please use the SHEGA mobile app. Web access is for administrators only.");
-      router.push('/');
-    }
     if (!isLoading && !isAuthenticated) {
       router.push('/auth/login');
     }
-  }, [isLoading, isAuthenticated, user, router]);
+  }, [isLoading, isAuthenticated, router]);
 
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
         const api = (await import('@/lib/api')).default;
-        const { data } = await api.get('/notifications/');
+        const { data } = await api.get('/customers/notifications');
         setNotifications(Array.isArray(data) ? data : data.results ?? []);
       } catch {
         // silently fail

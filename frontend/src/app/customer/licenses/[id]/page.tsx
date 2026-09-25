@@ -46,14 +46,14 @@ export default function LicenseDetailPage() {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const { data: lic } = await api.get(`/customers/licenses/${params.id}/`);
+        const { data: lic } = await api.get(`/customers/licenses/${params.id}`);
         setLicense(lic);
         setDaysRemaining(Math.ceil((new Date(lic.expiry_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
 
-        const { data: devs } = await api.get(`/customers/licenses/${params.id}/devices/`);
+        const { data: devs } = await api.get(`/customers/licenses/${params.id}/devices`);
         setDevices(Array.isArray(devs) ? devs : devs.results ?? []);
 
-        const { data: pays } = await api.get(`/customers/licenses/${params.id}/payments/`);
+        const { data: pays } = await api.get(`/customers/licenses/${params.id}/payments`);
         setPayments(Array.isArray(pays) ? pays : pays.results ?? []);
       } catch {
         router.push('/customer/licenses');

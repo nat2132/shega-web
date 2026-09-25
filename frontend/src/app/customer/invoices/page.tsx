@@ -23,7 +23,7 @@ export default function InvoicesPage() {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const { data } = await api.get('/customers/invoices/');
+        const { data } = await api.get('/customers/invoices');
         setInvoices(Array.isArray(data) ? data : data.results ?? []);
       } catch {
         setInvoices([]);

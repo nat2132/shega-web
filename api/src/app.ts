@@ -17,6 +17,11 @@ import { appVersionsRouter } from "./modules/app-versions/app-versions.router";
 import { dashboardRouter } from "./modules/dashboard/dashboard.router";
 import { auditLogsRouter } from "./modules/audit-logs/audit-logs.router";
 import { adminsRouter } from "./modules/admin-users/admin-users.router";
+import { adminExtrasRouter } from "./modules/admin-extras/admin-extras.router";
+import { customerRouter, publicRouter } from "./modules/customer/customer.router";
+import { licenseDeviceRouter } from "./modules/license-device/license-device.router";
+import { walletRouter, publicWalletRouter } from "./modules/wallet/wallet.router";
+import { githubRouter } from "./modules/github/github.router";
 
 export function createApp(): express.Express {
   const app = express();
@@ -46,6 +51,25 @@ export function createApp(): express.Express {
   }
 
   app.use("/api/auth", authRouter);
+  app.use("/api/license", licenseDeviceRouter);
+  app.use("/api/payments", walletRouter);
+  app.use("/api/subscription", publicWalletRouter);
+  app.use("/api/github", githubRouter);
+
+  if (env.rateLimitAdmin > 0) {
+    app.use(
+      "/api/admin",
+      rateLimit({
+        windowMs: 60 * 1000,
+        limit: env.rateLimitAdmin,
+        standardHeaders: "draft-7",
+        legacyHeaders: false,
+        handler: (_req: Request, res: Response) => {
+          res.status(429).json({ detail: "Admin rate limit exceeded. Please try again later." });
+        },
+      }),
+    );
+  }
 
   const adminApi = express.Router();
   adminApi.use("/businesses", businessesRouter);
@@ -57,12 +81,16 @@ export function createApp(): express.Express {
   adminApi.use("/dashboard", dashboardRouter);
   adminApi.use("/audit-logs", auditLogsRouter);
   adminApi.use("/admins", adminsRouter);
+  adminApi.use("/", adminExtrasRouter);
   app.use("/api/admin", adminApi);
 
   const licensesApi = express.Router();
   licensesApi.use("/plans", plansRouter);
   licensesApi.use("/", licensesRouter);
   app.use("/api/licenses", licensesApi);
+  app.use("/api/customers", customerRouter);
+  app.use("/api/notifications", customerRouter);
+  app.use("/api", publicRouter);
 
   app.get("/health", (_req: Request, res: Response) => {
     res.json({ status: "ok", service: "shega-admin-api", time: new Date().toISOString() });

@@ -137,7 +137,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
   fetchDashboard: async () => {
     set({ dashboardLoading: true });
     try {
-      const { data } = await api.get('/admin/dashboard/');
+      const { data } = await api.get('/admin/dashboard');
       set({ metrics: data });
     } catch (err) {
       console.error('Failed to fetch dashboard:', err);
@@ -149,7 +149,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
   fetchBusinesses: async (params) => {
     set({ businessesLoading: true });
     try {
-      const { data } = await api.get('/admin/businesses/', { params });
+      const { data } = await api.get('/admin/businesses', { params });
       set({ businesses: data.results || data, totalBusinesses: data.count || data.length });
     } catch (err) {
       console.error('Failed to fetch businesses:', err);
@@ -161,7 +161,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
   fetchSubscriptions: async (params) => {
     set({ subscriptionsLoading: true });
     try {
-      const { data } = await api.get('/admin/subscriptions/', { params });
+      const { data } = await api.get('/admin/subscriptions', { params });
       set({ subscriptions: data.results || data, totalSubscriptions: data.count || data.length });
     } catch (err) {
       console.error('Failed to fetch subscriptions:', err);
@@ -173,7 +173,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
   fetchPayments: async (params) => {
     set({ paymentsLoading: true });
     try {
-      const { data } = await api.get('/admin/payments/', { params });
+      const { data } = await api.get('/admin/payments', { params });
       set({ payments: data.results || data, totalPayments: data.count || data.length });
     } catch (err) {
       console.error('Failed to fetch payments:', err);
@@ -185,7 +185,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
   fetchPlans: async () => {
     set({ plansLoading: true });
     try {
-      const { data } = await api.get('/licenses/plans/');
+      const { data } = await api.get('/licenses/plans');
       set({ plans: data.results || data });
     } catch (err) {
       console.error('Failed to fetch plans:', err);
@@ -197,7 +197,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
   fetchSettings: async () => {
     set({ settingsLoading: true });
     try {
-      const { data } = await api.get('/admin/settings/');
+      const { data } = await api.get('/admin/settings');
       set({ settings: data.results || data });
     } catch (err) {
       console.error('Failed to fetch settings:', err);
@@ -209,7 +209,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
   fetchFeatureFlags: async () => {
     set({ featureFlagsLoading: true });
     try {
-      const { data } = await api.get('/admin/feature-flags/');
+      const { data } = await api.get('/admin/feature-flags');
       set({ featureFlags: data.results || data });
     } catch (err) {
       console.error('Failed to fetch feature flags:', err);
@@ -221,7 +221,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
   fetchAppVersions: async () => {
     set({ appVersionsLoading: true });
     try {
-      const { data } = await api.get('/admin/app-versions/');
+      const { data } = await api.get('/admin/app-versions');
       set({ appVersions: data.results || data });
     } catch (err) {
       console.error('Failed to fetch app versions:', err);
@@ -233,7 +233,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
   fetchSupportTickets: async () => {
     set({ supportTicketsLoading: true });
     try {
-      const { data } = await api.get('/admin/support-tickets/');
+      const { data } = await api.get('/admin/support-tickets');
       set({ supportTickets: data.results || data });
     } catch (err) {
       console.error('Failed to fetch support tickets:', err);
@@ -245,7 +245,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
   fetchAuditLogs: async (params) => {
     set({ auditLogsLoading: true });
     try {
-      const { data } = await api.get('/admin/audit-logs/', { params });
+      const { data } = await api.get('/admin/audit-logs', { params });
       set({ auditLogs: data.results || data });
     } catch (err) {
       console.error('Failed to fetch audit logs:', err);
@@ -257,7 +257,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
   fetchAdminNotifications: async () => {
     set({ adminNotificationsLoading: true });
     try {
-      const { data } = await api.get('/notifications/notifications/');
+      const { data } = await api.get('/notifications/notifications');
       set({ adminNotifications: data.results || data });
     } catch (err) {
       console.error('Failed to fetch notifications:', err);
@@ -269,7 +269,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
   fetchRevenue: async () => {
     set({ revenueLoading: true });
     try {
-      const { data } = await api.get('/admin/revenue/');
+      const { data } = await api.get('/admin/revenue');
       set({ revenue: data });
     } catch (err) {
       console.error('Failed to fetch revenue:', err);
@@ -281,7 +281,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
   fetchAnalytics: async () => {
     set({ analyticsLoading: true });
     try {
-      const { data } = await api.get('/admin/analytics/overview/');
+      const { data } = await api.get('/admin/analytics/overview');
       set({ analytics: data });
     } catch (err) {
       console.error('Failed to fetch analytics:', err);
@@ -293,7 +293,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
   fetchAdmins: async () => {
     set({ adminsLoading: true });
     try {
-      const { data } = await api.get('/admin/admins/');
+      const { data } = await api.get('/admin/admins');
       set({ admins: data.results || data });
     } catch (err) {
       console.error('Failed to fetch admins:', err);
@@ -305,7 +305,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
   fetchTrials: async (params) => {
     set({ trialsLoading: true });
     try {
-      const { data } = await api.get('/admin/trials/', { params });
+      const { data } = await api.get('/admin/trials', { params });
       set({ trials: data.results || data });
     } catch (err) {
       console.error('Failed to fetch trials:', err);
@@ -315,133 +315,133 @@ export const useAdminStore = create<AdminState>((set, get) => ({
   },
 
   suspendBusiness: async (id) => {
-    await api.post(`/admin/businesses/${id}/suspend/`);
+    await api.post(`/admin/businesses/${id}/suspend`);
     get().fetchBusinesses();
   },
   activateBusiness: async (id) => {
-    await api.post(`/admin/businesses/${id}/activate/`);
+    await api.post(`/admin/businesses/${id}/activate`);
     get().fetchBusinesses();
   },
   deleteBusiness: async (id) => {
-    await api.delete(`/admin/businesses/${id}/`);
+    await api.delete(`/admin/businesses/${id}`);
     get().fetchBusinesses();
   },
   resetTrial: async (id) => {
-    await api.post(`/admin/businesses/${id}/reset-trial/`);
+    await api.post(`/admin/businesses/${id}/reset-trial`);
     get().fetchBusinesses();
   },
 
   approvePayment: async (id) => {
-    await api.post(`/admin/payments/${id}/approve/`);
+    await api.post(`/admin/payments/${id}/approve`);
     get().fetchPayments();
   },
   rejectPayment: async (id, reason) => {
-    await api.post(`/admin/payments/${id}/reject/`, { reason });
+    await api.post(`/admin/payments/${id}/reject`, { reason });
     get().fetchPayments();
   },
   requestPaymentInfo: async (id, message) => {
-    await api.post(`/admin/payments/${id}/request-info/`, { message });
+    await api.post(`/admin/payments/${id}/request-info`, { message });
     get().fetchPayments();
   },
 
   activateSubscription: async (id) => {
-    await api.post(`/admin/subscriptions/${id}/activate/`);
+    await api.post(`/admin/subscriptions/${id}/activate`);
     get().fetchSubscriptions();
   },
   extendSubscription: async (id, days) => {
-    await api.post(`/admin/subscriptions/${id}/extend/`, { days });
+    await api.post(`/admin/subscriptions/${id}/extend`, { days });
     get().fetchSubscriptions();
   },
   renewSubscription: async (id) => {
-    await api.post(`/admin/subscriptions/${id}/renew/`);
+    await api.post(`/admin/subscriptions/${id}/renew`);
     get().fetchSubscriptions();
   },
   upgradeSubscription: async (id, planId) => {
-    await api.post(`/admin/subscriptions/${id}/upgrade/`, { plan_id: planId });
+    await api.post(`/admin/subscriptions/${id}/upgrade`, { plan_id: planId });
     get().fetchSubscriptions();
   },
   downgradeSubscription: async (id, planId) => {
-    await api.post(`/admin/subscriptions/${id}/downgrade/`, { plan_id: planId });
+    await api.post(`/admin/subscriptions/${id}/downgrade`, { plan_id: planId });
     get().fetchSubscriptions();
   },
   cancelSubscription: async (id) => {
-    await api.post(`/admin/subscriptions/${id}/cancel/`);
+    await api.post(`/admin/subscriptions/${id}/cancel`);
     get().fetchSubscriptions();
   },
   expireSubscription: async (id) => {
-    await api.post(`/admin/subscriptions/${id}/expire/`);
+    await api.post(`/admin/subscriptions/${id}/expire`);
     get().fetchSubscriptions();
   },
   restoreSubscription: async (id) => {
-    await api.post(`/admin/subscriptions/${id}/restore/`);
+    await api.post(`/admin/subscriptions/${id}/restore`);
     get().fetchSubscriptions();
   },
 
   extendTrial: async (id, days) => {
-    await api.post(`/admin/trials/${id}/extend/`, { days });
+    await api.post(`/admin/trials/${id}/extend`, { days });
     get().fetchTrials();
   },
   endTrial: async (id) => {
-    await api.post(`/admin/trials/${id}/end/`);
+    await api.post(`/admin/trials/${id}/end`);
     get().fetchTrials();
   },
   convertTrial: async (id, planId) => {
-    await api.post(`/admin/trials/${id}/convert/`, { plan_id: planId });
+    await api.post(`/admin/trials/${id}/convert`, { plan_id: planId });
     get().fetchTrials();
   },
 
   createAdmin: async (data) => {
-    await api.post('/admin/admins/', data);
+    await api.post('/admin/admins', data);
     get().fetchAdmins();
   },
   suspendAdmin: async (id) => {
-    await api.post(`/admin/admins/${id}/suspend/`);
+    await api.post(`/admin/admins/${id}/suspend`);
     get().fetchAdmins();
   },
   resetAdminPassword: async (id) => {
-    await api.post(`/admin/admins/${id}/reset-password/`);
+    await api.post(`/admin/admins/${id}/reset-password`);
   },
 
   saveSettings: async (data) => {
-    await api.put('/admin/settings/', data);
+    await api.put('/admin/settings', data);
     get().fetchSettings();
   },
 
   toggleFeatureFlag: async (id) => {
-    await api.post(`/admin/feature-flags/${id}/toggle/`);
+    await api.post(`/admin/feature-flags/${id}/toggle`);
     get().fetchFeatureFlags();
   },
   createFeatureFlag: async (data) => {
-    await api.post('/admin/feature-flags/', data);
+    await api.post('/admin/feature-flags', data);
     get().fetchFeatureFlags();
   },
 
   createAppVersion: async (data) => {
-    await api.post('/admin/app-versions/', data);
+    await api.post('/admin/app-versions', data);
     get().fetchAppVersions();
   },
   notifyAppUpdate: async (id) => {
-    await api.post(`/admin/app-versions/${id}/notify/`);
+    await api.post(`/admin/app-versions/${id}/notify`);
   },
 
   replyToTicket: async (ticketId, message, isInternal) => {
-    await api.post(`/admin/support-tickets/${ticketId}/reply/`, { message, is_internal: isInternal });
+    await api.post(`/admin/support-tickets/${ticketId}/reply`, { message, is_internal: isInternal });
     get().fetchSupportTickets();
   },
   closeTicket: async (ticketId) => {
-    await api.post(`/admin/support-tickets/${ticketId}/close/`);
+    await api.post(`/admin/support-tickets/${ticketId}/close`);
     get().fetchSupportTickets();
   },
   assignTicket: async (ticketId, adminId) => {
-    await api.post(`/admin/support-tickets/${ticketId}/assign/`, { admin_id: adminId });
+    await api.post(`/admin/support-tickets/${ticketId}/assign`, { admin_id: adminId });
     get().fetchSupportTickets();
   },
   escalateTicket: async (ticketId) => {
-    await api.post(`/admin/support-tickets/${ticketId}/escalate/`);
+    await api.post(`/admin/support-tickets/${ticketId}/escalate`);
     get().fetchSupportTickets();
   },
 
   sendNotification: async (data) => {
-    await api.post('/admin/notifications/send/', data);
+    await api.post('/admin/notifications/send', data);
   },
 }));

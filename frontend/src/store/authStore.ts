@@ -4,14 +4,26 @@ import type { User, LoginResponse } from '@/lib/types';
 
 interface RegisterData {
   email: string;
-  name: string;
   password: string;
   password2: string;
+  name?: string;
+  first_name?: string;
+  last_name?: string;
+  phone?: string;
+  business_name?: string;
 }
 
 interface UpdateProfileData {
   full_name?: string;
   phone_number?: string;
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  phone?: string;
+  business_name?: string;
+  business_type?: string;
+  address?: string;
+  notes?: string;
   profile?: {
     company_name?: string;
     contact_person?: string;
@@ -42,13 +54,13 @@ export const useAuthStore = create<AuthState>((set) => ({
   login: async (email: string, password: string) => {
     set({ isLoading: true });
     try {
-      const { data } = await api.post<LoginResponse & { user?: User }>('/auth/login/', { username: email, password });
+      const { data } = await api.post<LoginResponse & { user?: User }>('/auth/login', { username: email, password });
       localStorage.setItem('access_token', data.access);
       localStorage.setItem('refresh_token', data.refresh);
       if (data.user) {
         set({ user: data.user, isAuthenticated: true, isLoading: false });
       } else {
-        const profileRes = await api.get<User>('/auth/profile/');
+        const profileRes = await api.get<User>('/auth/profile');
         set({ user: profileRes.data, isAuthenticated: true, isLoading: false });
       }
     } catch (error) {
@@ -60,7 +72,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   register: async (registerData: RegisterData) => {
     set({ isLoading: true });
     try {
-      const { data } = await api.post<LoginResponse>('/auth/register/', registerData);
+      const { data } = await api.post<LoginResponse>('/auth/register', registerData);
       localStorage.setItem('access_token', data.access);
       localStorage.setItem('refresh_token', data.refresh);
       set({ user: data.user, isAuthenticated: true, isLoading: false });
@@ -84,7 +96,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
     set({ isLoading: true });
     try {
-      const { data } = await api.get<User>('/auth/profile/');
+      const { data } = await api.get<User>('/auth/profile');
       set({ user: data, isAuthenticated: true, isLoading: false });
     } catch {
       localStorage.removeItem('access_token');
@@ -96,7 +108,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   updateProfile: async (profileData: UpdateProfileData) => {
     set({ isLoading: true });
     try {
-      const { data } = await api.patch<User>('/auth/profile/', profileData);
+      const { data } = await api.patch<User>('/auth/profile', profileData);
       set({ user: data, isLoading: false });
     } catch (error) {
       set({ isLoading: false });

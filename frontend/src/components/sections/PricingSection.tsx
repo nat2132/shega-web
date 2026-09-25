@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ComponentType } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "@/hooks/useTranslations";
-import { Check, Smartphone, Star } from "lucide-react";
+import { Check, Monitor, Smartphone, Star, TabletSmartphone } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -15,13 +15,24 @@ type PlanType = {
   period: string;
   monthLabel: string;
   quarterLabel: string;
+  includes?: string;
   features: string[];
   cta: string;
   popular?: string;
   recommended?: string;
 };
 
-function PricingCard({ plan, index, isQuarterly }: { plan: PlanType; index: number; isQuarterly: boolean }) {
+function PricingCard({
+  plan,
+  index,
+  isQuarterly,
+  icon: Icon,
+}: {
+  plan: PlanType;
+  index: number;
+  isQuarterly: boolean;
+  icon?: ComponentType<{ className?: string }>;
+}) {
   const { t } = useTranslations();
   const isPopular = !!plan.popular;
 
@@ -59,6 +70,11 @@ function PricingCard({ plan, index, isQuarterly }: { plan: PlanType; index: numb
       )}
 
       <div className="text-center pt-2">
+        {Icon && (
+          <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--accent)]/10">
+            <Icon className="h-5 w-5 text-[var(--accent)]" />
+          </div>
+        )}
         <h3 className="text-lg font-semibold text-[var(--fg)] mb-1 tracking-tight">
           {plan.name}
         </h3>
@@ -77,6 +93,9 @@ function PricingCard({ plan, index, isQuarterly }: { plan: PlanType; index: numb
             {isQuarterly ? plan.quarterlyPrice : plan.monthlyPrice}
           </span>
         </div>
+        {plan.includes && (
+          <div className="mt-2 text-[11px] font-medium text-[var(--muted)]">{plan.includes}</div>
+        )}
         {isPopular && (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -123,12 +142,21 @@ function PricingCard({ plan, index, isQuarterly }: { plan: PlanType; index: numb
   );
 }
 
+const PLAN_KEYS = ["mobile", "desktop", "both"] as const;
+const PLAN_ICONS = {
+  mobile: Smartphone,
+  desktop: Monitor,
+  both: TabletSmartphone,
+} as const;
+
 function PricingSection() {
   const { t } = useTranslations();
   const [isQuarterly, setIsQuarterly] = useState(false);
 
-  const mobileBasic = t("pricing.mobile.basic") as unknown as PlanType;
-  const mobilePremium = t("pricing.mobile.premium") as unknown as PlanType;
+  const plans = PLAN_KEYS.map((key) => ({
+    key,
+    plan: t(`pricing.plans.${key}`) as unknown as PlanType,
+  })).filter((entry) => entry.plan && typeof entry.plan === "object");
 
   return (
     <section id="pricing" className="section-light py-28 relative overflow-hidden">
@@ -186,13 +214,23 @@ function PricingSection() {
         </motion.div>
 
         <div className="mb-20">
-          <div className="flex items-center gap-3 justify-center mb-8">
-            <Smartphone className="h-5 w-5 text-[var(--accent)]" />
-            <h3 className="text-lg font-semibold text-[var(--fg)]">{t("pricing.mobile.title") as string}</h3>
+          <div className="flex items-center gap-3 justify-center mb-3">
+            <TabletSmartphone className="h-5 w-5 text-[var(--accent)]" />
+            <h3 className="text-lg font-semibold text-[var(--fg)]">{t("pricing.plans.title") as string}</h3>
           </div>
-          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-            <PricingCard plan={mobileBasic} index={0} isQuarterly={isQuarterly} />
-            <PricingCard plan={mobilePremium} index={1} isQuarterly={isQuarterly} />
+          <p className="text-center text-[15px] text-[var(--muted)] max-w-xl mx-auto mb-8">
+            {t("pricing.plans.subtitle") as string}
+          </p>
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {plans.map(({ key, plan }, index) => (
+              <PricingCard
+                key={key}
+                plan={plan}
+                icon={PLAN_ICONS[key]}
+                index={index}
+                isQuarterly={isQuarterly}
+              />
+            ))}
           </div>
         </div>
       </div>

@@ -33,6 +33,21 @@ export const env = {
   loginLockoutWindowMinutes: int("LOGIN_LOCKOUT_WINDOW_MINUTES", 15),
   rateLimitGlobal: int("RATE_LIMIT_GLOBAL", 0),
   rateLimitLogin: int("RATE_LIMIT_LOGIN", 10),
+  rateLimitRegister: int("RATE_LIMIT_REGISTER", 5),
   rateLimitAdmin: int("RATE_LIMIT_ADMIN", 600),
   trustProxy: int("TRUST_PROXY", 1),
+
+  githubToken: process.env.GITHUB_TOKEN || "",
+  githubOwner: process.env.GITHUB_OWNER || "nat2132",
+  githubRepo: process.env.GITHUB_REPO || "shega-mobile",
+  githubCacheTtl: int("GITHUB_CACHE_TTL", 600),
+
+  smtpHost: process.env.SMTP_HOST || "",
+  smtpPort: int("SMTP_PORT", 587),
+  smtpUser: process.env.SMTP_USER || "",
+  smtpPass: process.env.SMTP_PASS || "",
+  mailFrom: process.env.MAIL_FROM || "no-reply@shega.com",
+  mailFromName: process.env.MAIL_FROM_NAME || "SHEGA",
 };
+
+export const mailEnabled = (): boolean => Boolean(process.env.SMTP_HOST);

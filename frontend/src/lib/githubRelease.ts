@@ -34,10 +34,9 @@ interface CachedReleaseList {
   fetchedAt: number;
 }
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL || "https://shega-api-dah3.onrender.com/api";
-const API_URL = `${API_BASE}/github/release/`;
-const LIST_API_URL = `${API_BASE}/github/releases/`;
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "/api";
+const API_URL = `${API_BASE}/github/release`;
+const LIST_API_URL = `${API_BASE}/github/releases`;
 
 const CACHE_KEY = "shega_latest_release";
 const CACHE_LIST_KEY = "shega_recent_releases";

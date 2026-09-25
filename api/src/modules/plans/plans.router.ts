@@ -15,15 +15,38 @@ export const plansRouter = Router();
 
 const PLAN_ORDERING = ["price", "duration_months", "created_at", "name", "id"] as const;
 
+export const PLAN_EDITIONS = ["mobile", "desktop", "both"] as const;
+export type PlanEdition = (typeof PLAN_EDITIONS)[number];
+
 plansRouter.use(requireAuth, requireAdmin);
 
+// The canonical plan shape: an edition (which platforms the plan unlocks),
+// a monthly price, and the device/business allocations included. Everything
+// except `name`, `duration_months` and `price` is optional so legacy-shaped
+// payloads still validate.
 const planSchema = z.object({
   name: z.string().min(1),
   duration_months: z.coerce.number().int().min(1),
   device_limit: z.coerce.number().int().min(0).default(1),
   price: z.coerce.number().nonnegative(),
   is_active: z.boolean().optional().default(true),
+  edition: z.enum(PLAN_EDITIONS).optional(),
+  included_mobile_devices: z.coerce.number().int().min(0).optional(),
+  included_desktop_devices: z.coerce.number().int().min(0).optional(),
+  included_businesses: z.coerce.number().int().min(0).optional(),
+  addon_mobile_price: z.coerce.number().nonnegative().optional(),
+  addon_desktop_price: z.coerce.number().nonnegative().optional(),
+  addon_business_price: z.coerce.number().nonnegative().optional(),
 });
+
+/** Plan-management payload → Prisma data (drops undefined so PATCH is partial). */
+function planData(data: z.infer<typeof planSchema>): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(data)) {
+    if (value !== undefined) out[key] = value;
+  }
+  return out;
+}
 
 plansRouter.get(
   "/",
@@ -56,13 +79,14 @@ plansRouter.post(
     const data = parsed.data;
     const plan = await prisma.plan.create({
       data: {
+        ...planData(data),
         name: data.name,
         duration_months: data.duration_months,
         device_limit: data.device_limit,
         price: data.price,
         is_active: data.is_active,
         created_at: new Date(),
-      },
+      } as never,
     });
     await logAdminAction(req, {
       action: "create_plan",
@@ -95,7 +119,7 @@ plansRouter.patch(
       return;
     }
     const { is_active, price, device_limit, ...rest } = parsed.data;
-    const data: Record<string, unknown> = { ...rest, updated_at: new Date() };
+    const data: Record<string, unknown> = { ...planData(rest as z.infer<typeof planSchema>), updated_at: new Date() };
     if (price !== undefined) data.price = price;
     if (device_limit !== undefined) data.device_limit = device_limit;
     if (is_active !== undefined) data.is_active = is_active;

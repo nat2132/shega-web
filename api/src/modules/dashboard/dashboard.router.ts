@@ -39,10 +39,11 @@ dashboardRouter.get(
         prisma.license.count({ where: { status: "expired" } }),
       ]);
 
-    const [basicSubscribers, premiumSubscribers, monthlyRevenue, todayRevenue, renewalsThisMonth, newBusinessesToday, totalTrials, convertedTrials] =
+    const [mobileSubscribers, desktopSubscribers, bothSubscribers, monthlyRevenue, todayRevenue, renewalsThisMonth, newBusinessesToday, totalTrials, convertedTrials] =
       await Promise.all([
-        prisma.license.count({ where: { status: "active", plan: { name: { contains: "basic" } } } }),
-        prisma.license.count({ where: { status: "active", plan: { name: { contains: "premium" } } } }),
+        prisma.license.count({ where: { status: "active", plan: { edition: "mobile" } } }),
+        prisma.license.count({ where: { status: "active", plan: { edition: "desktop" } } }),
+        prisma.license.count({ where: { status: "active", plan: { edition: "both" } } }),
         prisma.payment.aggregate({
           where: { status: "approved", created_at: { gte: monthStart } },
           _sum: { amount: true },
@@ -109,8 +110,11 @@ dashboardRouter.get(
       pendingPayments,
       activeSubscriptions,
       expiredSubscriptions,
-      basicSubscribers,
-      premiumSubscribers,
+      // Plan distribution by edition (the canonical plan structure:
+      // Mobile · Desktop · Mobile + Desktop).
+      mobileSubscribers,
+      desktopSubscribers,
+      bothSubscribers,
       monthlyRevenue: Number(monthlyRevenue._sum.amount ?? 0),
       todayRevenue: Number(todayRevenue._sum.amount ?? 0),
       renewalsThisMonth,
@@ -125,7 +129,11 @@ dashboardRouter.get(
       })),
       trialConversionRate,
       mobileVsDesktop: { mobile: mobileCount, desktop: desktopCount },
-      subscriptionDistribution: { basic: basicSubscribers, premium: premiumSubscribers },
+      subscriptionDistribution: {
+        mobile: mobileSubscribers,
+        desktop: desktopSubscribers,
+        both: bothSubscribers,
+      },
       expiringSoon: expiringSoon.map((e) => ({
         id: e.id,
         key: e.license_key,

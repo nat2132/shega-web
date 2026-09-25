@@ -13,7 +13,9 @@ import {
   sha256,
   REFRESH_TTL_SECONDS,
 } from "../../lib/tokens";
-import { serializeUser } from "../../lib/serializers";
+import { serializeUser, fullName, isoDateTime } from "../../lib/serializers";
+import { sendMail } from "../../lib/mail";
+import { mailEnabled } from "../../config/env";
 import { requireAuth } from "../../middleware/auth";
 import { clientIp, clientUserAgent } from "../../lib/audit";
 import { env } from "../../config/env";
@@ -161,6 +163,161 @@ authRouter.post(
   }),
 );
 
+const registerLimit = rateLimit({
+  windowMs: 60_000,
+  max: env.rateLimitRegister,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: () => env.rateLimitRegister === 0,
+  handler: (_req, res) => {
+    res.status(429).json({ detail: "Too many accounts created. Please try again later." });
+  },
+});
+
+authRouter.post(
+  "/register",
+  registerLimit,
+  wrap(async (req: Request, res: Response) => {
+    const schema = z.object({
+      email: z.string().email("Enter a valid email address."),
+      password: z.string().min(8, "This password is too short. It must contain at least 8 characters."),
+      password2: z.string(),
+      first_name: z.string().max(150).optional().default(""),
+      last_name: z.string().max(150).optional().default(""),
+      name: z.string().max(300).optional(),
+      username: z.string().min(3).max(150).optional(),
+      phone: z.string().max(20).optional().default(""),
+      business_name: z.string().max(255).optional().default(""),
+      business_type: z.string().max(50).optional().default(""),
+    });
+    const parsed = schema.safeParse(req.body ?? {});
+    if (!parsed.success) {
+      const issue = parsed.error.issues[0];
+      const field = String(issue?.path[0] ?? "detail");
+      res.status(400).json({ [field]: [issue?.message ?? "Invalid value."] });
+      return;
+    }
+    const data = parsed.data;
+
+    if (data.password !== data.password2) {
+      res.status(400).json({ password2: ["The two password fields didn't match."] });
+      return;
+    }
+
+    const meta = data.name
+      ? splitFullName(data.name, data.first_name, data.last_name)
+      : { first_name: data.first_name, last_name: data.last_name };
+
+    const email = data.email.trim().toLowerCase();
+    const emailTaken = await prisma.$queryRaw<Array<{ id: number }>>`
+      SELECT id FROM accounts_user WHERE LOWER(email) = ${email} LIMIT 1
+    `;
+    if (emailTaken.length > 0) {
+      res.status(400).json({ email: ["A user with that email already exists."] });
+      return;
+    }
+
+    const phoneNum = (data.phone || "").trim();
+    if (phoneNum) {
+      const phoneTaken = await prisma.$queryRaw<Array<{ id: number }>>`
+        SELECT id FROM accounts_user WHERE phone = ${phoneNum} LIMIT 1
+      `;
+      if (phoneTaken.length > 0) {
+        res.status(400).json({ phone: ["A user with that phone number already exists."] });
+        return;
+      }
+    }
+
+    let username = (data.username || "").trim().toLowerCase();
+    if (!username) {
+      const base = (email.split("@")[0] || "user").replace(/[^a-z0-9_.]/g, "").slice(0, 60) || "user";
+      username = await uniqueUsername(base);
+    } else {
+      const clash = await prisma.$queryRaw<Array<{ id: number }>>`
+        SELECT id FROM accounts_user WHERE LOWER(username) = LOWER(${username}) LIMIT 1
+      `;
+      if (clash.length > 0) {
+        res.status(400).json({ username: ["A user with that username already exists."] });
+        return;
+      }
+    }
+
+    const now = new Date();
+    const user = await prisma.user.create({
+      data: {
+        username,
+        email,
+        password: await hashPassword(data.password),
+        first_name: meta.first_name,
+        last_name: meta.last_name,
+        phone: data.phone || null,
+        business_name: data.business_name,
+        business_type: data.business_type,
+        address: "",
+        notes: "",
+        is_staff: false,
+        is_superuser: false,
+        is_admin: false,
+        is_customer: true,
+        is_active: true,
+        email_verified: false,
+        phone_verified: false,
+        date_joined: now,
+        created_at: now,
+        updated_at: now,
+        customer_profile: {
+          create: {
+            company_name: data.business_name || fullName(meta),
+            tin_number: "",
+            city: "",
+            region: "",
+            website: "",
+            notes: "",
+            created_at: now,
+            updated_at: now,
+          },
+        },
+      },
+    });
+
+    await prisma.notification.create({
+      data: {
+        recipient_id: user.id,
+        notification_type: "account",
+        title: "Welcome to Shega",
+        message: "Your customer account was created successfully.",
+        created_at: now,
+      },
+    });
+
+    const tokens = await issueTokens(req, user.id);
+    res.status(201).json({
+      access: tokens.access,
+      refresh: tokens.refresh,
+      user: serializeUser(user),
+    });
+  }),
+);
+
+function splitFullName(name: string, first_name: string, last_name: string): { first_name: string; last_name: string } {
+  if (first_name || last_name) return { first_name, last_name };
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  return { first_name: parts[0] || "", last_name: parts.slice(1).join(" ") };
+}
+
+async function uniqueUsername(base: string): Promise<string> {
+  let candidate = base;
+  let n = 1;
+  for (;;) {
+    const clash = await prisma.$queryRaw<Array<{ id: number }>>`
+      SELECT id FROM accounts_user WHERE LOWER(username) = LOWER(${candidate}) LIMIT 1
+    `;
+    if (clash.length === 0) return candidate;
+    n += 1;
+    candidate = `${base.slice(0, 60 - String(n).length)}${n}`;
+  }
+}
+
 authRouter.post(
   "/refresh",
   wrap(async (req: Request, res: Response) => {
@@ -233,6 +390,47 @@ authRouter.get(
     const user = await prisma.user.findUnique({ where: { id: req.user!.id } });
     if (!user) throw unauthorized("User does not exist.");
     res.json(serializeUser(user));
+  }),
+);
+
+authRouter.get(
+  "/memberships",
+  requireAuth,
+  wrap(async (req: Request, res: Response) => {
+    const user = await prisma.user.findUnique({ where: { id: req.user!.id } });
+    if (!user) throw unauthorized("User does not exist.");
+
+    // Mirrors Django's MyMembershipsView: the businesses the requesting
+    // account may operate (owned + memberships). Used by Shega Mobile and
+    // Shega Desktop to pick/share the SAME business_id (and therefore the
+    // same subscription) across platforms.
+    const memberships = await prisma.businessMembership.findMany({
+      where: { user_id: user.id, is_active: true },
+      include: {
+        user: true,
+        business: true,
+        invited_by: true,
+      },
+      orderBy: { created_at: "asc" },
+    });
+
+    res.json({
+      owned: [serializeUser(user)],
+      memberships: memberships.map((m) => ({
+        id: m.id,
+        user_id: m.user_id,
+        user_name: [m.user.first_name, m.user.last_name].filter(Boolean).join(" ").trim() || m.user.username || "",
+        user_email: m.user.email || m.user.username || "",
+        business_id: m.business_id,
+        business_name: m.business.business_name || m.business.username || "",
+        role: m.role,
+        permissions: m.permissions ?? null,
+        status: m.status,
+        is_active: m.is_active,
+        created_at: isoDateTime(m.created_at),
+        updated_at: isoDateTime(m.updated_at),
+      })),
+    });
   }),
 );
 
@@ -312,10 +510,23 @@ authRouter.post(
         { expiresIn: "1h" },
       );
       resetData = { email: user.email, uid, token };
+      const sent = await sendMail({
+        to: user.email,
+        subject: "Reset your SHEGA password",
+        text: `Use the token below to set a new password:\n\nToken: ${token}\nUID: ${uid}\n\nIt expires in 1 hour.`,
+      });
+      if (!sent.delivered) {
+        // Dev/CI: no SMTP configured — surface the reset data to the caller.
+        res.json({
+          detail: "If that email is registered, a reset link has been sent.",
+          reset_data: resetData,
+        });
+        return;
+      }
     }
     res.json({
       detail: "If that email is registered, a reset link has been sent.",
-      ...(resetData ? { reset_data: resetData } : {}),
+      ...(resetData && !mailEnabled() ? { reset_data: resetData } : {}),
     });
   }),
 );

@@ -104,7 +104,7 @@ export default function PaymentsPage() {
     if (!detail) return;
     setActionLoading(true);
     try {
-      await api.post(`/admin/payments/${detail.id}/approve/`, { admin_notes: adminNotes });
+      await api.post(`/admin/payments/${detail.id}/approve`, { admin_notes: adminNotes });
       setDetail(null);
       setAdminNotes("");
       loadPayments();
@@ -119,7 +119,7 @@ export default function PaymentsPage() {
     if (!rejectModal) return;
     setActionLoading(true);
     try {
-      await api.post(`/admin/payments/${rejectModal.id}/reject/`, { reason: rejectReason });
+      await api.post(`/admin/payments/${rejectModal.id}/reject`, { reason: rejectReason });
       setRejectModal(null);
       setRejectReason("");
       loadPayments();

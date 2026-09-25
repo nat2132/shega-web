@@ -1,13 +1,11 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   CreditCard,
   Plus,
-  Upload,
   X,
-  Check,
   FileText,
   DollarSign,
   Banknote,
@@ -56,16 +54,12 @@ export default function PaymentsPage() {
   const [formData, setFormData] = useState({
     plan: '',
     payment_method: '',
-    amount: '',
-    receipt: null as File | null,
   });
-  const [dragOver, setDragOver] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const fetch = async () => {
       try {
-        const { data } = await api.get('/customers/payments/');
+        const { data } = await api.get('/customers/payments');
         setPayments(Array.isArray(data) ? data : data.results ?? []);
       } catch {
         setPayments([]);
@@ -79,7 +73,7 @@ export default function PaymentsPage() {
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const { data } = await api.get('/plans/');
+        const { data } = await api.get('/plans');
         setPlans(Array.isArray(data) ? data : data.results ?? []);
       } catch {
         // silently fail
@@ -97,56 +91,31 @@ export default function PaymentsPage() {
         return true;
       });
 
-  const handleFileDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOver(false);
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) {
-      setFormData((prev) => ({ ...prev, receipt: file }));
-    } else {
-      toast.error('Please upload an image file');
-    }
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) setFormData((prev) => ({ ...prev, receipt: file }));
-  };
-
   const handlePlanChange = (planId: string) => {
-    const plan = plans.find((p) => String(p.id) === planId);
-    setFormData((prev) => ({
-      ...prev,
-      plan: planId,
-      amount: plan ? String(plan.price) : '',
-    }));
+    setFormData((prev) => ({ ...prev, plan: planId }));
   };
 
   const handleSubmit = async () => {
-    if (!formData.plan || !formData.payment_method || !formData.receipt) {
-      toast.error('Please fill all fields');
+    if (!formData.plan || !formData.payment_method) {
+      toast.error('Please select a plan and payment method');
       return;
     }
     setSubmitting(true);
     try {
-      const fd = new FormData();
-      fd.append('plan', formData.plan);
-      fd.append('payment_method', formData.payment_method);
-      fd.append('amount', formData.amount);
-      fd.append('receipt', formData.receipt);
-
-      await api.post('/customers/payments/', fd, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      await api.post('/customers/payments', {
+        plan: Number(formData.plan),
+        payment_method: formData.payment_method,
       });
 
       toast.success('Payment submitted successfully');
       setShowModal(false);
-      setFormData({ plan: '', payment_method: '', amount: '', receipt: null });
+      setFormData({ plan: '', payment_method: '' });
 
-      const { data } = await api.get('/customers/payments/');
+      const { data } = await api.get('/customers/payments');
       setPayments(Array.isArray(data) ? data : data.results ?? []);
-    } catch {
-      toast.error('Failed to submit payment');
+    } catch (error) {
+      const detail = (error as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
+      toast.error(detail || 'Failed to submit payment');
     } finally {
       setSubmitting(false);
     }
@@ -351,52 +320,15 @@ export default function PaymentsPage() {
                     <div className="relative">
                       <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                       <input
-                        type="number"
-                        value={formData.amount}
+                        type="text"
+                        value="Calculated by Shega"
                         readOnly
                         className="w-full h-10 pl-9 pr-3 rounded-xl bg-white/5 border border-[var(--color-border)] text-gray-300 text-sm focus:outline-none"
                       />
                     </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1.5">Upload Receipt</label>
-                    <div
-                      onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-                      onDragLeave={() => setDragOver(false)}
-                      onDrop={handleFileDrop}
-                      onClick={() => fileInputRef.current?.click()}
-                      className={cn(
-                        'border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all duration-200',
-                        dragOver
-                          ? 'border-border bg-muted'
-                          : formData.receipt
-                            ? 'border-border bg-muted'
-                            : 'border-[var(--color-border)] hover:border-white/20'
-                      )}
-                    >
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        className="hidden"
-                      />
-                      {formData.receipt ? (
-                        <div className="flex items-center justify-center gap-2">
-                          <Check className="h-5 w-5 text-foreground" />
-                          <span className="text-sm text-gray-300">{formData.receipt.name}</span>
-                        </div>
-                      ) : (
-                        <div>
-                          <Upload className="h-8 w-8 text-gray-500 mx-auto mb-2" />
-                          <p className="text-sm text-gray-400">
-                            Drop payment receipt here or click to browse
-                          </p>
-                          <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
-                        </div>
-                      )}
-                    </div>
+                    <p className="text-xs text-gray-500 mt-1.5">
+                      The amount is verified on approval. Add-ons and renewals are priced based on your subscription.
+                    </p>
                   </div>
                 </div>
 

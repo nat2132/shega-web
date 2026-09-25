@@ -80,13 +80,26 @@ already holds an active license for that plan) and a `INV-YYYYMMDD-XXXX` invoice
 
 ## Plans (`/api/licenses/plans`)
 
+The canonical plan structure is three editions:
+
+| Plan | Edition | Price | Mobile | Desktop | Businesses |
+|------|---------|-------|--------|---------|------------|
+| Mobile | `mobile` | 4,500 ETB/mo | 1 | 0 | 1 |
+| Desktop | `desktop` | 7,500 ETB/mo | 0 | 1 | 1 |
+| Mobile + Desktop | `both` | 10,000 ETB/mo | 1 | 1 | 1 |
+
 | Method | Path        | Description |
 |--------|-------------|-------------|
 | GET    | `/`         | list (search name, filter `is_active`, dating, ordering price/duration_months/created_at) |
-| POST   | `/`         | create `{name, duration_months, device_limit, price, is_active}` |
+| POST   | `/`         | create `{name, duration_months, device_limit, price, is_active, edition?, included_mobile_devices?, included_desktop_devices?, included_businesses?, addon_*_price?}` |
 | GET    | `/:id/`     | detail |
-| PATCH  | `/:id/`     | update (partial) |
+| PATCH  | `/:id/`     | update (partial — any field above) |
 | DELETE | `/:id/`     | delete (400 if referenced by licenses) |
+
+Public (no auth): `GET /api/plans` → active plans, ordered by price.
+
+Legacy `Basic*` / `Premium*` rows are folded into the editions above with
+`npm run migrate:plans` (add `DRY_RUN=1` to preview).
 
 ## Licenses & devices (`/api/licenses`)
 
@@ -118,11 +131,12 @@ already holds an active license for that plan) and a `INV-YYYYMMDD-XXXX` invoice
 
 `GET /` → metrics matching the frontend `DashboardMetrics`:
 `totalBusinesses, activeBusinesses, trialUsers, pendingPayments,
-activeSubscriptions, expiredSubscriptions, basicSubscribers, premiumSubscribers,
-monthlyRevenue, todayRevenue, renewalsThisMonth, newBusinessesToday,
-revenueTrend, subscriptionGrowth, trialConversionRate, mobileVsDesktop,
-subscriptionDistribution, expiringSoon, recentActivity`. Time buckets use
-Ethiopia (UTC+3) like the legacy `TIME_ZONE`.
+activeSubscriptions, expiredSubscriptions, mobileSubscribers, desktopSubscribers,
+bothSubscribers, monthlyRevenue, todayRevenue, renewalsThisMonth,
+newBusinessesToday, revenueTrend, subscriptionGrowth, trialConversionRate,
+mobileVsDesktop, subscriptionDistribution, expiringSoon, recentActivity`.
+`subscriptionDistribution` is `{ mobile, desktop, both }` — the canonical plan
+editions. Time buckets use Ethiopia (UTC+3) like the legacy `TIME_ZONE`.
 
 ## Audit logs (`/api/admin/audit-logs`)
 
@@ -150,14 +164,26 @@ Ethiopia (UTC+3) like the legacy `TIME_ZONE`.
 - `429 {detail}` — lockout / rate limit
 - `204` — successful delete
 
-## Dropped endpoints (not implemented)
+## Client (Mobile / Desktop) endpoints
 
-The following legacy endpoints are **intentionally not** re-implemented; the
-admin panel does not call them:
+These are the endpoints Shega Mobile and Shega Desktop call, so all three apps
+share one account, one subscription and one business id:
 
-- Customer portal: `/api/customers/*`, `/api/notifications/*`,
-  `/api/payments/create`, `/api/payments/my-payment`, `/api/plans/`,
-  `/api/subscription/status/`
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/api/auth/register` | create account |
+| POST | `/api/auth/login` | `{username\|email, password}` → tokens |
+| POST | `/api/auth/refresh` | rotate tokens |
+| POST | `/api/auth/logout` | revoke refresh token |
+| GET | `/api/auth/profile` | current account |
+| GET | `/api/auth/memberships` | businesses this account may operate |
+| GET | `/api/plans` | active plans (Mobile / Desktop / Mobile + Desktop) |
+| POST | `/api/subscription/trial` | `{plan_id}` → start 7-day trial |
+| GET | `/api/subscription/status` | canonical subscription status |
+| POST | `/api/payments/create` | submit a payment `{plan_id, transaction_id, payment_type?}` |
+| GET | `/api/payments/my-payment` | latest payment |
+| GET | `/api/license/status` · POST `/api/license/verify` | license + device activation |
+| GET | `/api/customers/dashboard` · `/licenses` · `/payments` · `/invoices` · `/notifications` | customer portal |
 - Device sync / mobile flow: `/api/license/*` (validate/activate/heartbeat),
   `/api/sync/*`, `/api/mor/*`, `/api/github/release/*`
 - Admin extras: `/api/admin/revenue/*`, `/api/admin/analytics/*`,

@@ -26,7 +26,7 @@ export function errorHandler(
   }
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
     if (err.code === "P2002") {
-      res.status(400).json({ detail: "A record with these values already exists." });
+      res.status(400).json({ detail: "A record with these values already exists.", meta: err.meta });
       return;
     }
     if (err.code === "P2025") {

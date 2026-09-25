@@ -198,3 +198,50 @@ adminsRouter.delete(
     res.status(204).send();
   }),
 );
+
+/** Reset any account's password (admin only) to a generated temporary value. */
+adminsRouter.post(
+  "/:id(\\d+)/reset-password",
+  wrap(async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user) throw notFound("User not found.");
+    if (user.is_admin && user.is_superuser && user.id === req.user!.id) {
+      throw badRequest("Use change-password to reset your own password.");
+    }
+    const temp = randomTempPassword();
+    await prisma.user.update({
+      where: { id },
+      data: { password: await hashPassword(temp), updated_at: new Date() },
+    });
+    await prisma.refreshToken.updateMany({
+      where: { user_id: id, revoked_at: null },
+      data: { revoked_at: new Date() },
+    });
+    await prisma.notification.create({
+      data: {
+        recipient_id: id,
+        notification_type: "password_changed",
+        title: "Your password was reset",
+        message: "An administrator reset your password. Please use the link in your email to sign in and change it.",
+        created_at: new Date(),
+      },
+    });
+    await logAdminAction(req, {
+      action: "reset_user_password",
+      resourceType: "user",
+      resourceId: id,
+      details: { target: user.username },
+    });
+    res.json({ detail: "Password reset successfully.", temporary_password: temp });
+  }),
+);
+
+function randomTempPassword(): string {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#%";
+  let out = "";
+  for (let i = 0; i < 14; i += 1) {
+    out += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return out;
+}

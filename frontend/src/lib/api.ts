@@ -6,7 +6,7 @@ interface ApiErrorResponse {
 }
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://shega-api-dah3.onrender.com/api',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || '/api',
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -14,6 +14,9 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
+  }
+  if (config.headers) {
+    config.headers['ngrok-skip-browser-warning'] = 'true';
   }
   return config;
 });
@@ -62,7 +65,7 @@ api.interceptors.response.use(
         }
 
         const { data } = await axios.post<{ access: string; refresh?: string }>(
-          `${api.defaults.baseURL}/auth/refresh/`,
+          `${api.defaults.baseURL}/auth/refresh`,
           { refresh: refreshToken }
         );
 

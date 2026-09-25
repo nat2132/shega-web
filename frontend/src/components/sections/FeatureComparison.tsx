@@ -5,37 +5,38 @@ import { useTranslations } from "@/hooks/useTranslations";
 import { Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type FeatureEntry = {
-  key: string;
-  mobileBasic: boolean;
-  mobilePremium: boolean;
-};
+type Edition = "mobile" | "desktop" | "both";
 
+type FeatureEntry = { key: string } & Record<Edition, boolean>;
+
+// Inclusion per canonical plan edition. Desktop and Mobile + Desktop unlock the
+// full ERP surface; Mobile covers the day-to-day shop floor.
 const featureList: FeatureEntry[] = [
-  { key: "inventory", mobileBasic: true, mobilePremium: true },
-  { key: "sales", mobileBasic: true, mobilePremium: true },
-  { key: "contacts", mobileBasic: true, mobilePremium: true },
-  { key: "stockAdjustments", mobileBasic: true, mobilePremium: true },
-  { key: "reports", mobileBasic: false, mobilePremium: true },
-  { key: "dashboardOverview", mobileBasic: false, mobilePremium: true },
-  { key: "pdfReceipts", mobileBasic: false, mobilePremium: true },
-  { key: "csvImportExport", mobileBasic: false, mobilePremium: true },
-  { key: "expenseManagement", mobileBasic: false, mobilePremium: true },
-  { key: "budgetManagement", mobileBasic: false, mobilePremium: true },
-  { key: "debtManagement", mobileBasic: false, mobilePremium: true },
-  { key: "customerOrders", mobileBasic: false, mobilePremium: true },
-  { key: "purchaseOrders", mobileBasic: false, mobilePremium: true },
-  { key: "multiWarehouse", mobileBasic: false, mobilePremium: true },
-  { key: "aiAssistant", mobileBasic: false, mobilePremium: true },
-  { key: "businessHealthScore", mobileBasic: false, mobilePremium: true },
-  { key: "biometrics", mobileBasic: false, mobilePremium: true },
-  { key: "themes", mobileBasic: false, mobilePremium: true },
-  { key: "supplierCreditReminders", mobileBasic: false, mobilePremium: true },
+  { key: "inventory", mobile: true, desktop: true, both: true },
+  { key: "sales", mobile: true, desktop: true, both: true },
+  { key: "contacts", mobile: true, desktop: true, both: true },
+  { key: "stockAdjustments", mobile: true, desktop: true, both: true },
+  { key: "reports", mobile: true, desktop: true, both: true },
+  { key: "dashboardOverview", mobile: true, desktop: true, both: true },
+  { key: "pdfReceipts", mobile: false, desktop: true, both: true },
+  { key: "csvImportExport", mobile: false, desktop: true, both: true },
+  { key: "expenseManagement", mobile: false, desktop: true, both: true },
+  { key: "budgetManagement", mobile: false, desktop: true, both: true },
+  { key: "debtManagement", mobile: true, desktop: true, both: true },
+  { key: "customerOrders", mobile: false, desktop: true, both: true },
+  { key: "purchaseOrders", mobile: false, desktop: true, both: true },
+  { key: "multiWarehouse", mobile: false, desktop: true, both: true },
+  { key: "aiAssistant", mobile: false, desktop: true, both: true },
+  { key: "businessHealthScore", mobile: false, desktop: true, both: true },
+  { key: "biometrics", mobile: false, desktop: true, both: true },
+  { key: "themes", mobile: true, desktop: true, both: true },
+  { key: "supplierCreditReminders", mobile: false, desktop: true, both: true },
 ];
 
-const columns = [
-  { key: "mobileBasic", labelKey: "pricing.comparison.columns.mobileBasic" },
-  { key: "mobilePremium", labelKey: "pricing.comparison.columns.mobilePremium", premium: true },
+const columns: { key: Edition; labelKey: string; highlight?: boolean }[] = [
+  { key: "mobile", labelKey: "pricing.comparison.columns.mobile" },
+  { key: "desktop", labelKey: "pricing.comparison.columns.desktop" },
+  { key: "both", labelKey: "pricing.comparison.columns.both", highlight: true },
 ];
 
 function FeatureComparison() {
@@ -71,7 +72,7 @@ function FeatureComparison() {
                     key={col.key}
                     className={cn(
                       "text-center py-3 px-3 text-[12px] font-semibold uppercase tracking-[0.04em] rounded-t-lg",
-                      col.premium
+                      col.highlight
                         ? "text-[#f59e0b] bg-[#f59e0b]/5"
                         : "text-[var(--muted)]"
                     )}
@@ -98,19 +99,19 @@ function FeatureComparison() {
                     {t(`pricing.comparison.features.${feature.key}`) as string}
                   </td>
                   {columns.map((col) => {
-                    const included = feature[col.key as keyof FeatureEntry] as boolean;
+                    const included = feature[col.key];
                     return (
                       <td
                         key={col.key}
                         className={cn(
                           "text-center py-3 px-3",
-                          col.premium && "bg-[#f59e0b]/[0.03]"
+                          col.highlight && "bg-[#f59e0b]/[0.03]"
                         )}
                       >
                         {included ? (
                           <Check className={cn(
                             "h-4 w-4 mx-auto",
-                            col.premium ? "text-[#f59e0b]" : "text-[var(--accent)]"
+                            col.highlight ? "text-[#f59e0b]" : "text-[var(--accent)]"
                           )} />
                         ) : (
                           <X className="h-4 w-4 mx-auto text-[var(--border)]" />

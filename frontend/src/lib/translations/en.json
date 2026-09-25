@@ -63,55 +63,64 @@
       "monthly": "1 Month",
       "threeMonths": "3 Months"
     },
-    "mobile": {
-      "title": "Mobile Plans",
-      "subtitle": "Start on mobile and upgrade as you grow.",
-      "basic": {
-        "name": "Basic",
-        "description": "Essential tools for small businesses getting started.",
-        "monthlyPrice": "1,999",
-        "quarterlyPrice": "2,499",
+    "plans": {
+      "title": "Choose Your Plan",
+      "subtitle": "Mobile, Desktop, or both — one account, one business, one subscription.",
+      "mobile": {
+        "name": "Mobile",
+        "description": "Run your entire shop from your phone.",
+        "monthlyPrice": "4,500",
+        "quarterlyPrice": "13,500",
         "period": "ETB",
-        "monthLabel": "1 Month",
-        "quarterLabel": "3 Months",
+        "monthLabel": "per month",
+        "quarterLabel": "3 months",
+        "includes": "1 mobile device · 1 business",
         "features": [
           "Inventory",
-          "Sales",
-          "Contacts",
+          "Sales & POS",
+          "Customers & Debts",
           "Stock Adjustments",
-          "Export to PDF or CSV"
+          "Reports & Dashboard"
         ],
-        "cta": "Choose Basic"
+        "cta": "Choose Mobile"
       },
-      "premium": {
-        "name": "Premium",
-        "description": "Advanced features for growing businesses ready to scale.",
-        "popular": "Most Popular",
-        "recommended": "Best Value",
-        "monthlyPrice": "2,499",
-        "quarterlyPrice": "5,499",
+      "desktop": {
+        "name": "Desktop",
+        "description": "Full ERP power for your back office.",
+        "monthlyPrice": "7,500",
+        "quarterlyPrice": "22,500",
         "period": "ETB",
-        "monthLabel": "1 Month",
-        "quarterLabel": "3 Months",
+        "monthLabel": "per month",
+        "quarterLabel": "3 months",
+        "includes": "1 desktop device · 1 business",
         "features": [
-          "Everything in Basic plus:",
-          "Reports",
-          "Dashboard Overview",
-          "PDF Receipts",
-          "CSV Import & Export",
-          "Expense Management",
-          "Budget Management",
-          "Debt Management",
-          "Customer Orders",
-          "Purchase Orders",
-          "Multi Warehouse",
-          "AI Assistant",
-          "Business Health Score",
-          "Biometrics",
-          "Themes",
-          "Supplier Credit Reminders"
+          "Everything in Mobile",
+          "Desktop POS & Receipts",
+          "Multi-Warehouse",
+          "Employees & Permissions",
+          "Analytics & Audit"
         ],
-        "cta": "Choose Premium"
+        "cta": "Choose Desktop"
+      },
+      "both": {
+        "name": "Mobile + Desktop",
+        "description": "Run mobile and desktop together, perfectly in sync.",
+        "monthlyPrice": "10,000",
+        "quarterlyPrice": "30,000",
+        "period": "ETB",
+        "monthLabel": "per month",
+        "quarterLabel": "3 months",
+        "includes": "1 mobile + 1 desktop · 1 business",
+        "features": [
+          "Everything in Desktop",
+          "Mobile POS & Scanner",
+          "Real-time device sync",
+          "Team devices",
+          "Priority support"
+        ],
+        "cta": "Choose Mobile + Desktop",
+        "popular": "Most Popular",
+        "recommended": "Best Value"
       }
     },
     "comparison": {
@@ -122,8 +131,9 @@
       "subtitle": "See exactly what you get with each plan.",
       "columns": {
         "feature": "Feature",
-        "mobileBasic": "Mobile Basic",
-        "mobilePremium": "Mobile Premium"
+        "mobile": "Mobile",
+        "desktop": "Desktop",
+        "both": "Mobile + Desktop"
       },
       "features": {
         "inventory": "Inventory",
@@ -154,7 +164,7 @@
     "subtitle": "No credit card required. Explore all features during your trial period.",
     "benefits": {
       "noCard": "7-Day Free Trial",
-      "fullAccess": "Full Premium Access",
+      "fullAccess": "Full Plan Access",
       "noCommitment": "No Commitment Required",
       "allFeatures": "All Features Unlocked"
     },
@@ -178,7 +188,7 @@
       {
         "step": "3",
         "title": "Start Your Free Trial",
-        "desc": "Get 7 days of full Premium access. Explore every feature with no limits and no commitment."
+        "desc": "Get 7 days of full access. Explore every feature with no limits and no commitment."
       },
       {
         "step": "4",
@@ -215,7 +225,7 @@
       {
         "step": "5",
         "title": "Subscription Active",
-        "desc": "Your Premium access is activated immediately."
+        "desc": "Your plan is activated immediately."
       }
     ],
     "note": "Payment verification is quick and secure. Your subscription activates as soon as payment is confirmed.",
@@ -281,7 +291,7 @@
     "items": [
       {
         "question": "How does the free trial work?",
-        "answer": "Every new account receives a 7-day Premium trial with full access to all features. No credit card or payment information is required. Simply download the app, create your business, and start exploring immediately."
+        "answer": "Every new account receives a 7-day free trial with full access to all features. No credit card or payment information is required. Simply download the app, create your business, and start exploring immediately."
       },
       {
         "question": "What happens after my trial ends?",
@@ -289,11 +299,11 @@
       },
       {
         "question": "Can I upgrade later?",
-        "answer": "Yes, you can upgrade from Basic to Premium at any time. When you upgrade, you immediately get access to all Premium features. The remaining value of your current subscription is applied to your new plan."
+        "answer": "Yes, you can move between Mobile, Desktop and Mobile + Desktop at any time. When you upgrade, you immediately get access to the larger edition. The remaining value of your current subscription is applied to your new plan."
       },
       {
-        "question": "Can I switch between Basic and Premium?",
-        "answer": "Absolutely. You can switch between Basic and Premium plans at any time. Downgrades take effect at the end of your current billing period, while upgrades are applied immediately."
+        "question": "Can I switch between plans?",
+        "answer": "Absolutely. You can switch between the Mobile, Desktop and Mobile + Desktop plans at any time. Downgrades take effect at the end of your current billing period, while upgrades are applied immediately."
       },
       {
         "question": "Will my data be deleted if my subscription expires?",

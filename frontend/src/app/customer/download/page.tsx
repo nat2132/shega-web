@@ -43,7 +43,7 @@ export default function DownloadPage() {
     const fetch = async () => {
       try {
         const api = (await import('@/lib/api')).default;
-        const { data } = await api.get('/customers/download/');
+        const { data } = await api.get('/customers/download');
         setLatest(data.latest ?? null);
         setHistory(data.history ?? []);
       } catch {

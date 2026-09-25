@@ -26,7 +26,7 @@ export default function DownloadsPage() {
 
   async function load() {
     try {
-      const { data } = await api.get<PaginatedResponse<AppVersion>>("/admin/app-versions/", { params: { page_size: 100 } });
+      const { data } = await api.get<PaginatedResponse<AppVersion>>("/admin/app-versions", { params: { page_size: 100 } });
       setVersions(data.results ?? []);
     } catch {
       /* ignore */

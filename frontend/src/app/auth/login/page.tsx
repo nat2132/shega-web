@@ -25,9 +25,11 @@ export default function LoginPage() {
       const user = useAuthStore.getState().user;
       if (user?.is_staff) {
         router.push("/admin/");
+      } else if (user?.is_customer) {
+        router.push("/customer");
       } else {
         logout();
-        toast.error("Please use the SHEGA mobile app to sign in. Web login is for administrators only.");
+        toast.error("This account does not have web access.");
         router.push("/");
       }
     } catch (err) {

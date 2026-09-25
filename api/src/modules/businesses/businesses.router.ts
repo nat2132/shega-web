@@ -88,7 +88,7 @@ async function buildBusinessAggs(customerIds: number[]): Promise<Map<number, Bus
   return map;
 }
 
-function serializeCustomerProfile(profile: { id: number; user_id: number; company_name: string; tin_number: string; city: string; region: string; country: string; website: string; status: string; notes: string; created_at: Date; updated_at: Date } | null) {
+function serializeCustomerProfile(profile: { id: number; user_id: number; company_name: string; tin_number: string; city: string; region: string; country: string; website: string; status: string; notes: string | null; created_at: Date; updated_at: Date } | null) {
   if (!profile) return null;
   return {
     id: profile.id,
@@ -103,7 +103,7 @@ function serializeCustomerProfile(profile: { id: number; user_id: number; compan
     country: profile.country,
     website: profile.website,
     status: profile.status,
-    notes: profile.notes,
+    notes: profile.notes || "",
     created_at: isoDateTime(profile.created_at),
     updated_at: isoDateTime(profile.updated_at),
   };

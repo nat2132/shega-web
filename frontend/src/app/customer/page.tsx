@@ -41,7 +41,7 @@ export default function CustomerDashboard() {
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        const { data: res } = await api.get('/customers/dashboard/');
+        const { data: res } = await api.get('/customers/dashboard');
         setData(res);
       } catch {
         setData({

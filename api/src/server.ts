@@ -4,9 +4,16 @@ import { prisma } from "./lib/prisma";
 
 const app = createApp();
 
-app.listen(env.port, () => {
-  console.log(`shega-admin-api listening on ${env.publicApiUrl || `http://localhost:${env.port}/api`}`);
-});
+const host = process.env.HOSTNAME || undefined;
+if (host) {
+  app.listen(env.port, host, () => {
+    console.log(`shega-admin-api listening on ${env.publicApiUrl || `http://${host}:${env.port}/api`}`);
+  });
+} else {
+  app.listen(env.port, () => {
+    console.log(`shega-admin-api listening on ${env.publicApiUrl || `http://0.0.0.0:${env.port}/api`}`);
+  });
+}
 
 const shutdown = async (signal: string) => {
   console.log(`Received ${signal}; shutting down...`);

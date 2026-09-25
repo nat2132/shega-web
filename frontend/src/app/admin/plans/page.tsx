@@ -8,15 +8,37 @@ import { formatCurrency, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import type { LicensePlan, PaginatedResponse } from "@/lib/types";
 
+type PlanEdition = "mobile" | "desktop" | "both";
+
 interface PlanForm {
   name: string;
   price: string;
   duration_months: string;
   device_limit: string;
+  edition: PlanEdition;
+  included_mobile_devices: string;
+  included_desktop_devices: string;
+  included_businesses: string;
   is_active: boolean;
 }
 
-const emptyForm: PlanForm = { name: "", price: "", duration_months: "1", device_limit: "1", is_active: true };
+const emptyForm: PlanForm = {
+  name: "",
+  price: "",
+  duration_months: "1",
+  device_limit: "1",
+  edition: "both",
+  included_mobile_devices: "1",
+  included_desktop_devices: "1",
+  included_businesses: "1",
+  is_active: true,
+};
+
+const EDITION_LABELS: Record<PlanEdition, string> = {
+  mobile: "Mobile",
+  desktop: "Desktop",
+  both: "Mobile + Desktop",
+};
 
 export default function PlansPage() {
   const [plans, setPlans] = useState<LicensePlan[]>([]);
@@ -54,6 +76,10 @@ export default function PlansPage() {
       price: plan.price.toString(),
       duration_months: plan.duration_months?.toString() || "1",
       device_limit: plan.device_limit?.toString() || "1",
+      edition: (plan.edition as PlanEdition) || "both",
+      included_mobile_devices: plan.included_mobile_devices?.toString() ?? "1",
+      included_desktop_devices: plan.included_desktop_devices?.toString() ?? "1",
+      included_businesses: plan.included_businesses?.toString() ?? "1",
       is_active: plan.is_active,
     });
     setModalOpen(true);
@@ -66,13 +92,17 @@ export default function PlansPage() {
       price: parseFloat(form.price),
       duration_months: parseInt(form.duration_months, 10),
       device_limit: parseInt(form.device_limit, 10),
+      edition: form.edition,
+      included_mobile_devices: parseInt(form.included_mobile_devices, 10) || 0,
+      included_desktop_devices: parseInt(form.included_desktop_devices, 10) || 0,
+      included_businesses: parseInt(form.included_businesses, 10) || 0,
       is_active: form.is_active,
     };
     try {
       if (editing) {
-        await api.patch(`/licenses/plans/${editing.id}/`, payload);
+        await api.patch(`/licenses/plans/${editing.id}`, payload);
       } else {
-        await api.post("/licenses/plans/", payload);
+        await api.post("/licenses/plans", payload);
       }
       setModalOpen(false);
       loadPlans();
@@ -83,7 +113,7 @@ export default function PlansPage() {
 
   async function toggleActive(plan: LicensePlan) {
     try {
-      await api.patch(`/licenses/plans/${plan.id}/`, { is_active: !plan.is_active });
+      await api.patch(`/licenses/plans/${plan.id}`, { is_active: !plan.is_active });
       loadPlans();
     } catch {
       /* ignore */
@@ -124,7 +154,12 @@ export default function PlansPage() {
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-lg font-semibold text-fg">{plan.name}</h3>
-                  <p className="text-xs text-muted mt-0.5">{plan.duration_months} mo · {plan.device_limit} device(s)</p>
+                  <p className="text-xs text-muted mt-0.5">
+                    {EDITION_LABELS[(plan.edition as PlanEdition) || "both"]} · {plan.duration_months} mo
+                  </p>
+                  <p className="text-[11px] text-muted mt-0.5">
+                    {plan.included_mobile_devices ?? 0} mobile · {plan.included_desktop_devices ?? 0} desktop · {plan.included_businesses ?? 0} business(es)
+                  </p>
                 </div>
                 <button onClick={() => toggleActive(plan)} className={cn("transition-colors", plan.is_active ? "text-fg" : "text-muted")}>
                   {plan.is_active ? <ToggleRight className="h-6 w-6" /> : <ToggleLeft className="h-6 w-6" />}
@@ -172,6 +207,14 @@ export default function PlansPage() {
                   <label className="mb-1.5 block text-xs font-medium text-muted">Plan Name</label>
                   <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="h-10 w-full rounded-xl border border-border bg-surface px-3 text-sm text-fg outline-none focus:border-border-soft" />
                 </div>
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium text-muted">Edition</label>
+                  <select value={form.edition} onChange={(e) => setForm({ ...form, edition: e.target.value as PlanEdition })} className="h-10 w-full rounded-xl border border-border bg-surface px-3 text-sm text-fg outline-none focus:border-border-soft">
+                    {(Object.keys(EDITION_LABELS) as PlanEdition[]).map((edition) => (
+                      <option key={edition} value={edition}>{EDITION_LABELS[edition]}</option>
+                    ))}
+                  </select>
+                </div>
                 <div className="grid grid-cols-3 gap-4">
                   <div>
                     <label className="mb-1.5 block text-xs font-medium text-muted">Price (ETB)</label>
@@ -184,6 +227,20 @@ export default function PlansPage() {
                   <div>
                     <label className="mb-1.5 block text-xs font-medium text-muted">Device Limit (0=unlimited)</label>
                     <input required type="number" min="0" value={form.device_limit} onChange={(e) => setForm({ ...form, device_limit: e.target.value })} className="h-10 w-full rounded-xl border border-border bg-surface px-3 text-sm text-fg outline-none focus:border-border-soft" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className="mb-1.5 block text-xs font-medium text-muted">Mobile slots</label>
+                    <input required type="number" min="0" value={form.included_mobile_devices} onChange={(e) => setForm({ ...form, included_mobile_devices: e.target.value })} className="h-10 w-full rounded-xl border border-border bg-surface px-3 text-sm text-fg outline-none focus:border-border-soft" />
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-xs font-medium text-muted">Desktop slots</label>
+                    <input required type="number" min="0" value={form.included_desktop_devices} onChange={(e) => setForm({ ...form, included_desktop_devices: e.target.value })} className="h-10 w-full rounded-xl border border-border bg-surface px-3 text-sm text-fg outline-none focus:border-border-soft" />
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-xs font-medium text-muted">Businesses</label>
+                    <input required type="number" min="0" value={form.included_businesses} onChange={(e) => setForm({ ...form, included_businesses: e.target.value })} className="h-10 w-full rounded-xl border border-border bg-surface px-3 text-sm text-fg outline-none focus:border-border-soft" />
                   </div>
                 </div>
                 <div className="flex items-center gap-3">

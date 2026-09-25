@@ -55,7 +55,7 @@ export default function ContactPage() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await api.post("/contacts/", form);
+      await api.post("/contacts", form);
       toast.success("Message sent successfully! We'll get back to you soon.");
       setForm({ name: "", phone: "", email: "", business_name: "", message: "" });
     } catch {

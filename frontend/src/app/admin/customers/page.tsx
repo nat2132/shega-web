@@ -80,7 +80,7 @@ export default function CustomersPage() {
       const params: Record<string, unknown> = { page, page_size: pageSize };
       if (search) params.search = search;
       if (statusFilter) params.is_active = statusFilter === "active";
-      const { data } = await api.get<PaginatedResponse<AdminCustomer>>("/admin/businesses/", { params });
+      const { data } = await api.get<PaginatedResponse<AdminCustomer>>("/admin/businesses", { params });
       setCustomers(data.results);
       setTotal(data.count);
     } catch {
@@ -101,12 +101,12 @@ export default function CustomersPage() {
     setDevices([]);
     setActiveLicenseId(null);
     try {
-      const { data } = await api.get<BusinessDetail>(`/admin/businesses/${userId}/`);
+      const { data } = await api.get<BusinessDetail>(`/admin/businesses/${userId}`);
       setDetail(data);
       const license = data.licenses?.find((l) => l.status === "active") ?? data.licenses?.[0];
       if (license) {
         setActiveLicenseId(license.id);
-        const devRes = await api.get<PaginatedResponse<DeviceActivation>>(`/licenses/device-activations/`, { params: { license: license.id, page_size: 50 } });
+        const devRes = await api.get<PaginatedResponse<DeviceActivation>>(`/licenses/device-activations`, { params: { license: license.id, page_size: 50 } });
         setDevices(devRes.data.results ?? []);
       }
     } catch {

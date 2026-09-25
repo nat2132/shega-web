@@ -43,18 +43,14 @@ export default function ProfilePage() {
   const handleSaveProfile = async () => {
     setSavingProfile(true);
     try {
+      const names = profileForm.full_name.split(/\s+/).filter(Boolean);
       await updateProfile({
-        full_name: profileForm.full_name,
-        phone_number: profileForm.phone_number,
-        profile: {
-          company_name: profileForm.company_name,
-          contact_person: profileForm.full_name,
-          phone_number: profileForm.phone_number,
-          address: profileForm.address,
-          city: '',
-          country: '',
-          tax_id: '',
-        },
+        first_name: names[0] || '',
+        last_name: names.slice(1).join(' ') || '',
+        phone: profileForm.phone_number,
+        business_name: profileForm.company_name,
+        business_type: profileForm.business_type,
+        address: profileForm.address,
       });
       toast.success('Profile updated successfully');
     } catch {
@@ -76,8 +72,8 @@ export default function ProfilePage() {
     setSavingPassword(true);
     try {
       const api = (await import('@/lib/api')).default;
-      await api.post('/auth/change-password/', {
-        current_password: passwordForm.current_password,
+      await api.post('/auth/change-password', {
+        old_password: passwordForm.current_password,
         new_password: passwordForm.new_password,
       });
       toast.success('Password changed successfully');

@@ -34,7 +34,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     api
-      .get<SystemSettingsResponse>("/admin/settings/")
+      .get<SystemSettingsResponse>("/admin/settings")
       .then(({ data }) => {
         const list = data.settings ?? [];
         const byKey: Record<string, string> = {};
@@ -56,7 +56,7 @@ export default function SettingsPage() {
       ...PAYMENT_KEYS.map((key) => ({ key, value: payment[key as keyof typeof payment], type: "string" })),
     ];
     try {
-      await api.put("/admin/settings/", payload);
+      await api.put("/admin/settings", payload);
       toast.success("Settings saved");
     } catch {
       toast.error("Failed to save settings");
@@ -69,7 +69,7 @@ export default function SettingsPage() {
     e.preventDefault();
     setPasswordLoading(true);
     try {
-      await api.post("/auth/change-password/", password);
+      await api.post("/auth/change-password", password);
       toast.success("Password changed");
       setPassword({ old_password: "", new_password: "" });
     } catch {

@@ -5,6 +5,10 @@
 // JSON fields (Django JSONField) are stored as LongText like Django does on
 // MySQL; the application parses them.
 //
+// MySQL note: LONGTEXT columns are nullable (MySQL 8 strict mode rejects
+// literal DEFAULT values on TEXT columns). The API always writes full values;
+// serializers normalize null to "" for a stable wire contract.
+//
 // NOTE: ids are Int (32-bit); the legacy data must fit within 2^31-1.
 
 generator client {
@@ -33,14 +37,14 @@ model User {
   phone           String?   @unique @db.VarChar(20)
   business_name   String    @default("") @db.VarChar(255)
   business_type   String    @default("") @db.VarChar(50)
-  address         String    @db.LongText
+  address         String?   @db.LongText
   is_customer     Boolean   @default(false) @db.TinyInt
   is_admin        Boolean   @default(false) @db.TinyInt
   email_verified  Boolean   @default(false) @db.TinyInt
   phone_verified  Boolean   @default(false) @db.TinyInt
   created_at      DateTime  @db.DateTime(0)
   updated_at      DateTime  @db.DateTime(0)
-  notes           String    @db.LongText
+  notes           String?   @db.LongText
 
   customer_profile    CustomerProfile?
   licenses            License[]
@@ -69,7 +73,7 @@ model BusinessMembership {
   business_id   Int
   status        String   @default("active") @db.VarChar(20)
   role          String   @default("cashier") @db.VarChar(20)
-  permissions   String   @default("{}") @db.LongText
+  permissions   String?  @db.LongText
   is_active     Boolean  @default(true) @db.TinyInt
   invited_by_id Int?
   created_at    DateTime @db.DateTime(0)
@@ -90,7 +94,7 @@ model LoginAttempt {
   user_id    Int?
   success    Boolean   @default(false) @db.TinyInt
   outcome    String    @db.VarChar(10)
-  user_agent String    @db.LongText
+  user_agent String?   @db.LongText
   timestamp  DateTime  @db.DateTime(0)
 
   user User? @relation(fields: [user_id], references: [id], onDelete: SetNull)
@@ -112,7 +116,7 @@ model CustomerProfile {
   country      String   @default("Ethiopia") @db.VarChar(100)
   website      String   @default("") @db.VarChar(200)
   status       String   @default("active") @db.VarChar(20)
-  notes        String   @db.LongText
+  notes        String?  @db.LongText
   created_at   DateTime @db.DateTime(0)
   updated_at   DateTime @db.DateTime(0)
 
@@ -124,13 +128,20 @@ model CustomerProfile {
 // ─── licenses ────────────────────────────────────────────────────────────────
 
 model Plan {
-  id              Int       @id @default(autoincrement())
-  name            String    @db.VarChar(100)
-  duration_months Int
-  device_limit    Int       @default(1)
-  price           Decimal   @db.Decimal(10, 2)
-  is_active       Boolean   @default(true) @db.TinyInt
-  created_at      DateTime  @db.DateTime(0)
+  id                    Int       @id @default(autoincrement())
+  name                  String    @db.VarChar(100)
+  duration_months       Int
+  device_limit          Int       @default(1)
+  price                 Decimal   @db.Decimal(10, 2)
+  is_active             Boolean   @default(true) @db.TinyInt
+  edition               String    @default("both") @db.VarChar(20)
+  included_mobile_devices Int     @default(1)
+  included_desktop_devices Int    @default(1)
+  included_businesses   Int       @default(1)
+  addon_mobile_price    Decimal   @default(500) @db.Decimal(10, 2)
+  addon_desktop_price   Decimal   @default(800) @db.Decimal(10, 2)
+  addon_business_price  Decimal   @default(1000) @db.Decimal(10, 2)
+  created_at            DateTime  @db.DateTime(0)
 
   licenses License[]
 
@@ -144,12 +155,15 @@ model License {
   license_key  String    @unique @db.VarChar(20)
   customer_id  Int
   plan_id      Int
-  status       String    @default("active") @db.VarChar(20)
-  start_date   DateTime  @db.Date
-  expiry_date  DateTime? @db.Date
-  device_limit Int
-  notes        String    @default("") @db.LongText
-  is_trial     Boolean   @default(false) @db.TinyInt
+  status         String    @default("active") @db.VarChar(20)
+  start_date     DateTime  @db.Date
+  expiry_date    DateTime? @db.Date
+  device_limit   Int
+  max_mobile_devices  Int  @default(1)
+  max_desktop_devices Int @default(1)
+  max_businesses Int      @default(1)
+  notes          String?   @db.LongText
+  is_trial       Boolean   @default(false) @db.TinyInt
   created_at   DateTime  @db.DateTime(0)
   updated_at   DateTime  @db.DateTime(0)
 
@@ -176,6 +190,7 @@ model DeviceActivation {
   last_seen       DateTime  @db.DateTime(0)
   ip_address      String    @db.VarChar(45)
   operating_system String   @db.VarChar(255)
+  device_type     String    @default("MOBILE") @db.VarChar(10)
   is_active       Boolean   @default(true) @db.TinyInt
 
   license License @relation(fields: [license_id], references: [id], onDelete: Cascade)
@@ -188,7 +203,7 @@ model LicenseAuditLog {
   id           Int       @id @default(autoincrement())
   license_id   Int
   action       String    @db.VarChar(20)
-  details      String    @default("{}") @db.LongText
+  details      String?   @db.LongText
   ip_address   String?   @db.VarChar(45)
   created_by_id Int?
   created_at   DateTime  @db.DateTime(0)
@@ -212,8 +227,11 @@ model Payment {
   transaction_id String    @unique @db.VarChar(100)
   receipt_image  String?   @db.VarChar(100)
   payment_method String    @db.VarChar(20)
+  payment_type   String    @default("subscription") @db.VarChar(30)
+  quantity       Int       @default(1)
+  description    String    @default("") @db.VarChar(255)
   status         String    @default("pending") @db.VarChar(20)
-  admin_notes    String    @default("") @db.LongText
+  admin_notes    String?   @db.LongText
   reviewed_by_id Int?
   reviewed_at    DateTime? @db.DateTime(0)
   created_at     DateTime  @db.DateTime(0)
@@ -255,7 +273,7 @@ model Notification {
   recipient_id      Int
   notification_type String   @db.VarChar(30)
   title             String   @db.VarChar(255)
-  message           String   @db.LongText
+  message           String?  @db.LongText
   is_read           Boolean  @default(false) @db.TinyInt
   link              String   @default("") @db.VarChar(500)
   created_at        DateTime @db.DateTime(0)
@@ -291,9 +309,9 @@ model RefreshToken {
 model SystemSetting {
   id          Int      @id @default(autoincrement())
   key         String   @unique @db.VarChar(255)
-  value       String   @db.LongText
+  value       String?  @db.LongText
   type        String   @default("string") @db.VarChar(20)
-  description String   @default("") @db.LongText
+  description String?  @db.LongText
   created_at  DateTime @db.DateTime(0)
   updated_at  DateTime @db.DateTime(0)
 
@@ -306,7 +324,7 @@ model FeatureFlag {
   code        String   @unique @db.VarChar(100)
   enabled     Boolean  @default(false) @db.TinyInt
   is_beta     Boolean  @default(false) @db.TinyInt
-  description String   @default("") @db.LongText
+  description String?  @db.LongText
   created_at  DateTime @db.DateTime(0)
   updated_at  DateTime @db.DateTime(0)
 
@@ -319,7 +337,7 @@ model AppVersion {
   version         String   @db.VarChar(20)
   min_version     String   @default("") @db.VarChar(20)
   is_force_update Boolean  @default(false) @db.TinyInt
-  release_notes   String   @default("") @db.LongText
+  release_notes   String?  @db.LongText
   download_url    String   @default("") @db.VarChar(200)
   created_at      DateTime @db.DateTime(0)
 
@@ -331,7 +349,7 @@ model SupportTicket {
   id            Int      @id @default(autoincrement())
   business_id   Int
   subject       String   @db.VarChar(255)
-  description   String   @db.LongText
+  description   String?  @db.LongText
   priority      String   @default("medium") @db.VarChar(20)
   status        String   @default("open") @db.VarChar(20)
   assigned_to_id Int?
@@ -351,7 +369,7 @@ model SupportReply {
   id          Int      @id @default(autoincrement())
   ticket_id   Int
   admin_id    Int?
-  message     String   @db.LongText
+  message     String?  @db.LongText
   is_internal Boolean  @default(false) @db.TinyInt
   created_at  DateTime @db.DateTime(0)
 
@@ -367,9 +385,9 @@ model AuditLog {
   action        String    @db.VarChar(100)
   resource_type String    @db.VarChar(100)
   resource_id   String    @default("") @db.VarChar(255)
-  details       String    @db.LongText
-  before_state  String    @db.LongText
-  after_state   String    @db.LongText
+  details       String?   @db.LongText
+  before_state  String?   @db.LongText
+  after_state   String?   @db.LongText
   ip_address    String?   @db.VarChar(45)
   user_agent    String    @default("") @db.VarChar(500)
   created_at    DateTime  @db.DateTime(0)
@@ -379,6 +397,20 @@ model AuditLog {
   @@index([admin_id])
   @@index([created_at])
   @@map("admin_api_auditlog")
+}
+
+model ContactMessage {
+  id         Int       @id @default(autoincrement())
+  name       String    @db.VarChar(150)
+  email      String    @db.VarChar(254)
+  phone      String?   @db.VarChar(20)
+  subject    String    @db.VarChar(255)
+  message    String?   @db.LongText
+  status     String    @default("new") @db.VarChar(20)
+  created_at DateTime  @db.DateTime(0)
+
+  @@index([created_at])
+  @@map("marketing_contactmessage")
 }
 
 model AdminSession {

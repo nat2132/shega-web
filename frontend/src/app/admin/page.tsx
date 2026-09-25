@@ -47,7 +47,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     api
-      .get<DashboardMetrics>("/admin/dashboard/")
+      .get<DashboardMetrics>("/admin/dashboard")
       .then(({ data }) => setMetrics(data))
       .catch(() => setError("Failed to load dashboard data"))
       .finally(() => setLoading(false));
@@ -60,8 +60,9 @@ export default function AdminDashboard() {
     { label: "Monthly Revenue", value: formatCurrency(metrics?.monthlyRevenue ?? metrics?.monthly_revenue ?? 0), icon: DollarSign, iconBgClass: "bg-green-500/10 text-green-400 border-green-500/20" },
   ];
 
-  const basic = metrics?.basicSubscribers ?? 0;
-  const premium = metrics?.premiumSubscribers ?? 0;
+  const mobilePlan = metrics?.mobileSubscribers ?? metrics?.subscriptionDistribution?.mobile ?? 0;
+  const desktopPlan = metrics?.desktopSubscribers ?? metrics?.subscriptionDistribution?.desktop ?? 0;
+  const bothPlans = metrics?.bothSubscribers ?? metrics?.subscriptionDistribution?.both ?? 0;
   const expired = metrics?.expiredSubscriptions ?? 0;
   const recentActivity = (metrics?.recentActivity ?? []) as unknown as RecentActivity[];
 
@@ -156,8 +157,9 @@ export default function AdminDashboard() {
             <h3 className="text-sm font-semibold text-fg">Subscription Overview</h3>
           </div>
           <div className="p-6 space-y-4">
-            <OverviewRow label="Basic Users" value={basic} tone="text-accent" />
-            <OverviewRow label="Premium Users" value={premium} tone="text-emerald-400" />
+            <OverviewRow label="Mobile plan" value={mobilePlan} tone="text-accent" />
+            <OverviewRow label="Desktop plan" value={desktopPlan} tone="text-emerald-400" />
+            <OverviewRow label="Mobile + Desktop plan" value={bothPlans} tone="text-amber-400" />
             <OverviewRow label="Expired Licenses" value={expired} tone="text-red-400" />
           </div>
         </div>

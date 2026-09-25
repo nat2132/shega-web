@@ -51,13 +51,22 @@ export interface Business {
 export interface LicensePlan {
   id: number;
   name: string;
+  display_name?: string;
   code?: string;
+  /** Which platforms the plan unlocks: Mobile, Desktop or Mobile + Desktop. */
+  edition?: PlanEdition;
   description: string;
   price: number;
   duration_months: number;
   duration_days?: number;
   device_limit: number;
   max_activations?: number;
+  included_mobile_devices?: number;
+  included_desktop_devices?: number;
+  included_businesses?: number;
+  addon_mobile_price?: number;
+  addon_desktop_price?: number;
+  addon_business_price?: number;
   features: string[] | Record<string, boolean>;
   is_active: boolean;
   created_at: string;
@@ -93,6 +102,8 @@ export interface Payment {
   amount: number;
   transaction_id: string;
   payment_method: string;
+  payment_type?: string;
+  description?: string;
   status: 'pending' | 'approved' | 'rejected';
   receipt_image?: string;
   admin_notes?: string;
@@ -188,8 +199,10 @@ export interface DashboardMetrics {
   trialUsers?: number;
   activeSubscriptions?: number;
   expiredSubscriptions?: number;
-  basicSubscribers?: number;
-  premiumSubscribers?: number;
+  /** Active licenses per canonical plan edition. */
+  mobileSubscribers?: number;
+  desktopSubscribers?: number;
+  bothSubscribers?: number;
   monthlyRevenue?: number;
   todayRevenue?: number;
   renewalsThisMonth?: number;
@@ -199,7 +212,7 @@ export interface DashboardMetrics {
   subscriptionGrowth?: { date: string; count: number }[];
   trialConversionRate?: number;
   mobileVsDesktop?: { mobile: number; desktop: number };
-  subscriptionDistribution?: { basic: number; premium: number };
+  subscriptionDistribution?: { mobile: number; desktop: number; both: number };
   expiringSoon?: License[];
   recentActivity?: Record<string, unknown>[];
 }
@@ -320,13 +333,16 @@ export interface LoginResponse {
   user: User;
 }
 
+/** The canonical plan structure: which platforms a plan unlocks. */
+export type PlanEdition = 'mobile' | 'desktop' | 'both';
+
 export interface Subscription {
   id: number;
   business_id: number;
   business_name: string;
   license_key: string;
-  platform: 'mobile' | 'desktop';
-  plan: 'Basic' | 'Premium';
+  platform: PlanEdition;
+  plan: string;
   billing: 'Monthly' | 'Quarterly' | 'Annual';
   status: 'active' | 'expired' | 'suspended' | 'cancelled' | 'pending';
   start_date: string;

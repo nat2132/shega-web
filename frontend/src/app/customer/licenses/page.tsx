@@ -63,7 +63,7 @@ export default function LicensesPage() {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const { data } = await api.get('/customers/licenses/');
+        const { data } = await api.get('/customers/licenses');
         const list = (Array.isArray(data) ? data : data.results ?? []) as License[];
         setLicenses(list);
         const now = Date.now();

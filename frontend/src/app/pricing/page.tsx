@@ -1,94 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
-import { Check, ChevronDown, ArrowRight } from "lucide-react";
+import { Check, ChevronDown, ArrowRight, AlertTriangle, RefreshCw } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-const plans = [
-  {
-    name: "Starter",
-    monthlyPrice: 49,
-    yearlyPrice: 39,
-    period: "3 months",
-    devices: "1 device",
-    savings: "Save 20%",
-    popular: false,
-    features: [
-      "Inventory management",
-      "Point of sale",
-      "Expense tracking",
-      "Basic reports",
-      "Email support",
-      "1 warehouse",
-    ],
-    cta: "Start Free Trial",
-  },
-  {
-    name: "Business",
-    monthlyPrice: 89,
-    yearlyPrice: 69,
-    period: "6 months",
-    devices: "3 devices",
-    savings: "Save 22%",
-    popular: true,
-    features: [
-      "Everything in Starter",
-      "Debt management",
-      "Supplier management",
-      "Multi-warehouse",
-      "Employee management",
-      "Priority email & chat",
-      "Advanced reports",
-      "API access",
-    ],
-    cta: "Start Free Trial",
-  },
-  {
-    name: "Enterprise",
-    monthlyPrice: 149,
-    yearlyPrice: 119,
-    period: "12 months",
-    devices: "Unlimited",
-    savings: "Save 20%",
-    popular: false,
-    features: [
-      "Everything in Business",
-      "Unlimited devices",
-      "Dedicated account manager",
-      "On-site training",
-      "Custom integrations",
-      "SLA guarantee",
-      "Phone & priority support",
-      "Data migration assistance",
-    ],
-    cta: "Contact Sales",
-  },
-];
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "/api";
 
-const featuresCompare = [
-  { name: "Inventory Management", starter: true, business: true, enterprise: true },
-  { name: "Point of Sale", starter: true, business: true, enterprise: true },
-  { name: "Expense Tracking", starter: true, business: true, enterprise: true },
-  { name: "Basic Reports", starter: true, business: true, enterprise: true },
-  { name: "Email Support", starter: true, business: true, enterprise: true },
-  { name: "Debt Management", starter: false, business: true, enterprise: true },
-  { name: "Supplier Management", starter: false, business: true, enterprise: true },
-  { name: "Multi-Warehouse", starter: false, business: true, enterprise: true },
-  { name: "Employee Management", starter: false, business: true, enterprise: true },
-  { name: "Advanced Reports", starter: false, business: true, enterprise: true },
-  { name: "API Access", starter: false, business: true, enterprise: true },
-  { name: "Unlimited Devices", starter: false, business: false, enterprise: true },
-  { name: "Dedicated Manager", starter: false, business: false, enterprise: true },
-  { name: "On-site Training", starter: false, business: false, enterprise: true },
-  { name: "Custom Integrations", starter: false, business: false, enterprise: true },
-  { name: "SLA Guarantee", starter: false, business: false, enterprise: true },
-  { name: "Phone Support", starter: false, business: false, enterprise: true },
-  { name: "Data Migration", starter: false, business: false, enterprise: true },
-];
+type PublicPlan = {
+  id: number;
+  name: string;
+  display_name?: string | null;
+  edition?: string | null;
+  duration_months?: number | null;
+  device_limit?: number | null;
+  price?: number | null;
+  included_mobile_devices?: number | null;
+  included_desktop_devices?: number | null;
+  included_businesses?: number | null;
+  addon_mobile_price?: number | null;
+  addon_desktop_price?: number | null;
+  addon_business_price?: number | null;
+  is_active?: boolean;
+};
 
 const faqs = [
   {
@@ -97,11 +34,11 @@ const faqs = [
   },
   {
     question: "How does licensing work?",
-    answer: "Shega offers flexible licensing based on your plan. Starter covers 1 device for 3 months, Business covers 3 devices for 6 months, and Enterprise offers unlimited devices for 12 months. All plans include free updates during the license period.",
+    answer: "Each plan includes a set number of mobile devices, desktop devices, and businesses, plus the duration shown on your plan. You can add more devices or businesses whenever you need them with flexible add-ons.",
   },
   {
     question: "What payment methods do you accept?",
-    answer: "We accept Telebirr, bank transfers, and international payments via credit/debit cards. For Enterprise plans, we also offer customized payment schedules.",
+    answer: "We accept Telebirr, bank transfers, and international payments via credit/debit cards. For larger plans, we also offer customized payment schedules.",
   },
   {
     question: "Is there a free trial?",
@@ -121,9 +58,68 @@ const cardVariants: Variants = {
   }),
 };
 
+function num(value?: number | null): number {
+  return typeof value === "number" && Number.isFinite(value) ? value : 0;
+}
+
+function fmtPts(value?: number | null): string {
+  return num(value).toLocaleString("en-US");
+}
+
+function planFeatures(plan: PublicPlan): string[] {
+  const lines: string[] = [];
+  const mobile = num(plan.included_mobile_devices);
+  const desktop = num(plan.included_desktop_devices);
+  const businesses = num(plan.included_businesses);
+  if (mobile > 0) lines.push(`${fmtPts(mobile)} mobile device${mobile === 1 ? "" : "s"} included`);
+  if (desktop > 0) lines.push(`${fmtPts(desktop)} desktop device${desktop === 1 ? "" : "s"} included`);
+  if (businesses > 0) lines.push(`${fmtPts(businesses)} business${businesses === 1 ? "" : "es"} included`);
+  return lines;
+}
+
+function planAddons(plan: PublicPlan): { label: string; price: number }[] {
+  const addons: { label: string; price: number }[] = [];
+  const mobile = num(plan.addon_mobile_price);
+  const desktop = num(plan.addon_desktop_price);
+  const business = num(plan.addon_business_price);
+  if (mobile > 0) addons.push({ label: "Extra mobile device", price: mobile });
+  if (desktop > 0) addons.push({ label: "Extra desktop device", price: desktop });
+  if (business > 0) addons.push({ label: "Extra business", price: business });
+  return addons;
+}
+
 export default function PricingPage() {
-  const [yearly, setYearly] = useState(false);
+  const [plans, setPlans] = useState<PublicPlan[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const res = await fetch(`${API_BASE}/plans`);
+      if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+      const data = await res.json();
+      const list: PublicPlan[] = Array.isArray(data) ? data : (data.results ?? []);
+      setPlans(list.filter((p) => p.is_active !== false));
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const popularId =
+    plans.length > 0
+      ? plans.reduce((best, plan) =>
+          num(plan.price) > num(best.price) ? plan : best
+        ).id
+      : null;
 
   return (
     <div className="min-h-screen bg-bg flex flex-col">
@@ -151,156 +147,165 @@ export default function PricingPage() {
               </p>
             </motion.div>
 
-            <div className="mb-12 flex items-center justify-center gap-4">
-              <span className={cn("text-sm font-medium transition-colors", !yearly ? "text-foreground" : "text-muted")}>
-                Monthly
+            <div className="mb-12 flex items-center justify-center">
+              <span className="rounded-full bg-white/[0.06] border border-white/[0.06] px-3 py-1 text-xs font-medium text-muted">
+                All prices in Ethiopian Birr (ETB) · Billed monthly
               </span>
-              <button
-                onClick={() => setYearly(!yearly)}
-                className={cn(
-                  "relative inline-flex h-7 w-12 items-center rounded-full transition-colors",
-                  yearly ? "bg-foreground/60" : "bg-foreground/15"
-                )}
-              >
-                <span
-                  className={cn(
-                    "inline-block h-5 w-5 rounded-full bg-white transition-transform",
-                    yearly ? "translate-x-6" : "translate-x-1"
-                  )}
-                />
-              </button>
-              <span className={cn("text-sm font-medium transition-colors", yearly ? "text-foreground" : "text-muted")}>
-                Yearly
-              </span>
-              {yearly && (
-                <motion.span
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="rounded-full bg-white/[0.06] px-2.5 py-0.5 text-xs font-medium text-foreground border border-white/[0.06]"
-                >
-                  Save ~20%
-                </motion.span>
-              )}
             </div>
 
-            <motion.div
-              className="grid gap-6 lg:grid-cols-3"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-80px" }}
-            >
-              {plans.map((plan, i) => (
-                <motion.div
-                  key={plan.name}
-                  variants={cardVariants}
-                  custom={i}
-                  className={cn(
-                    "relative rounded-2xl p-8 transition-all duration-300 glass-inner-highlight",
-                    plan.popular
-                      ? "glass-strong shadow-[0_8px_40px_-8px_rgba(0,0,0,0.12)]"
-                      : "glass hover:shadow-[0_8px_32px_-8px_rgba(0,0,0,0.08)]"
-                  )}
-                >
-                  {plan.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-foreground px-4 py-1 text-xs font-semibold text-bg tracking-wider uppercase">
-                      Most Popular
-                    </div>
-                  )}
-
-                  <div className="mb-6 pt-2">
-                    <h3 className="text-lg font-semibold text-foreground tracking-tight">
-                      {plan.name}
-                    </h3>
-                    <div className="mt-4 flex items-baseline gap-1">
-                      <span className="text-4xl font-bold text-foreground tracking-tight">
-                        ETB {yearly ? plan.yearlyPrice : plan.monthlyPrice}
-                      </span>
-                      <span className="text-sm text-muted">
-                        /{plan.period.toLowerCase()}
-                      </span>
-                    </div>
-                    <p className="mt-1 text-sm text-muted">{plan.devices}</p>
-                  </div>
-
-                  <AnimatePresence mode="wait">
-                    {yearly && (
-                      <motion.p
-                        key="savings"
-                        initial={{ opacity: 0, y: -8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -8 }}
-                        className="mb-6 text-sm font-medium text-foreground/60"
-                      >
-                        {plan.savings} with yearly billing
-                      </motion.p>
-                    )}
-                  </AnimatePresence>
-
-                  <Link
-                    href="#how-it-works"
+            {loading ? (
+              <div className="grid gap-6 lg:grid-cols-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div
+                    key={i}
                     className={cn(
-                      "mb-8 flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold transition-all",
-                      plan.popular ? "btn-glass-primary" : "btn-glass"
+                      "relative rounded-2xl p-8 glass glass-inner-highlight animate-pulse"
                     )}
                   >
-                    {plan.cta}
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-
-                  <ul className="space-y-3">
-                    {plan.features.map((f) => (
-                      <li key={f} className="flex items-start gap-3 text-sm text-muted">
-                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-foreground/40" />
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-              ))}
-            </motion.div>
-
-            <motion.div
-              className="mt-20"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-            >
-              <h3 className="mb-8 text-center text-lg font-semibold text-foreground tracking-tight">
-                Compare Features
-              </h3>
-              <div className="overflow-x-auto rounded-2xl glass glass-inner-highlight">
-                <table className="w-full min-w-[600px] border-collapse">
-                  <thead>
-                    <tr className="border-b border-white/[0.04]">
-                      <th className="px-4 py-3.5 text-left text-sm font-medium text-muted">Feature</th>
-                      <th className="px-4 py-3.5 text-center text-sm font-medium text-muted">Starter</th>
-                      <th className="px-4 py-3.5 text-center text-sm font-medium text-foreground">Business</th>
-                      <th className="px-4 py-3.5 text-center text-sm font-medium text-muted">Enterprise</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {featuresCompare.map((f) => (
-                      <tr
-                        key={f.name}
-                        className="border-b border-white/[0.03] transition-colors hover:bg-white/[0.02]"
-                      >
-                        <td className="px-4 py-3 text-sm text-muted">{f.name}</td>
-                        <td className="px-4 py-3 text-center">
-                          <Check className={cn("mx-auto h-4 w-4", f.starter ? "text-foreground/40" : "text-muted/20")} />
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          <Check className={cn("mx-auto h-4 w-4", f.business ? "text-foreground/40" : "text-muted/20")} />
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          <Check className={cn("mx-auto h-4 w-4", f.enterprise ? "text-foreground/40" : "text-muted/20")} />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    <div className="mb-6 pt-2">
+                      <div className="h-5 w-24 rounded-md bg-white/5" />
+                      <div className="mt-4 h-10 w-40 rounded-md bg-white/5" />
+                      <div className="mt-3 h-4 w-28 rounded-md bg-white/5" />
+                    </div>
+                    <div className="mb-8 h-11 w-full rounded-xl bg-white/5" />
+                    <div className="space-y-3">
+                      {Array.from({ length: 4 }).map((_, j) => (
+                        <div key={j} className="h-4 w-full rounded-md bg-white/5" />
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
-            </motion.div>
+            ) : error ? (
+              <div className="mx-auto max-w-md">
+                <div className="glass rounded-2xl p-10 text-center glass-inner-highlight">
+                  <AlertTriangle className="mx-auto mb-4 h-10 w-10 text-foreground/40" />
+                  <h3 className="text-lg font-semibold text-foreground tracking-tight">
+                    Couldn&apos;t load pricing
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted">
+                    We couldn&apos;t fetch the latest plans. Please check your connection and try again.
+                  </p>
+                  <button
+                    onClick={load}
+                    className="btn-glass-primary mt-6 inline-flex items-center gap-2 rounded-xl px-8 py-3 text-sm font-semibold"
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                    Try again
+                  </button>
+                </div>
+              </div>
+            ) : plans.length === 0 ? (
+              <div className="mx-auto max-w-md">
+                <div className="glass rounded-2xl p-10 text-center glass-inner-highlight">
+                  <h3 className="text-lg font-semibold text-foreground tracking-tight">
+                    No plans available
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted">
+                    Plans aren&apos;t available right now. Please check back soon.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <motion.div
+                className="grid gap-6 lg:grid-cols-3"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-80px" }}
+              >
+                {plans.map((plan, i) => {
+                  const popular = plan.id === popularId;
+                  const features = planFeatures(plan);
+                  const addons = planAddons(plan);
+                  const months = num(plan.duration_months);
+                  const deviceLimit = num(plan.device_limit);
+                  return (
+                    <motion.div
+                      key={plan.id}
+                      variants={cardVariants}
+                      custom={i}
+                      className={cn(
+                        "relative rounded-2xl p-8 transition-all duration-300 glass-inner-highlight",
+                        popular
+                          ? "glass-strong shadow-[0_8px_40px_-8px_rgba(0,0,0,0.12)]"
+                          : "glass hover:shadow-[0_8px_32px_-8px_rgba(0,0,0,0.08)]"
+                      )}
+                    >
+                      {popular && (
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-foreground px-4 py-1 text-xs font-semibold text-bg tracking-wider uppercase">
+                          Most Popular
+                        </div>
+                      )}
+
+                      <div className="mb-6 pt-2">
+                        <h3 className="text-lg font-semibold text-foreground tracking-tight">
+                          {plan.name}
+                        </h3>
+                        {plan.edition && (
+                          <p className="mt-1 text-xs font-medium text-muted uppercase tracking-wider">
+                            {plan.edition}
+                          </p>
+                        )}
+                        <div className="mt-4 flex items-baseline gap-1">
+                          <span className="text-4xl font-bold text-foreground tracking-tight">
+                            {fmtPts(plan.price)} ETB
+                          </span>
+                          <span className="text-sm text-muted">/month</span>
+                        </div>
+                        <p className="mt-1 text-sm text-muted">
+                          {months > 0 && `${months}-month license`}
+                          {months > 0 && deviceLimit > 0 && " · "}
+                          {deviceLimit > 0 && `Up to ${fmtPts(deviceLimit)} device${deviceLimit === 1 ? "" : "s"}`}
+                        </p>
+                      </div>
+
+                      <Link
+                        href="/auth/register"
+                        className={cn(
+                          "mb-8 flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold transition-all",
+                          popular ? "btn-glass-primary" : "btn-glass"
+                        )}
+                      >
+                        Get Started
+                        <ArrowRight className="h-4 w-4" />
+                      </Link>
+
+                      {features.length > 0 && (
+                        <ul className="space-y-3">
+                          {features.map((f) => (
+                            <li key={f} className="flex items-start gap-3 text-sm text-muted">
+                              <Check className="mt-0.5 h-4 w-4 shrink-0 text-foreground/40" />
+                              {f}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+
+                      {addons.length > 0 && (
+                        <div className="mt-6 rounded-xl border border-white/[0.06] bg-white/[0.03] p-4">
+                          <p className="mb-2.5 text-xs font-medium text-muted tracking-wider uppercase">
+                            Add-ons
+                          </p>
+                          <ul className="space-y-1.5">
+                            {addons.map((addon) => (
+                              <li
+                                key={addon.label}
+                                className="flex items-center justify-between gap-3 text-sm"
+                              >
+                                <span className="text-muted">{addon.label}</span>
+                                <span className="font-medium text-foreground/70">
+                                  +{addon.price.toLocaleString("en-US")} ETB/month
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            )}
           </div>
         </section>
 

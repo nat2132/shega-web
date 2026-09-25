@@ -83,9 +83,17 @@ export function serializePlan(plan: Plan): Record<string, unknown> {
   return {
     id: plan.id,
     name: plan.name,
+    display_name: plan.name,
+    edition: plan.edition,
     duration_months: plan.duration_months,
     device_limit: plan.device_limit,
     price: toNumber(plan.price),
+    included_mobile_devices: plan.included_mobile_devices,
+    included_desktop_devices: plan.included_desktop_devices,
+    included_businesses: plan.included_businesses,
+    addon_mobile_price: toNumber(plan.addon_mobile_price),
+    addon_desktop_price: toNumber(plan.addon_desktop_price),
+    addon_business_price: toNumber(plan.addon_business_price),
     is_active: plan.is_active,
     created_at: isoDateTime(plan.created_at),
   };
@@ -113,6 +121,9 @@ export function serializeLicense(
     start_date: isoDate(license.start_date),
     expiry_date: isoDate(license.expiry_date),
     device_limit: license.device_limit,
+    max_mobile_devices: license.max_mobile_devices,
+    max_desktop_devices: license.max_desktop_devices,
+    max_businesses: license.max_businesses,
     notes: license.notes,
     is_trial: license.is_trial,
     created_at: isoDateTime(license.created_at),
@@ -133,6 +144,7 @@ export function serializeDeviceActivation(
     last_seen: isoDateTime(da.last_seen),
     ip_address: da.ip_address,
     operating_system: da.operating_system,
+    device_type: da.device_type,
     is_active: da.is_active,
   };
 }
@@ -176,6 +188,9 @@ export function serializeSubscriptionList(
     start_date: isoDate(sub.start_date),
     expiry_date: isoDate(sub.expiry_date),
     device_limit: sub.device_limit,
+    max_mobile_devices: sub.max_mobile_devices,
+    max_desktop_devices: sub.max_desktop_devices,
+    max_businesses: sub.max_businesses,
     is_trial: sub.is_trial,
     days_remaining: daysRemaining(sub.expiry_date),
     notes: sub.notes,
@@ -218,6 +233,9 @@ export function serializePaymentList(
     plan: pmt.plan_id,
     plan_name: pmt.plan?.name ?? null,
     plan_label: planLabel(pmt.plan),
+    payment_type: pmt.payment_type,
+    quantity: pmt.quantity,
+    description: pmt.description,
     amount: toNumber(pmt.amount),
     transaction_id: pmt.transaction_id,
     receipt_image: pmt.receipt_image ?? null,
@@ -353,6 +371,10 @@ export function toNumber(value: unknown): number {
   if (typeof value === "number") return value;
   if (typeof value === "string") {
     const n = Number.parseFloat(value);
+    return Number.isFinite(n) ? n : 0;
+  }
+  if (typeof value === "object" && value !== null && typeof (value as { toString?: unknown }).toString === "function") {
+    const n = Number.parseFloat(String((value as { toString(): string }).toString()));
     return Number.isFinite(n) ? n : 0;
   }
   return 0;

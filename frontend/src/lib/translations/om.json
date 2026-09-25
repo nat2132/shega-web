@@ -143,158 +143,106 @@
     }
   },
   "pricing": {
-    "badge": "Gatii Salphaa",
-    "heading": "Karoora Bija Keessaan Walitti Dagaatan",
-    "lead": "Karoora bijaa keetti tolu filadhu. Yeroo barbaaddettan ol qacari.",
-    "bestValue": "Gatii Irra Gaarii — Karoora Baay'ee Filatamaa",
+    "badge": "Simple Pricing",
+    "heading": "Plans That Grow With Your Business",
+    "lead": "Choose the plan that fits your business. Upgrade anytime.",
+    "bestValue": "Gatii Cimaa — Karoora Baay'ee Jaalatamaa",
     "toggle": {
-      "monthly": "Ji'aan",
-      "threeMonths": "Ji'aa 3 Iffaa"
+      "monthly": "1 Month",
+      "threeMonths": "3 Months"
     },
-    "desktop": {
-      "title": "Karoora Dhasktii",
-      "subtitle": "Garee fi dhaabbata dagaaganiif meeshaa cimaa.",
-      "basic": {
-        "name": "Bu'ura",
-        "description": "Bija xixiqqoof meeshaa dhasktii bu'uraa.",
-        "monthlyPrice": "2,499",
-        "quarterlyPrice": "5,499",
+    "plans": {
+      "title": "Karoora Keessan Filadhaa",
+      "subtitle": "Moobaayilii, Deeskitooppii yookaan lamaanuu — herrega tokko, daldala tokko, maallaqa tokko.",
+      "mobile": {
+        "name": "Mobile",
+        "description": "Suuqii guutuu bilbila keessan irraa bulchaa.",
+        "monthlyPrice": "4,500",
+        "quarterlyPrice": "13,500",
         "period": "ETB",
-        "monthLabel": "Ji'a 1",
-        "quarterLabel": "Ji'a 3",
+        "monthLabel": "ji'a tokkoof",
+        "quarterLabel": "ji'a 3",
+        "includes": "Meeshaa moobaayilii 1 · Daldala 1",
         "features": [
-          "Kuusaa",
-          "Gurgurtaa",
-          "Quunnamoota",
-          "Qindaa'ina Kuusaa Fooyyessuu"
+          "Qabeenya",
+          "Gurgurtaa fi POS",
+          "Maamiltoota fi Liqii",
+          "Sirreeffama Kuusaa",
+          "Gabaasa fi Daashboordii"
         ],
-        "cta": "Bu'ura Filadhu"
+        "cta": "Moobaayilii Filadhu"
       },
-      "premium": {
-        "name": "Sadarkaa Ol",
-        "description": "Meeshaalee dhasktii amaloota guutuu qaban garee fi dhaabbata guddachaa jiraniif.",
-        "popular": "Baay'ee Filatamaa",
-        "recommended": "Gatii Gaarii",
-        "monthlyPrice": "4,499",
-        "quarterlyPrice": "11,499",
+      "desktop": {
+        "name": "Desktop",
+        "description": "Waajjira keessaniif humna ERP guutuu.",
+        "monthlyPrice": "7,500",
+        "quarterlyPrice": "22,500",
         "period": "ETB",
-        "monthLabel": "Ji'a 1",
-        "quarterLabel": "Ji'a 3",
+        "monthLabel": "ji'a tokkoof",
+        "quarterLabel": "ji'a 3",
+        "includes": "Meeshaa deeskitooppii 1 · Daldala 1",
         "features": [
-          "Waan Dhasktii Bu'ura keessa jiru hunda fi dabalata:",
-          "Gazzii",
-          "Dashboard Irratti Argama",
-          "Rasiidii PDF",
-          "CSV Ol Fe'uu fi Erguu",
-          "Bulchiinsa Baasii",
-          "Bulchiinsa Bajataa",
-          "Bulchiinsa Daa",
-          "Ajaja Maamila",
-          "Ajaja Bitaa",
+          "Waan moobaayilii keessa jiru hunda",
+          "POS Deeskitooppii fi Nagahee",
           "Kuusaa Baay'ee",
-          "Gargaaraa AI",
-          "Dhamma Fayyaa Bija",
-          "Biometrics",
-          "Gammee",
-          "Bulchiinsa Fayyadamaa",
-          "Bulchiinsa Hojjattootaa",
-          "Galmee Qorannoo",
-          "Bulchiinsa Dhiyeessitootaa",
-          "Bulchiinsa Guuricha"
+          "Hojjettoota fi Hayyama",
+          "Xiinxala fi Ooditii"
         ],
-        "cta": "Sadarkaa Ol Filadhu"
-      }
-    },
-    "mobile": {
-      "title": "Karoora Bilbilaa",
-      "subtitle": "Bilbila irraa jalqabi akkaataa guddannaa keessaniin ol qacari.",
-      "basic": {
-        "name": "Bu'ura",
-        "description": "Bija xixiqqoo jalqabuuf meeshaa barbaachisaa.",
-        "monthlyPrice": "1,999",
-        "quarterlyPrice": "2,499",
-        "period": "ETB",
-        "monthLabel": "Ji'a 1",
-        "quarterLabel": "Ji'a 3",
-        "features": [
-          "Kuusaa",
-          "Gurgurtaa",
-          "Quunnamoota",
-          "Qindaa'ina Kuusaa Fooyyessuu",
-          "PDF ykn CSV itti gad ba'aa"
-        ],
-        "cta": "Bu'ura Filadhu"
+        "cta": "Deeskitooppii Filadhu"
       },
-      "premium": {
-        "name": "Sadarkaa Ol",
-        "description": "Daldaltoota guddachuu qophaa'aniif amaloota sadarkaa olaa.",
-        "popular": "Baay'ee Filatamaa",
-        "recommended": "Gatii Gaarii",
-        "monthlyPrice": "2,499",
-        "quarterlyPrice": "5,499",
+      "both": {
+        "name": "Mobile + Desktop",
+        "description": "Moobaayilii fi deeskitooppii waliin wal-simsiisaa bulchaa.",
+        "monthlyPrice": "10,000",
+        "quarterlyPrice": "30,000",
         "period": "ETB",
-        "monthLabel": "Ji'a 1",
-        "quarterLabel": "Ji'a 3",
+        "monthLabel": "ji'a tokkoof",
+        "quarterLabel": "ji'a 3",
+        "includes": "Moobaayilii 1 + Deeskitooppii 1 · Daldala 1",
         "features": [
-          "Waan Bu'ura keessa jiru hunda fi dabalata:",
-          "Gazzii",
-          "Dashboard Irratti Argama",
-          "Rasiidii PDF",
-          "CSV Ol Fe'uu fi Erguu",
-          "Bulchiinsa Baasii",
-          "Bulchiinsa Bajataa",
-          "Bulchiinsa Daa",
-          "Ajaja Maamila",
-          "Ajaja Bitaa",
-          "Kuusaa Baay'ee",
-          "Gargaaraa AI",
-          "Dhamma Fayyaa Bija",
-          "Biometrics",
-          "Gammee",
-          "Yaadachiisa Liqii Dhiyeessitootaa"
+          "Waan deeskitooppii keessa jiru hunda",
+          "POS Moobaayilii fi Iskaanerii",
+          "Wal-simsiisa meeshaa yeroo hunda",
+          "Meeshaalee garee",
+          "Deeggarsa dursaa"
         ],
-        "cta": "Sadarkaa Ol Filadhu"
+        "cta": "Moobaayilii + Deeskitooppii Filadhu",
+        "popular": "Baay'ee Jaalatamaa",
+        "recommended": "Gatii Cimaa"
       }
     },
     "comparison": {
-      "badge": "Madaallee Amalootaa",
-      "included": "Dabalameera",
-      "notIncluded": "Hin dabalamin",
-      "title": "Amaloota Hunda Wal bira Kaa'i",
-      "subtitle": "Karoora hunda keessatti waan argattan sirriitti ilaalaa.",
+      "badge": "Feature Comparison",
+      "included": "Included",
+      "notIncluded": "Not included",
+      "title": "Compare All Features",
+      "subtitle": "See exactly what you get with each plan.",
       "columns": {
-        "feature": "Amala",
-        "mobileBasic": "Mobile Bu'ura",
-        "mobilePremium": "Mobile Sadarkaa Ol",
-        "desktopBasic": "Dhasktii Bu'ura",
-        "desktopPremium": "Dhasktii Sadarkaa Ol"
+        "feature": "Feature",
+        "mobile": "Mobile",
+        "desktop": "Desktop",
+        "both": "Mobile + Desktop"
       },
       "features": {
-        "inventory": "Kuusaa",
+        "inventory": "Qabeenya",
         "sales": "Gurgurtaa",
-        "contacts": "Quunnamoota",
-        "stockAdjustments": "Qindaa'ina Kuusaa Fooyyessuu",
-        "reports": "Gazzii",
-        "dashboardOverview": "Dashboard Irratti Argama",
-        "pdfReceipts": "Rasiidii PDF",
-        "csvImportExport": "CSV Ol Fe'uu fi Erguu",
+        "contacts": "Quunnamtii",
+        "stockAdjustments": "Sirreeffama Kuusaa",
+        "reports": "Gabaasa",
+        "dashboardOverview": "Waliigala Daashboordii",
+        "pdfReceipts": "Nagahee PDF",
+        "csvImportExport": "CSV Galchi fi Baasi",
         "expenseManagement": "Bulchiinsa Baasii",
-        "budgetManagement": "Bulchiinsa Bajataa",
-        "debtManagement": "Bulchiinsa Daa",
-        "customerOrders": "Ajaja Maamila",
-        "purchaseOrders": "Ajaja Bitaa",
+        "budgetManagement": "Bulchiinsa Baajataa",
+        "debtManagement": "Bulchiinsa Liqii",
+        "customerOrders": "Ajaja Maamilaa",
+        "purchaseOrders": "Ajaja Bittaa",
         "multiWarehouse": "Kuusaa Baay'ee",
         "aiAssistant": "Gargaaraa AI",
-        "businessHealthScore": "Dhamma Fayyaa Bija",
-        "biometrics": "Baayometiriksii",
-        "themes": "Gammee",
-        "supplierCreditReminders": "Yaadachiisa Liqii Dhiyeessitootaa",
-        "userManagement": "Bulchiinsa Fayyadamaa",
-        "employeeManagement": "Bulchiinsa Hojjattootaa",
-        "auditLogs": "Galmee Qorannoo",
-        "supplierManagement": "Bulchiinsa Dhiyeessitootaa",
-        "shipmentManagement": "Bulchiinsa Guuricha",
-        "advancedReporting": "Gabaasa Sadarkaa Ol"
+        "businessHealthScore": "Qabxii Fayyaa Daldalaa",
+        "biometrics": "Baayomeetiriksii",
+        "themes": "Bifa",
+        "supplierCreditReminders": "Yaadachiisa Liqii Dhiyeessaa"
       }
     }
   },
@@ -440,7 +388,7 @@
       {
         "step": "3",
         "title": "Bilis Yaali Keessan Jalqabaa",
-        "desc": "Guyyaa 3 Premium oophii guutuu argadhu. Amaloota hunda daawwadhu."
+        "desc": "Guyyaa 3 oophii guutuu argadhu. Amaloota hunda daawwadhu."
       },
       {
         "step": "4",
@@ -496,7 +444,7 @@
     "ti": "Tigrignaa",
     "select": "Afaan Filadhu"
   },
-"download": {
+  "download": {
     "title": "Shega Buufadhu",
     "latestVersion": "Gosa dhihoo",
     "subtitle": "Gosa dhihoo Shega Android irratti buufadhu. Platforma bulkiin kuusaa fi gurgurtaa guutuun biijaa kee bulchi.",
@@ -538,6 +486,6 @@
         "description": "Karoora filadhu irratti Teelebiirr itti galmaa'i. Yoo hanga amma; qoricha hin qabduu fi trial bilisaa 7 guyyaa app keessaa jalqi."
       }
     ],
-"releaseNotes": "Galmee Baafannaa"
+    "releaseNotes": "Galmee Baafannaa"
   }
 }
